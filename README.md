@@ -2,6 +2,10 @@
 
 The source code for the project located here: http://www.infotinks.com/coronavirus-dashboard-covid19-py/
 
+It produces the following graphs:
+- Normal Axes: http://www.infotinks.com/covid19/covid19-normal.html
+- Log Axes: http://www.infotinks.com/covid19/covid19-log.html
+
 Requirements:
 
 * python 3.7 (or which ever python 3 allows for f"formatted strings {like} this")
@@ -9,9 +13,7 @@ Requirements:
 * plotly python module. if missing can download+install with pip like so:
 pip install plotly
 
-
 * internet access to https://pomber.github.io/covid19/timeseries.json (more info about the timeseries here: https://github.com/pomber/covid19)
-
 
 Just run *plot.py*. This will gather data, and parse it and generate directory html_plots/ and dump 2 graphs for each country (normal y axes and log y axes) in dir. As Total worldwide is not provided in time series, we have to calculate it from the data for each day from all countries. It will provide both plots for TOTAL in the same dir as well. It then creates covid19-log.html and covid19-normal.html in the root directory for all of the countries, TOTAL at the top, then sorted by number of cases.
 
