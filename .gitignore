@@ -1,8 +1,8 @@
 html-plots/*
 other/
 .idea/
-covid19-log.html
-covid19-normal.html
-places.html
-run.timelog
-run-*.out
+/covid19-log.html
+/covid19-normal.html
+/places.html
+/run.timelog
+/run-*.out

@@ -1,0 +1,8 @@
+Thu Mar 26 13:04:20 PDT 2020 - start
+Traceback (most recent call last):
+  File "covid19plot.py", line 92, in <module>
+    entry=Entry(str_date,int_confirmed,int_deaths,int_recovered,prevEntry=oldEntry)
+  File "covid19plot.py", line 22, in __init__
+    self.active=cases-deaths-recovered
+TypeError: unsupported operand type(s) for -: 'int' and 'NoneType'
+Thu Mar 26 13:04:21 PDT 2020 - end
