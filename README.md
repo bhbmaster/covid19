@@ -6,6 +6,9 @@ It produces the following graphs:
 - Normal Axes: http://www.infotinks.com/covid19/covid19-normal.html
 - Log Axes: http://www.infotinks.com/covid19/covid19-log.html
 
+The following html data is produced from the logs of run.sh:
+- Places: http://www.infotinks.com/covid19/places.html
+
 Requirements:
 
 * python 3.7 (or which ever python 3 allows for f"formatted strings {like} this")
