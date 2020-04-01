@@ -6,21 +6,38 @@ import plotly.offline.offline
 # import plotly.plotly as py
 import string
 import os
+import datetime
 
 # By: Kostia Khlebopros #
+# Last Update: 2020-03-28 #
 
 # constants
 
 SITE="https://pomber.github.io/covid19/timeseries.json"
+start_time = datetime.datetime.now()
+start_time_string = start_time.strftime("%Y-%m-%d %H:%M:%S")
 
 ### classes ###
 
 class Entry:
     def __init__(self,date,cases,deaths,recovered,prevEntry=None):
         self.date=date
+        if cases == None:
+            cases=0
+        if deaths == None:
+            deaths=0
+        if recovered == None:
+            recovered=0
+        if cases < 0:
+            cases = 0
+        if deaths < 0:
+            deaths = 0
+        if recovered < 0:
+            recovered = 0
         self.cases=cases
         self.deaths=deaths
         self.recovered=recovered
+        # print(f"{date}, {cases}, {deaths}, {recovered}.")
         self.active=cases-deaths-recovered
         if prevEntry:
             self.delta_cases=cases-prevEntry.cases
@@ -172,7 +189,7 @@ for i in list_of_countries:
     fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_active_list, name="Ratio Diff Active Cases", showlegend=True),row=2,col=1)
     fig.update_yaxes(type="log",row=1,col=1)
     fig.update_yaxes(type=None,rangemode="tozero",row=2,col=1)
-    # fig.write_html(full_path_html,auto_open=False) # write 2.5 MiB file
+    # fig.write_html(full_path_html,auto_open=False) # write 2.5 MiB html file
     div = plotly.offline.offline.plot(fig, show_link=False, include_plotlyjs=False, output_type='div')
     div_list_log.append(div)
     ### normal ###
@@ -187,7 +204,7 @@ for i in list_of_countries:
     fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_active_list, name="Ratio Diff Active Cases", showlegend=True),row=2,col=1)
     fig.update_yaxes(type=None,row=1,col=1)
     fig.update_yaxes(type=None,rangemode="tozero",row=2,col=1)
-    # fig.write_html(full_path_html,auto_open=False) # write 2.5 MiB file
+    # fig.write_html(full_path_html,auto_open=False) # write 2.5 MiB html file
     div = plotly.offline.offline.plot(fig, show_link=False, include_plotlyjs=False, output_type='div')
     div_list_normal.append(div)
     ### done plot ###
@@ -197,6 +214,7 @@ for i in list_of_countries:
 ### create html - log ###
 
 html="""<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>"""
+html+=f"<p><b>covid19.py stats (LOG) - Last Update: {start_time_string}</b></p>"
 for i in div_list_log:
     # html+="<p>-------------------------</p>"
     html+=i
@@ -207,6 +225,7 @@ with open('covid19-log.html', 'w') as file:
 ### create html - normal ###
 
 html="""<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>"""
+html+=f"<p><b>covid19.py stats (NORMAL) - Last Update: {start_time_string}</b></p>"
 for i in div_list_normal:
     # html+="<p>-------------------------</p>"
     html+=i
