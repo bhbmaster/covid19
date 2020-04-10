@@ -247,22 +247,40 @@ for i in list_of_countries:
 
 ### create html - log ###
 
-html="""<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>"""
+html="""<!DOCTYPE html>
+<html>
+<head>
+<title>Covid19.py Stats Normal Scale</title>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<head/>
+<body>
+"""
 html+=f"<p><b>covid19.py stats (LOG) - Last Update: {start_time_string}</b></p>"
 for i in div_list_log:
     # html+="<p>-------------------------</p>"
     html+=i
+html+="""</body>
+</html>"""
 
 with open('covid19-log.html', 'w') as file:
     file.write(html)
 
 ### create html - normal ###
 
-html="""<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>"""
+html="""<!DOCTYPE html>
+<html>
+<head>
+<title>Covid19.py Stats Log Scale</title>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<head/>
+<body>
+"""
 html+=f"<p><b>covid19.py stats (NORMAL) - Last Update: {start_time_string}</b></p>"
 for i in div_list_normal:
     # html+="<p>-------------------------</p>"
     html+=i
+html+="""</body>
+</html>"""
 
 with open('covid19-normal.html', 'w') as file:
     file.write(html)
