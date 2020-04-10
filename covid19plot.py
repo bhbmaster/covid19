@@ -9,7 +9,7 @@ import os
 import datetime
 
 # By: Kostia Khlebopros #
-# Last Update: 2020-03-28 #
+# Last Update: 2020-04-09 #
 
 # constants
 
@@ -42,19 +42,37 @@ class Entry:
         if prevEntry:
             self.delta_cases=cases-prevEntry.cases
             self.delta_active=self.active-prevEntry.active
+            self.delta_recovered=self.recovered-prevEntry.recovered
+            self.delta_deaths=self.deaths-prevEntry.deaths
+            # ratio cases
             try:
                 self.delta_ratio_cases=cases/prevEntry.cases
             except:
                 self.delta_ratio_cases=None
+            # ratio active cases
             try:
                 self.delta_ratio_active=self.active/prevEntry.active
             except:
                 self.delta_ratio_active=None
+            # ratio recovered
+            try:
+                self.delta_ratio_recovered=self.recovered/prevEntry.recovered
+            except:
+                self.delta_ratio_recovered=None
+            # ratio deaths
+            try:
+                self.delta_ratio_deaths=self.deaths/prevEntry.deaths
+            except:
+                self.delta_ratio_deaths=None
         else:
             self.delta_cases=None
             self.delta_active=None
+            self.delta_recovered=None
+            self.delta_deaths=None
             self.delta_ratio_cases=None
             self.delta_ratio_active=None
+            self.delta_ratio_recovered=None
+            self.delta_ratio_deaths=None
 
 class Country:
     def __init__(self,country,entrylist):
@@ -65,10 +83,18 @@ class Country:
         self.deaths_list=[]
         self.recovered_list=[]
         self.active_list=[]
+        # cases
         self.delta_cases_list=[]
         self.delta_ratio_cases_list=[]
+        # active
         self.delta_active_list=[]
         self.delta_ratio_active_list=[]
+        # recovered
+        self.delta_recovered_list=[]
+        self.delta_ratio_recovered_list=[]
+        # deaths
+        self.delta_deaths_list=[]
+        self.delta_ratio_deaths_list=[]
         for i in entrylist:
             self.date_list.append(i.date)
             self.cases_list.append(i.cases)
@@ -79,6 +105,10 @@ class Country:
             self.delta_ratio_cases_list.append(i.delta_ratio_cases)
             self.delta_active_list.append(i.delta_active)
             self.delta_ratio_active_list.append(i.delta_ratio_active)
+            self.delta_recovered_list.append(i.delta_recovered)
+            self.delta_ratio_recovered_list.append(i.delta_ratio_recovered)
+            self.delta_deaths_list.append(i.delta_deaths)
+            self.delta_ratio_deaths_list.append(i.delta_ratio_deaths)
         self.length=len(entrylist)
         self.last_date=entrylist[self.length-1].date
         self.last_cases=entrylist[self.length-1].cases
@@ -187,6 +217,8 @@ for i in list_of_countries:
     fig.add_trace(go.Scatter(x=i.date_list, y=i.active_list, name="Active Cases (Cases - Deaths & Recovered)", line=dict(color='purple', width=2),showlegend=True),row=1,col=1)
     fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_cases_list, name="Ratio Diff Cases", showlegend=True),row=2,col=1)
     fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_active_list, name="Ratio Diff Active Cases", showlegend=True),row=2,col=1)
+    #fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_recovered_list, name="Ratio Diff Recovered", showlegend=True),row=2,col=1)
+    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_deaths_list, name="Ratio Diff Deaths", showlegend=True),row=2,col=1)
     fig.update_yaxes(type="log",row=1,col=1)
     fig.update_yaxes(type=None,rangemode="tozero",row=2,col=1)
     # fig.write_html(full_path_html,auto_open=False) # write 2.5 MiB html file
@@ -202,6 +234,8 @@ for i in list_of_countries:
     fig.add_trace(go.Scatter(x=i.date_list, y=i.active_list, name="Active Cases (Cases - Deaths & Recovered)", line=dict(color='purple', width=2),showlegend=True),row=1,col=1)
     fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_cases_list, name="Ratio Diff Cases", showlegend=True),row=2,col=1)
     fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_active_list, name="Ratio Diff Active Cases", showlegend=True),row=2,col=1)
+    # fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_recovered_list, name="Ratio Diff Recovered", showlegend=True),row=2,col=1)
+    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_deaths_list, name="Ratio Diff Deaths", showlegend=True),row=2,col=1)
     fig.update_yaxes(type=None,row=1,col=1)
     fig.update_yaxes(type=None,rangemode="tozero",row=2,col=1)
     # fig.write_html(full_path_html,auto_open=False) # write 2.5 MiB html file
