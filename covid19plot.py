@@ -8,10 +8,12 @@ import string
 import os
 import datetime
 
-# By: Kostia Khlebopros #
-# Last Update: 2020-04-10 #
+# By: Kostia Khlebopros
+# Site: http://www.infotinks.com/coronavirus-dashboard-covid19-py/
+# Github: https://github.com/bhbmaster/covid19
+# Last Update: 2020-04-10
 
-# constants
+### constants ###
 
 SITE="https://pomber.github.io/covid19/timeseries.json"
 start_time = datetime.datetime.now()
