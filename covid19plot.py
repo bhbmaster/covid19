@@ -19,6 +19,7 @@ SITE="https://pomber.github.io/covid19/timeseries.json"
 start_time = datetime.datetime.now()
 start_time_string = start_time.strftime("%Y-%m-%d %H:%M:%S")
 valid_chars = "-_.%s%s" % (string.ascii_letters, string.digits)
+bootstrapped = True
 
 ### classes ###
 
@@ -156,20 +157,28 @@ def graph2div(country_class,graph_type):
 
 # create html file out of div list
 
-def divs2html(div_list,type_title,time_string,output_file):
+def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
+    bootstrap_string="""    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">\n""" if bootstrap_on else ""
+    # start of html
     html = """<!DOCTYPE html>
     <html>
     <head>
-    <title>Covid19.py Stats """+type_title+""" Scale</title>
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+        <title>Covid19.py Plots """+type_title+""" Scale</title>\n"""
+    html += bootstrap_string
+    html += """    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <head/>
-    <body>
-    """
-    html += f"<p><b>covid19.py stats ({type_title}) - Last Update: {time_string}</b></p>"
+    <body>\n"""
+    html += f"    <h2>Covid19.py Plots ({type_title})</h2>\n"
+    html += f"    <p>Last Update: {time_string}</p>"
+    # print("HTML START:")
+    # print(html)
+    # print("HTML END:")
     for i in div_list:
-        html += i
-    html += """</body>
-    </html>"""
+        html += "    " + i
+    html += "</body>\n"
+    html += "</html>"
+    # end of html
+    # write file
     with open(output_file, 'w') as file:
         file.write(html)
 
@@ -279,10 +288,10 @@ for i in list_of_countries:
 # create the html
 
 # create html from div list - log
-divs2html(div_list_log,"Log",start_time_string,"covid19-log.html")
+divs2html(div_list_log,"Log",start_time_string,"covid19-log.html",bootstrapped)
 
 # create html from div list - normal
-divs2html(div_list_normal,"Normal",start_time_string,"covid19-normal.html")
+divs2html(div_list_normal,"Normal",start_time_string,"covid19-normal.html",bootstrapped)
 
 # complete message
 print("Generating plots done!")
