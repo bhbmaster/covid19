@@ -160,12 +160,21 @@ def graph2div(country_class,graph_type):
 def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
     bootstrap_string="""    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">\n""" if bootstrap_on else ""
     # start of html
-    html = """<!DOCTYPE html>
-    <html>
+    # html = """<!DOCTYPE html>                # with html5 the divs are 50% height, without this they are 100%
+    html = """<html>
     <head>
         <title>Covid19.py Plots """+type_title+""" Scale</title>\n"""
     html += bootstrap_string
     html += """    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+        <style>
+	        h2, p {
+	            color: maroon;
+	            margin-left: 40px;
+	        }
+	        div {
+	            height: 100%;
+	        }
+	    </style>
     <head/>
     <body>\n"""
     html += f"    <h2>Covid19.py Plots ({type_title})</h2>\n"
