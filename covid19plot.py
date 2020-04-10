@@ -9,15 +9,18 @@ import os
 import datetime
 
 # By: Kostia Khlebopros #
-# Last Update: 2020-04-09 #
+# Last Update: 2020-04-10 #
 
 # constants
 
 SITE="https://pomber.github.io/covid19/timeseries.json"
 start_time = datetime.datetime.now()
 start_time_string = start_time.strftime("%Y-%m-%d %H:%M:%S")
+valid_chars = "-_.%s%s" % (string.ascii_letters, string.digits)
 
 ### classes ###
+
+# a single entry class
 
 class Entry:
     def __init__(self,date,cases,deaths,recovered,prevEntry=None):
@@ -74,6 +77,8 @@ class Entry:
             self.delta_ratio_recovered=None
             self.delta_ratio_deaths=None
 
+# a country class, full of entries
+
 class Country:
     def __init__(self,country,entrylist):
         self.country=country
@@ -116,7 +121,59 @@ class Country:
         self.last_recovered=entrylist[self.length-1].recovered
         self.last_active=entrylist[self.length-1].active
 
+### functions ###
+
+# create divs of graph of a certain type from country class item
+
+def graph2div(country_class,graph_type):
+    i=country_class
+    if graph_type=="log":           # log
+        the_type_string="LOG"
+        the_type_fig="log"
+    else:                           # normal
+        the_type_string="NORMAL"
+        the_type_fig=None
+    country_name=i.country
+    file_country_name=''.join(c for c in country_name if c in valid_chars)
+    full_path_html=f"html-plots/{file_country_name}-plot-{the_type_string}.html"
+    fig = make_subplots(rows=2, cols=1)
+    fig.update_layout(title=f"COVID19 - {country_name}")
+    fig.add_trace(go.Scatter(x=i.date_list, y=i.cases_list, name="Cases", line=dict(color='firebrick', width=2),showlegend=True),row=1,col=1)
+    fig.add_trace(go.Scatter(x=i.date_list, y=i.deaths_list, name="Deaths", line=dict(color='red', width=2),showlegend=True),row=1,col=1)
+    fig.add_trace(go.Scatter(x=i.date_list, y=i.recovered_list, name="Recovered", line=dict(color='green', width=2),showlegend=True),row=1,col=1)
+    fig.add_trace(go.Scatter(x=i.date_list, y=i.active_list, name="Active Cases (Cases - Deaths & Recovered)", line=dict(color='purple', width=2),showlegend=True),row=1,col=1)
+    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_cases_list, name="Ratio Diff Cases", showlegend=True),row=2,col=1)
+    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_active_list, name="Ratio Diff Active Cases", showlegend=True),row=2,col=1)
+    #fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_recovered_list, name="Ratio Diff Recovered", showlegend=True),row=2,col=1)
+    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_deaths_list, name="Ratio Diff Deaths", showlegend=True),row=2,col=1)
+    fig.update_yaxes(type=the_type_fig,row=1,col=1)
+    fig.update_yaxes(type=None,rangemode="tozero",row=2,col=1)
+    # fig.write_html(full_path_html,auto_open=False) # write 2.5 MiB html file
+    div = plotly.offline.offline.plot(fig, show_link=False, include_plotlyjs=False, output_type='div')
+    return div
+
+# create html file out of div list
+
+def divs2html(div_list,type_title,time_string,output_file):
+    html = """<!DOCTYPE html>
+    <html>
+    <head>
+    <title>Covid19.py Stats """+type_title+""" Scale</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <head/>
+    <body>
+    """
+    html += f"<p><b>covid19.py stats ({type_title}) - Last Update: {time_string}</b></p>"
+    for i in div_list:
+        html += i
+    html += """</body>
+    </html>"""
+    with open(output_file, 'w') as file:
+        file.write(html)
+
 ### main ###
+
+# get and parse data
 
 with urllib.request.urlopen(SITE) as url:
     data=json.loads(url.read().decode())
@@ -158,7 +215,10 @@ for x in data:
 # print(f"* TOTALS on {last_date} are {last_confirmed} confirmed {last_deaths} deaths {last_recovered} recovered {last_active} active")
 print(f"* # of countries {len(list_of_countries)}")
 
-# get world total
+# get world total country
+
+# world total not provided so we sum everything
+
 # get list of dates from China as it has the most most likely
 all_dates=[]
 for i in list_of_countries:
@@ -166,6 +226,7 @@ for i in list_of_countries:
         all_dates=i.date_list # at this point all_dates is all of our dates
         break
 
+# now iterate thru all of the dates summing each country at the date
 i=0
 oldEntry=None
 total_entry_list=[]
@@ -187,106 +248,41 @@ total_country=Country("TOTAL",total_entry_list)
 list_of_countries.append(total_country)
 
 # sort list of countries by total cases (TOTAL will be at top)
-
-# def mykey(x):
-#    return x.last_cases
-# list_of_countries.sort(key=mykey, reverse=True)
-
 list_of_countries.sort(key=lambda x: x.last_cases, reverse=True)
 
 # plot all
+
 rows=len(list_of_countries)
 n=1
-valid_chars="-_.%s%s" % (string.ascii_letters, string.digits)
 div_list_log=[]
 div_list_normal=[]
 # if not os.path.exists("html-plots"):
 #    os.mkdir("html-plots")
 # if not os.path.exists("img-plots"):
 #    os.mkdir("img-plots")
+
+# create divs for each country and store in lists
+
 for i in list_of_countries:
-    country_name=i.country
-    file_country_name=''.join(c for c in country_name if c in valid_chars)
-    ### log ###
-    full_path_html=f"html-plots/{file_country_name}-plot-LOG.html"
-    fig = make_subplots(rows=2, cols=1)
-    fig.update_layout(title=f"COVID19 - {country_name}")    
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.cases_list, name="Cases", line=dict(color='firebrick', width=2),showlegend=True),row=1,col=1)
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.deaths_list, name="Deaths", line=dict(color='red', width=2),showlegend=True),row=1,col=1)
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.recovered_list, name="Recovered", line=dict(color='green', width=2),showlegend=True),row=1,col=1)
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.active_list, name="Active Cases (Cases - Deaths & Recovered)", line=dict(color='purple', width=2),showlegend=True),row=1,col=1)
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_cases_list, name="Ratio Diff Cases", showlegend=True),row=2,col=1)
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_active_list, name="Ratio Diff Active Cases", showlegend=True),row=2,col=1)
-    #fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_recovered_list, name="Ratio Diff Recovered", showlegend=True),row=2,col=1)
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_deaths_list, name="Ratio Diff Deaths", showlegend=True),row=2,col=1)
-    fig.update_yaxes(type="log",row=1,col=1)
-    fig.update_yaxes(type=None,rangemode="tozero",row=2,col=1)
-    # fig.write_html(full_path_html,auto_open=False) # write 2.5 MiB html file
-    div = plotly.offline.offline.plot(fig, show_link=False, include_plotlyjs=False, output_type='div')
-    div_list_log.append(div)
-    ### normal ###
-    full_path_html=f"html-plots/{file_country_name}-plot-NORMAL.html"
-    fig = make_subplots(rows=2, cols=1)
-    fig.update_layout(title=f"COVID19 - {country_name}")    
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.cases_list, name="Cases", line=dict(color='firebrick', width=2),showlegend=True),row=1,col=1)
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.deaths_list, name="Deaths", line=dict(color='red', width=2),showlegend=True),row=1,col=1)
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.recovered_list, name="Recovered", line=dict(color='green', width=2),showlegend=True),row=1,col=1)
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.active_list, name="Active Cases (Cases - Deaths & Recovered)", line=dict(color='purple', width=2),showlegend=True),row=1,col=1)
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_cases_list, name="Ratio Diff Cases", showlegend=True),row=2,col=1)
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_active_list, name="Ratio Diff Active Cases", showlegend=True),row=2,col=1)
-    # fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_recovered_list, name="Ratio Diff Recovered", showlegend=True),row=2,col=1)
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_deaths_list, name="Ratio Diff Deaths", showlegend=True),row=2,col=1)
-    fig.update_yaxes(type=None,row=1,col=1)
-    fig.update_yaxes(type=None,rangemode="tozero",row=2,col=1)
-    # fig.write_html(full_path_html,auto_open=False) # write 2.5 MiB html file
-    div = plotly.offline.offline.plot(fig, show_link=False, include_plotlyjs=False, output_type='div')
+    # normal
+    div=graph2div(i,"normal")
     div_list_normal.append(div)
-    ### done plot ###
-    print(f"{n}/{rows} - {country_name} - last value from {i.last_date} with {i.last_cases} cases, {i.last_deaths} deaths, {i.last_recovered} recovered, {i.last_active} active cases.")
+    # log
+    div=graph2div(i,"log")
+    div_list_log.append(div)
+    # done creating div plots message
+    print(f"{n}/{rows} - {i.country} - last value from {i.last_date} with {i.last_cases} cases, {i.last_deaths} deaths, {i.last_recovered} recovered, {i.last_active} active cases.")
     n+=1
 
-### create html - log ###
+# create the html
 
-html="""<!DOCTYPE html>
-<html>
-<head>
-<title>Covid19.py Stats Normal Scale</title>
-<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-<head/>
-<body>
-"""
-html+=f"<p><b>covid19.py stats (LOG) - Last Update: {start_time_string}</b></p>"
-for i in div_list_log:
-    # html+="<p>-------------------------</p>"
-    html+=i
-html+="""</body>
-</html>"""
+# create html from div list - log
+divs2html(div_list_log,"Log",start_time_string,"covid19-log.html")
 
-with open('covid19-log.html', 'w') as file:
-    file.write(html)
+# create html from div list - normal
+divs2html(div_list_normal,"Normal",start_time_string,"covid19-normal.html")
 
-### create html - normal ###
-
-html="""<!DOCTYPE html>
-<html>
-<head>
-<title>Covid19.py Stats Log Scale</title>
-<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-<head/>
-<body>
-"""
-html+=f"<p><b>covid19.py stats (NORMAL) - Last Update: {start_time_string}</b></p>"
-for i in div_list_normal:
-    # html+="<p>-------------------------</p>"
-    html+=i
-html+="""</body>
-</html>"""
-
-with open('covid19-normal.html', 'w') as file:
-    file.write(html)
-
-### almost done
-
+# complete message
 print("Generating plots done!")
 
 ### the end ###
