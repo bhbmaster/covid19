@@ -19,7 +19,7 @@ SITE="https://pomber.github.io/covid19/timeseries.json"
 start_time = datetime.datetime.now()
 start_time_string = start_time.strftime("%Y-%m-%d %H:%M:%S")
 valid_chars = "-_.%s%s" % (string.ascii_letters, string.digits)
-bootstrapped = True
+bootstrapped = False
 
 ### classes ###
 
