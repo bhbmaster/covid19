@@ -5,7 +5,7 @@ from plotly.subplots import make_subplots
 import plotly.offline.offline
 # import plotly.plotly as py
 import string
-import os
+# import os
 import datetime
 import bs4
 import htmlmin
@@ -13,7 +13,7 @@ import htmlmin
 # By: Kostia Khlebopros
 # Site: http://www.infotinks.com/coronavirus-dashboard-covid19-py/
 # Github: https://github.com/bhbmaster/covid19
-# Last Update: 2020-04-10
+# Last Update: 2020-04-11
 
 ### constants ###
 
@@ -187,7 +187,10 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
     <head/>
     <body>
         <h2>Covid19.py Plots ({type_title})</h2>
-        <p>Last Update: {time_string}</p>\n"""
+        <p><b>Last Update:</b> {time_string}</p>
+        <p><b>* More Info:</b> available on <a href="https://github.com/bhbmaster/covid19">GitHub</a> and <a href="http://www.infotinks.com/coronavirus-dashboard-covid19-py/">infotinks.com</a></p>
+        <p><b>* Delta</b> is change from previous day ( + is growth; - is reduction )</p>
+        <p><b>* Ratio</b> is % change from previous day ( 1 or higher is growth; 0 to 1 is reduction )</p>\n"""
     # print("HTML START:")
     # print(html)
     # print("HTML END:")
@@ -199,8 +202,8 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
         <tr>
         <td>Date: {country.last_date}</td>
         <td>Last Value</td>
-        <td>Delta</td>
-        <td>Ratio</td>
+        <td>Delta Diff</td>
+        <td>Ratio Diff</td>
         </tr>
         <tr>
         <td>Cases</td>
