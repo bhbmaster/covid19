@@ -7,6 +7,7 @@ import plotly.offline.offline
 import string
 import os
 import datetime
+import bs4
 
 # By: Kostia Khlebopros
 # Site: http://www.infotinks.com/coronavirus-dashboard-covid19-py/
@@ -166,51 +167,89 @@ def graph2div(country_class,graph_type):
 # create html file out of div list
 
 def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
-    bootstrap_string="""    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">\n""" if bootstrap_on else ""
+    bootstrap_string="""<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">\n""" if bootstrap_on else ""
     # start of html
     # html = """<!DOCTYPE html>                # with html5 the divs are 50% height, without this they are 100%
-    html = """<html>
+    html = f"""<html>
     <head>
-        <title>Covid19.py Plots """+type_title+""" Scale</title>\n"""
-    html += bootstrap_string
-    html += """    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+        <title>Covid19.py Plots {type_title} Scale</title>
+        {bootstrap_string}
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
         <style>
-	        h2, h3, p {
+	        h2, h3, p, table {{
 	            margin-left: 40px;
-	        }
-	        div {
+	        }}
+	        div {{
 	            height: 100%;
-	        }
+	        }}
 	    </style>
     <head/>
-    <body>\n"""
-    html += f"    <h2>Covid19.py Plots ({type_title})</h2>\n"
-    html += f"    <p>Last Update: {time_string}</p>\n"
+    <body>
+        <h2>Covid19.py Plots ({type_title})</h2>
+        <p>Last Update: {time_string}</p>\n"""
     # print("HTML START:")
     # print(html)
     # print("HTML END:")
     for country,div in div_list:
-        html += f"<h3>{country.country}</h3>\n"
-        html += f"<p>Last Update Date: {country.last_date}</p>\n"
-        html += f"<p>Last Cases: {country.last_cases}</p>\n"
-        html += f"<p>Last Deaths: {country.last_deaths}</p>\n"
-        html += f"<p>Last Recovered: {country.last_recovered}</p>\n"
-        html += f"<p>Last Active Cases: {country.last_active}</p>\n"
-        html += f"<p>Last Delta Cases: {country.last_delta_cases}</p>\n"
-        html += f"<p>Last Delta Deaths: {country.last_delta_deaths}</p>\n"
-        html += f"<p>Last Delta Recovered: {country.last_delta_recovered}</p>\n"
-        html += f"<p>Last Delta Active Cases: {country.last_delta_active}</p>\n"
-        html += f"<p>Last Ratio Cases: {country.last_delta_ratio_cases}</p>\n"
-        html += f"<p>Last Ratio Deaths: {country.last_delta_ratio_deaths}</p>\n"
-        html += f"<p>Last Ratio Recovered: {country.last_delta_ratio_recovered}</p>\n"
-        html += f"<p>Last Ratio Active Cases: {country.last_delta_ratio_active}</p>\n"
-        html += div+"\n"
+        html += f"        <h3>{country.country}</h3>\n"
+        # html += f"<p>Last Update Date: {country.last_date}</p>\n"
+        # html += f"<p>Last Cases: {country.last_cases}</p>\n"
+        # html += f"<p>Last Deaths: {country.last_deaths}</p>\n"
+        # html += f"<p>Last Recovered: {country.last_recovered}</p>\n"
+        # html += f"<p>Last Active Cases: {country.last_active}</p>\n"
+        # html += f"<p>Last Delta Cases: {country.last_delta_cases}</p>\n"
+        # html += f"<p>Last Delta Deaths: {country.last_delta_deaths}</p>\n"
+        # html += f"<p>Last Delta Recovered: {country.last_delta_recovered}</p>\n"
+        # html += f"<p>Last Delta Active Cases: {country.last_delta_active}</p>\n"
+        # html += f"<p>Last Ratio Cases: {country.last_delta_ratio_cases}</p>\n"
+        # html += f"<p>Last Ratio Deaths: {country.last_delta_ratio_deaths}</p>\n"
+        # html += f"<p>Last Ratio Recovered: {country.last_delta_ratio_recovered}</p>\n"
+        # html += f"<p>Last Ratio Active Cases: {country.last_delta_ratio_active}</p>\n"
+
+        html += f"""
+        <table border="1" cellpadding="5">
+        <tbody>
+        <tr>
+        <td>Date: {country.last_date}</td>
+        <td>Last Value</td>
+        <td>Delta</td>
+        <td>Ratio</td>
+        </tr>
+        <tr>
+        <td>Cases</td>
+        <td>{country.last_cases}</td>
+        <td>{country.last_delta_cases}</td>
+        <td>{country.last_delta_ratio_cases}</td>
+        </tr>
+        <tr>
+        <td>Deaths</td>
+        <td>{country.last_deaths}</td>
+        <td>{country.last_delta_deaths}</td>
+        <td>{country.last_delta_ratio_deaths}</td>
+        </tr>
+        <tr>
+        <td>Recovered</td>
+        <td>{country.last_recovered}</td>
+        <td>{country.last_delta_recovered}</td>
+        <td>{country.last_delta_ratio_recovered}</td>
+        </tr>
+        <tr>
+        <td>Active Cases</td>
+        <td>{country.last_active}</td>
+        <td>{country.last_delta_active}</td>
+        <td>{country.last_delta_ratio_active}</td>
+        </tr>
+        </tbody>
+        </table>\n"""
+        html += "        " + div+"\n"
     html += "</body>\n"
     html += "</html>"
     # end of html
+    # make it pretty
+    newhtml = bs4.BeautifulSoup(html, "lxml").prettify()
     # write file
     with open(output_file, 'w') as file:
-        file.write(html)
+        file.write(newhtml)
 
 ### main ###
 
