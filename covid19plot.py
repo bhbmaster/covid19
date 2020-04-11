@@ -123,6 +123,14 @@ class Country:
         self.last_deaths=entrylist[self.length-1].deaths
         self.last_recovered=entrylist[self.length-1].recovered
         self.last_active=entrylist[self.length-1].active
+        self.last_delta_cases = entrylist[self.length - 1].delta_cases
+        self.last_delta_active = entrylist[self.length - 1].delta_active
+        self.last_delta_recovered = entrylist[self.length - 1].delta_recovered
+        self.last_delta_deaths = entrylist[self.length - 1].delta_deaths
+        self.last_delta_ratio_cases = entrylist[self.length - 1].delta_ratio_cases
+        self.last_delta_ratio_active = entrylist[self.length - 1].delta_ratio_active
+        self.last_delta_ratio_recovered = entrylist[self.length - 1].delta_ratio_recovered
+        self.last_delta_ratio_deaths = entrylist[self.length - 1].delta_ratio_deaths
 
 ### functions ###
 
@@ -167,8 +175,7 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
     html += bootstrap_string
     html += """    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
         <style>
-	        h2, p {
-	            color: maroon;
+	        h2, h3, p {
 	            margin-left: 40px;
 	        }
 	        div {
@@ -178,12 +185,26 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
     <head/>
     <body>\n"""
     html += f"    <h2>Covid19.py Plots ({type_title})</h2>\n"
-    html += f"    <p>Last Update: {time_string}</p>"
+    html += f"    <p>Last Update: {time_string}</p>\n"
     # print("HTML START:")
     # print(html)
     # print("HTML END:")
-    for i in div_list:
-        html += "    " + i
+    for country,div in div_list:
+        html += f"<h3>{country.country}</h3>\n"
+        html += f"<p>Last Update Date: {country.last_date}</p>\n"
+        html += f"<p>Last Cases: {country.last_cases}</p>\n"
+        html += f"<p>Last Deaths: {country.last_deaths}</p>\n"
+        html += f"<p>Last Recovered: {country.last_recovered}</p>\n"
+        html += f"<p>Last Active Cases: {country.last_active}</p>\n"
+        html += f"<p>Last Delta Cases: {country.last_delta_cases}</p>\n"
+        html += f"<p>Last Delta Deaths: {country.last_delta_deaths}</p>\n"
+        html += f"<p>Last Delta Recovered: {country.last_delta_recovered}</p>\n"
+        html += f"<p>Last Delta Active Cases: {country.last_delta_active}</p>\n"
+        html += f"<p>Last Ratio Cases: {country.last_delta_ratio_cases}</p>\n"
+        html += f"<p>Last Ratio Deaths: {country.last_delta_ratio_deaths}</p>\n"
+        html += f"<p>Last Ratio Recovered: {country.last_delta_ratio_recovered}</p>\n"
+        html += f"<p>Last Ratio Active Cases: {country.last_delta_ratio_active}</p>\n"
+        html += div+"\n"
     html += "</body>\n"
     html += "</html>"
     # end of html
@@ -286,10 +307,10 @@ div_list_normal=[]
 for i in list_of_countries:
     # normal
     div=graph2div(i,"normal")
-    div_list_normal.append(div)
+    div_list_normal.append((i,div))
     # log
     div=graph2div(i,"log")
-    div_list_log.append(div)
+    div_list_log.append((i,div))
     # done creating div plots message
     print(f"{n}/{rows} - {i.country} - last value from {i.last_date} with {i.last_cases} cases, {i.last_deaths} deaths, {i.last_recovered} recovered, {i.last_active} active cases.")
     n+=1
