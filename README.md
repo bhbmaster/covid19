@@ -12,7 +12,7 @@ Then places.sh uses those log files to get ordered list of most cases for each d
 
 Requirements:
 
-* python 3.7 or newer (or which ever python 3 allows for f"formatted strings {like} this")
+* Tested with python 3.7 (but probably works with python 3.6 which introduced formatted strings which are used in this program. formatted strings are strigns like this: f"formatted strings {like} this")
 
 * plotly python module. if missing can download+install with pip like so:
 
