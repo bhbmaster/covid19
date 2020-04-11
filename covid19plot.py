@@ -8,6 +8,7 @@ import string
 import os
 import datetime
 import bs4
+import htmlmin
 
 # By: Kostia Khlebopros
 # Site: http://www.infotinks.com/coronavirus-dashboard-covid19-py/
@@ -192,20 +193,6 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
     # print("HTML END:")
     for country,div in div_list:
         html += f"        <h3>{country.country}</h3>\n"
-        # html += f"<p>Last Update Date: {country.last_date}</p>\n"
-        # html += f"<p>Last Cases: {country.last_cases}</p>\n"
-        # html += f"<p>Last Deaths: {country.last_deaths}</p>\n"
-        # html += f"<p>Last Recovered: {country.last_recovered}</p>\n"
-        # html += f"<p>Last Active Cases: {country.last_active}</p>\n"
-        # html += f"<p>Last Delta Cases: {country.last_delta_cases}</p>\n"
-        # html += f"<p>Last Delta Deaths: {country.last_delta_deaths}</p>\n"
-        # html += f"<p>Last Delta Recovered: {country.last_delta_recovered}</p>\n"
-        # html += f"<p>Last Delta Active Cases: {country.last_delta_active}</p>\n"
-        # html += f"<p>Last Ratio Cases: {country.last_delta_ratio_cases}</p>\n"
-        # html += f"<p>Last Ratio Deaths: {country.last_delta_ratio_deaths}</p>\n"
-        # html += f"<p>Last Ratio Recovered: {country.last_delta_ratio_recovered}</p>\n"
-        # html += f"<p>Last Ratio Active Cases: {country.last_delta_ratio_active}</p>\n"
-
         html += f"""
         <table border="1" cellpadding="5">
         <tbody>
@@ -246,10 +233,12 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
     html += "</html>"
     # end of html
     # make it pretty
-    newhtml = bs4.BeautifulSoup(html, "lxml").prettify()
+    prettyhtml = bs4.BeautifulSoup(html, "lxml").prettify()
+    # make it htmlmin
+    minihtml = htmlmin.minify(prettyhtml, remove_empty_space=True)
     # write file
     with open(output_file, 'w') as file:
-        file.write(newhtml)
+        file.write(minihtml)
 
 ### main ###
 

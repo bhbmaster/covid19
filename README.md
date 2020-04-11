@@ -23,6 +23,10 @@ Requirements:
         pip install bs4
 
         pip install lxml
+        
+* htmlmin
+
+        pip install htmlmin
 
 * internet access to https://pomber.github.io/covid19/timeseries.json (more info about the timeseries here: https://github.com/pomber/covid19)
 
@@ -32,9 +36,9 @@ Update: I commented out the html_plots/ output as it generated 2.5 MiB for each 
 
 If you want to run this on a schedule, I recommend running it after midnight each day as the timeseries data updates once a day. On my infotinks site it runs 3 times a day 00:05, 06:05, 12:05, 18:05 using crontab. It run run.sh which runs covid19plot.sh saves the output to run-$DATE.out and then run places.sh. The then generates for me covid19-log.html, covid19-normal.html and places.html.
 
-To run:
+To run (the python program hooks to python 3.7):
 
-        python3.7 covid19plot.py
+        python covid19plot.py
 Or:
 
         ./run.sh    
