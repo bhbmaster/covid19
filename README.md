@@ -1,4 +1,4 @@
-# covid19.py
+# covid19plot.py
 
 The source code for the project located here: http://www.infotinks.com/coronavirus-dashboard-covid19-py/
 
@@ -10,23 +10,28 @@ I use a wrapper script run.sh to run covid19plot.py and save its text output to 
 Then places.sh uses those log files to get ordered list of most cases for each day. The output is saved in this html file:
 - Places: http://www.infotinks.com/covid19/places.html
 
-Requirements:
+Requirements: view requirements.txt to view
 
 * Tested with python 3.7 (but probably works with python 3.6 which introduced formatted strings which are used in this program. formatted strings are strigns like this: f"formatted strings {like} this")
 
 * plotly python module. if missing can download+install with pip like so:
 
-        pip install plotly
+        pip3 install plotly
 
 * bs4 (beautiful soup) + lxml.
 
-        pip install bs4
+        pip3 install bs4
 
-        pip install lxml
+        pip3 install lxml
         
 * htmlmin
 
-        pip install htmlmin
+        pip3 install htmlmin
+
+* numpy & sklearn for prediction 
+
+        pip3 install numpy
+        pip3 install sklearn
 
 * internet access to https://pomber.github.io/covid19/timeseries.json (more info about the timeseries here: https://github.com/pomber/covid19)
 
@@ -38,7 +43,7 @@ If you want to run this on a schedule, I recommend running it after midnight eac
 
 To run (the python program hooks to python 3.7):
 
-        python covid19plot.py
+        python3 covid19plot.py
 Or:
 
         ./run.sh    
