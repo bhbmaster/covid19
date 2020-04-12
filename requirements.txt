@@ -2,7 +2,5 @@ plotly
 bs4
 lxml
 htmlmin
-
-# for prediction
 sklearn
 numpy
