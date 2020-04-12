@@ -6,3 +6,4 @@ other/
 /places.html
 /run.timelog
 /run-*.out
+/test*py
