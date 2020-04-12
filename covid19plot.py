@@ -29,7 +29,6 @@ bootstrapped = False
 ### classes ###
 
 # a single entry class
-
 class Entry:
     def __init__(self,date,cases,deaths,recovered,prevEntry=None):
         self.date=date
@@ -451,4 +450,3 @@ if __name__ == "__main__":
     main()
 
 ### the end ###
-
