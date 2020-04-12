@@ -133,6 +133,27 @@ class Country:
         self.last_delta_ratio_active = entrylist[self.length - 1].delta_ratio_active
         self.last_delta_ratio_recovered = entrylist[self.length - 1].delta_ratio_recovered
         self.last_delta_ratio_deaths = entrylist[self.length - 1].delta_ratio_deaths
+    # input list type, output x (date list) and y (values). uses last X days to predict
+    def lastXdayslinearpredict(self, list, days=10):
+        # grab last 10 days or whatever
+        x0=self.date_list[-(days+1):-1]
+        y0=list[-(days+1):-1]
+        # get first day
+        firstday=x0[0]
+        # new days 0 thru 10
+        x00=[]
+        for i in range(len(x0)):
+            x00.append(i)
+        # now should have
+        # x00=0,1,2,3,4,5,6,7,8,9
+        # y0=with ten values
+        # linear fit
+        xfinal=[]
+        yfinal=[]
+        return (xfinal,yfinal)
+
+
+
 
 ### functions ###
 
