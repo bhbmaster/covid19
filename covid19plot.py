@@ -9,6 +9,9 @@ import string
 import datetime
 import bs4
 import htmlmin
+import numpy as np
+from sklearn.linear_model import LinearRegression
+# from sklearn.preprocessing import PolynomialFeatures
 
 # By: Kostia Khlebopros
 # Site: http://www.infotinks.com/coronavirus-dashboard-covid19-py/
@@ -133,6 +136,59 @@ class Country:
         self.last_delta_ratio_active = entrylist[self.length - 1].delta_ratio_active
         self.last_delta_ratio_recovered = entrylist[self.length - 1].delta_ratio_recovered
         self.last_delta_ratio_deaths = entrylist[self.length - 1].delta_ratio_deaths
+    # input list type, output x (date list) and y (values) and r^2 and m and b0. uses last X days to predict
+    def lastXdayslinearpredict(self, list, days=10):
+        success=True
+        try:
+            # grab last 10 days or whatever
+            days=int(days)
+            x0=self.date_list[-(days+1):-1]
+            y0=list[-(days+1):-1]
+            # get first day
+            day0=x0[0]
+            # new days 0 thru 10
+            x00=[]
+            for i in range(len(x0)):
+                x00.append(i)
+            # now should have
+            # x00=0,1,2,3,4,5,6,7,8,9
+            # y0=with ten values
+            # linear fit
+            x = np.array(x00).reshape((-1, 1))
+            y = np.array(y0)
+            model = LinearRegression()
+            model.fit(x, y)
+            r_sq = model.score(x, y)
+            b0=model.intercept_
+            m=float(model.coef_)
+            # print('* day 0:', day0)
+            # print('* coefficient of determination:', r_sq)
+            # print('* intercept:', b0)
+            # print('* slope:', m)
+            xpred0=[]
+            for i in range(len(x0)*2):
+                xpred0.append(i)
+            xpred=np.array(xpred0).reshape((-1,1))
+            y_pred = model.predict(xpred)
+            # print('predicted response:', y_pred, sep='\n')
+            # convert day 0,1,2,3,4 to day0+day
+            day0dt=datetime.datetime.strptime(day0, "%Y-%m-%d")
+            xdays=[]
+            for i in xpred0:
+                newdt=day0dt+datetime.timedelta(days=int(i))  # add x number of days
+                newday=newdt.strftime("%Y-%m-%d")
+                xdays.append(newday)
+            # final answer
+            xfinal=xdays   # need to convert these to dates of same format yyyy-mm-dd
+            yfinal=y_pred.tolist()
+        except:
+            success=False
+            xfinal=None
+            yfinal=None
+            r_sq=None
+            m=None
+            b0=None
+        return (success,xfinal,yfinal,r_sq,m,b0)
 
 ### functions ###
 
@@ -159,6 +215,11 @@ def graph2div(country_class,graph_type):
     fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_active_list, name="Ratio Diff Active Cases", showlegend=True),row=2,col=1)
     #fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_recovered_list, name="Ratio Diff Recovered", showlegend=True),row=2,col=1)
     fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_deaths_list, name="Ratio Diff Deaths", showlegend=True),row=2,col=1)
+    # below - ratio prediction
+    # success, xfinal, yfinal, r_sq, m, b0 = i.lastXdayslinearpredict(i.delta_ratio_active_list, 10)
+    # if success:
+    #     fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name="Predicted Ratio Active Cases", line=dict(color='gray', width=1), showlegend=True), row=2,col=1)
+    # above  - ratio prediction
     fig.update_yaxes(type=the_type_fig,row=1,col=1)
     fig.update_yaxes(type=None,rangemode="tozero",row=2,col=1)
     # fig.write_html(full_path_html,auto_open=False) # write 2.5 MiB html file
@@ -190,7 +251,8 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
         <p><b>Last Update:</b> {time_string}</p>
         <p><b>* More Info:</b> available on <a href="https://github.com/bhbmaster/covid19">GitHub</a> and <a href="http://www.infotinks.com/coronavirus-dashboard-covid19-py/">infotinks.com</a></p>
         <p><b>* Delta</b> is change from previous day ( + is growth; - is reduction )</p>
-        <p><b>* Ratio</b> is % change from previous day ( 1 or higher is growth; 0 to 1 is reduction )</p>\n"""
+        <p><b>* Ratio</b> is % change from previous day ( 1 or higher is growth; 0 to 1 is reduction )</p>
+        <p>* <b>Note:</b> Maximum active case prediction date is calculated using past 10 days of active cases ratio and a linear regression fit to see when it crosses 1.0.</p>\n"""
     # print("HTML START:")
     # print(html)
     # print("HTML END:")
@@ -231,6 +293,20 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
         </tr>
         </tbody>
         </table>\n"""
+        # below - ratio prediction
+        success, xfinal, yfinal, r_sq, m, b0 = country.lastXdayslinearpredict(country.delta_ratio_active_list, 10)
+        if success:
+            try:
+                x_cross1 = (1.0 - float(b0)) / float(m)
+                x_cross1_int=int(x_cross1)
+                day0=xfinal[0]
+                day0dt = datetime.datetime.strptime(day0, "%Y-%m-%d")
+                daycrossdt=day0dt+datetime.timedelta(days=int(x_cross1_int))
+                daycross = daycrossdt.strftime("%Y-%m-%d")
+                html += f"<p>* Active Cases predicted to hit peak @ {daycross}</p>\n"
+            except:
+                success=False
+        # above prediction
         html += "        " + div+"\n"
     html += "</body>\n"
     html += "</html>"
@@ -321,6 +397,18 @@ list_of_countries.append(total_country)
 
 # sort list of countries by total cases (TOTAL will be at top)
 list_of_countries.sort(key=lambda x: x.last_cases, reverse=True)
+
+# # test linear
+# print("======")
+# test_country=list_of_countries[1]
+# print(f"- country = {test_country.country}")
+# xfinal,yfinal,r_sq,m,b0 = test_country.lastXdayslinearpredict(test_country.delta_ratio_active_list,10)
+# print(f"- xfinal = {xfinal}")
+# print(f"- yfinal = {yfinal}")
+# print(f"- r^2 = {r_sq} || y={m}x+{b0}")
+# x_cross1=(1.0-b0)/m
+# print(f"- predict cross 1 @ {x_cross1}")
+# print("======")
 
 # plot all
 
