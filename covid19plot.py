@@ -321,128 +321,134 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
 
 ### main ###
 
-# get and parse data
+def main():
 
-with urllib.request.urlopen(SITE) as url:
-    data=json.loads(url.read().decode())
+    # get and parse data
 
-# last_date=data["China"][len(data["China"])-1]["date"]  # returns 2020-3-14
+    with urllib.request.urlopen(SITE) as url:
+        data=json.loads(url.read().decode())
 
-last_confirmed=0
-last_deaths=0
-last_recovered=0
-last_active = 0
+    # last_date=data["China"][len(data["China"])-1]["date"]  # returns 2020-3-14
 
-list_of_countries=[]
-for x in data:
-    str_country=x
-    list_of_entries=[]
+    last_confirmed=0
+    last_deaths=0
+    last_recovered=0
+    last_active = 0
+
+    list_of_countries=[]
+    for x in data:
+        str_country=x
+        list_of_entries=[]
+        oldEntry=None
+        for i in data[x]:
+            str_date=i["date"]
+            int_confirmed=i["confirmed"]
+            int_deaths=i["deaths"]
+            int_recovered=i["recovered"]
+            entry=Entry(str_date,int_confirmed,int_deaths,int_recovered,prevEntry=oldEntry)
+            oldEntry=entry
+            list_of_entries.append(entry)
+            # if i["date"] == last_date:
+            #     today=i
+            #     confirmed=i["confirmed"]
+            #     deaths=i["deaths"]
+            #     recovered=i["recovered"]
+            #     active=confirmed-deaths-recovered
+            #     last_confirmed+=confirmed
+            #     last_deaths+=deaths
+            #     last_recovered+=recovered
+            #     last_active+=active
+        country=Country(str_country,list_of_entries)
+        list_of_countries.append(country)
+        # print(f"- {x} on {last_date} has {confirmed} confirmed {deaths} deaths {recovered} recovered {active} active")
+
+    # print(f"* TOTALS on {last_date} are {last_confirmed} confirmed {last_deaths} deaths {last_recovered} recovered {last_active} active")
+    print(f"* # of countries {len(list_of_countries)}")
+
+    # get world total country
+
+    # world total not provided so we sum everything
+
+    # get list of dates from China as it has the most most likely
+    all_dates=[]
+    for i in list_of_countries:
+        if i.country == "China":
+            all_dates=i.date_list # at this point all_dates is all of our dates
+            break
+
+    # now iterate thru all of the dates summing each country at the date
+    i=0
     oldEntry=None
-    for i in data[x]:
-        str_date=i["date"]
-        int_confirmed=i["confirmed"]
-        int_deaths=i["deaths"]
-        int_recovered=i["recovered"]
-        entry=Entry(str_date,int_confirmed,int_deaths,int_recovered,prevEntry=oldEntry)
-        oldEntry=entry
-        list_of_entries.append(entry)
-        # if i["date"] == last_date:
-        #     today=i
-        #     confirmed=i["confirmed"]
-        #     deaths=i["deaths"]
-        #     recovered=i["recovered"]
-        #     active=confirmed-deaths-recovered
-        #     last_confirmed+=confirmed
-        #     last_deaths+=deaths
-        #     last_recovered+=recovered
-        #     last_active+=active
-    country=Country(str_country,list_of_entries)
-    list_of_countries.append(country)
-    # print(f"- {x} on {last_date} has {confirmed} confirmed {deaths} deaths {recovered} recovered {active} active")
+    total_entry_list=[]
+    for d in all_dates: # outer date loop (iterate thru all of the dates)
+        total_confirmed=0
+        total_deaths=0
+        total_recovered=0
+        for i in list_of_countries:  # country loop - itereate thru all countries
+            for e in i.entrylist:    # inner date loop - itereate thru all the dates until we hit our date & break out of inner date loop
+                if e.date == d:
+                    total_confirmed+=e.cases
+                    total_deaths+=e.deaths
+                    total_recovered+=e.recovered
+                    break
+        total_entry=Entry(d,total_confirmed,total_deaths,total_recovered,prevEntry=oldEntry)
+        total_entry_list.append(total_entry)
+        oldEntry=total_entry
+    total_country=Country("TOTAL",total_entry_list)
+    list_of_countries.append(total_country)
 
-# print(f"* TOTALS on {last_date} are {last_confirmed} confirmed {last_deaths} deaths {last_recovered} recovered {last_active} active")
-print(f"* # of countries {len(list_of_countries)}")
+    # sort list of countries by total cases (TOTAL will be at top)
+    list_of_countries.sort(key=lambda x: x.last_cases, reverse=True)
 
-# get world total country
+    # # test linear
+    # print("======")
+    # test_country=list_of_countries[1]
+    # print(f"- country = {test_country.country}")
+    # xfinal,yfinal,r_sq,m,b0 = test_country.lastXdayslinearpredict(test_country.delta_ratio_active_list,10)
+    # print(f"- xfinal = {xfinal}")
+    # print(f"- yfinal = {yfinal}")
+    # print(f"- r^2 = {r_sq} || y={m}x+{b0}")
+    # x_cross1=(1.0-b0)/m
+    # print(f"- predict cross 1 @ {x_cross1}")
+    # print("======")
 
-# world total not provided so we sum everything
+    # plot all
 
-# get list of dates from China as it has the most most likely
-all_dates=[]
-for i in list_of_countries:
-    if i.country == "China":
-        all_dates=i.date_list # at this point all_dates is all of our dates
-        break
+    rows=len(list_of_countries)
+    n=1
+    div_list_log=[]
+    div_list_normal=[]
+    # if not os.path.exists("html-plots"):
+    #    os.mkdir("html-plots")
+    # if not os.path.exists("img-plots"):
+    #    os.mkdir("img-plots")
 
-# now iterate thru all of the dates summing each country at the date
-i=0
-oldEntry=None
-total_entry_list=[]
-for d in all_dates: # outer date loop (iterate thru all of the dates)
-    total_confirmed=0
-    total_deaths=0
-    total_recovered=0
-    for i in list_of_countries:  # country loop - itereate thru all countries
-        for e in i.entrylist:    # inner date loop - itereate thru all the dates until we hit our date & break out of inner date loop
-            if e.date == d:
-                total_confirmed+=e.cases
-                total_deaths+=e.deaths
-                total_recovered+=e.recovered
-                break
-    total_entry=Entry(d,total_confirmed,total_deaths,total_recovered,prevEntry=oldEntry)
-    total_entry_list.append(total_entry)
-    oldEntry=total_entry
-total_country=Country("TOTAL",total_entry_list)
-list_of_countries.append(total_country)
+    # create divs for each country and store in lists
 
-# sort list of countries by total cases (TOTAL will be at top)
-list_of_countries.sort(key=lambda x: x.last_cases, reverse=True)
+    for i in list_of_countries:
+        # normal
+        div=graph2div(i,"normal")
+        div_list_normal.append((i,div))
+        # log
+        div=graph2div(i,"log")
+        div_list_log.append((i,div))
+        # done creating div plots message
+        print(f"{n}/{rows} - {i.country} - last value from {i.last_date} with {i.last_cases} cases, {i.last_deaths} deaths, {i.last_recovered} recovered, {i.last_active} active cases.")
+        n+=1
 
-# # test linear
-# print("======")
-# test_country=list_of_countries[1]
-# print(f"- country = {test_country.country}")
-# xfinal,yfinal,r_sq,m,b0 = test_country.lastXdayslinearpredict(test_country.delta_ratio_active_list,10)
-# print(f"- xfinal = {xfinal}")
-# print(f"- yfinal = {yfinal}")
-# print(f"- r^2 = {r_sq} || y={m}x+{b0}")
-# x_cross1=(1.0-b0)/m
-# print(f"- predict cross 1 @ {x_cross1}")
-# print("======")
+    # create the html
 
-# plot all
+    # create html from div list - log
+    divs2html(div_list_log,"Log",start_time_string,"covid19-log.html",bootstrapped)
 
-rows=len(list_of_countries)
-n=1
-div_list_log=[]
-div_list_normal=[]
-# if not os.path.exists("html-plots"):
-#    os.mkdir("html-plots")
-# if not os.path.exists("img-plots"):
-#    os.mkdir("img-plots")
+    # create html from div list - normal
+    divs2html(div_list_normal,"Normal",start_time_string,"covid19-normal.html",bootstrapped)
 
-# create divs for each country and store in lists
+    # complete message
+    print("Generating plots done!")
 
-for i in list_of_countries:
-    # normal
-    div=graph2div(i,"normal")
-    div_list_normal.append((i,div))
-    # log
-    div=graph2div(i,"log")
-    div_list_log.append((i,div))
-    # done creating div plots message
-    print(f"{n}/{rows} - {i.country} - last value from {i.last_date} with {i.last_cases} cases, {i.last_deaths} deaths, {i.last_recovered} recovered, {i.last_active} active cases.")
-    n+=1
-
-# create the html
-
-# create html from div list - log
-divs2html(div_list_log,"Log",start_time_string,"covid19-log.html",bootstrapped)
-
-# create html from div list - normal
-divs2html(div_list_normal,"Normal",start_time_string,"covid19-normal.html",bootstrapped)
-
-# complete message
-print("Generating plots done!")
+if __name__ == "__main__":
+    main()
 
 ### the end ###
+
