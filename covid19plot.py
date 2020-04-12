@@ -202,8 +202,8 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
         <tr>
         <td>Date: {country.last_date}</td>
         <td>Last Value</td>
-        <td>Delta Diff</td>
-        <td>Ratio Diff</td>
+        <td>Delta Change</td>
+        <td>Ratio Change</td>
         </tr>
         <tr>
         <td>Cases</td>
