@@ -253,7 +253,9 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
         <p><b>* More Info:</b> available on <a href="https://github.com/bhbmaster/covid19">GitHub</a> and <a href="http://www.infotinks.com/coronavirus-dashboard-covid19-py/">infotinks.com</a></p>
         <p><b>* Delta</b> is change from previous day ( + is growth; - is reduction )</p>
         <p><b>* Ratio</b> is % change from previous day ( 1 or higher is growth; 0 to 1 is reduction )</p>
-        <p>* <b>Note:</b> Maximum active case prediction date is calculated using past {predictdays} days of active cases ratio and a linear regression fit to see when it crosses 1.0.</p>\n"""
+        <p>* <b>Note:</b> Peak active case prediction date is calculated using a linear regression fit on "active cases ratio" and examing its past X days values to see when it crosses 1.0.</p>
+        <p>* An r^2 closer to 1.0 means a better prediction.</p>
+        <p>* Ignore predictions with past dates.</p>\n"""
     # print("HTML START:")
     # print(html)
     # print("HTML END:")
@@ -315,18 +317,19 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
         </tbody>
         </table>\n"""
         # below - ratio prediction
-        success, xfinal, yfinal, r_sq, m, b0 = country.lastXdayslinearpredict(country.delta_ratio_active_list, predictdays)
-        if success:
-            try:
-                x_cross1 = (1.0 - float(b0)) / float(m)
-                x_cross1_int=int(x_cross1)
-                day0=xfinal[0]
-                day0dt = datetime.datetime.strptime(day0, "%Y-%m-%d")
-                daycrossdt=day0dt+datetime.timedelta(days=int(x_cross1_int))
-                daycross = daycrossdt.strftime("%Y-%m-%d")
-                html += f"<p>* Active Cases peak predicted to hit peak on {daycross}. r^2 for this fit is {round(r_sq,sigdigit)}</p>\n"
-            except:
-                success=False
+        for pdays in range(4,11):
+            success, xfinal, yfinal, r_sq, m, b0 = country.lastXdayslinearpredict(country.delta_ratio_active_list, pdays)
+            if success:
+                try:
+                    x_cross1 = (1.0 - float(b0)) / float(m)
+                    x_cross1_int=int(x_cross1)
+                    day0=xfinal[0]
+                    day0dt = datetime.datetime.strptime(day0, "%Y-%m-%d")
+                    daycrossdt=day0dt+datetime.timedelta(days=int(x_cross1_int))
+                    daycross = daycrossdt.strftime("%Y-%m-%d")
+                    html += f"<p>* Using past {pdays} days for prediction, Active Cases might peak on {daycross}. The r^2 for this fit is {round(r_sq,sigdigit)}</p>\n"
+                except:
+                    success=False
         # above prediction
         html += "        " + div+"\n"
     html += "</body>\n"
