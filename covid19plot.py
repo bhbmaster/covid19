@@ -25,7 +25,8 @@ start_time = datetime.datetime.now()
 start_time_string = start_time.strftime("%Y-%m-%d %H:%M:%S")
 valid_chars = "-_.%s%s" % (string.ascii_letters, string.digits)
 bootstrapped = False
-predictdays=5
+predictdays=8
+sigdigit=4
 
 ### classes ###
 
@@ -271,25 +272,25 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
         <td>Cases</td>
         <td>{country.last_cases}</td>
         <td>{country.last_delta_cases}</td>
-        <td>{country.last_delta_ratio_cases}</td>
+        <td>{round(country.last_delta_ratio_cases,sigdigit)}</td>
         </tr>
         <tr>
         <td>Deaths</td>
         <td>{country.last_deaths}</td>
         <td>{country.last_delta_deaths}</td>
-        <td>{country.last_delta_ratio_deaths}</td>
+        <td>{round(country.last_delta_ratio_deaths,sigdigit)}</td>
         </tr>
         <tr>
         <td>Recovered</td>
         <td>{country.last_recovered}</td>
         <td>{country.last_delta_recovered}</td>
-        <td>{country.last_delta_ratio_recovered}</td>
+        <td>{round(country.last_delta_ratio_recovered,sigdigit)}</td>
         </tr>
         <tr>
         <td>Active Cases</td>
         <td>{country.last_active}</td>
         <td>{country.last_delta_active}</td>
-        <td>{country.last_delta_ratio_active}</td>
+        <td>{round(country.last_delta_ratio_active,sigdigit)}</td>
         </tr>
         </tbody>
         </table>\n"""
@@ -303,7 +304,7 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
                 day0dt = datetime.datetime.strptime(day0, "%Y-%m-%d")
                 daycrossdt=day0dt+datetime.timedelta(days=int(x_cross1_int))
                 daycross = daycrossdt.strftime("%Y-%m-%d")
-                html += f"<p>* Active Cases peak predicted to hit peak on {daycross}. r^2 for this fit is {r_sq}</p>\n"
+                html += f"<p>* Active Cases peak predicted to hit peak on {daycross}. r^2 for this fit is {round(r_sq,sigdigit)}</p>\n"
             except:
                 success=False
         # above prediction
