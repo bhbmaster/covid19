@@ -25,6 +25,7 @@ start_time = datetime.datetime.now()
 start_time_string = start_time.strftime("%Y-%m-%d %H:%M:%S")
 valid_chars = "-_.%s%s" % (string.ascii_letters, string.digits)
 bootstrapped = False
+predictdays=5
 
 ### classes ###
 
@@ -293,7 +294,7 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
         </tbody>
         </table>\n"""
         # below - ratio prediction
-        success, xfinal, yfinal, r_sq, m, b0 = country.lastXdayslinearpredict(country.delta_ratio_active_list, 10)
+        success, xfinal, yfinal, r_sq, m, b0 = country.lastXdayslinearpredict(country.delta_ratio_active_list, predictdays)
         if success:
             try:
                 x_cross1 = (1.0 - float(b0)) / float(m)
