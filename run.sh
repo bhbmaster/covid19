@@ -8,6 +8,7 @@
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 cd /var/www/covid19
 DATE=`date +%Y%m%d-%H%M%S`
+echo "Logging to $PWD/run-$DATE.out"
 echo "`date` - start" | tee -a run.timelog > run-$DATE.out
 python3.7 covid19plot.py >> run-$DATE.out 2>&1
 echo "`date` - end" | tee -a run.timelog >> run-$DATE.out
