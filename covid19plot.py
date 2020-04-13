@@ -26,7 +26,7 @@ start_time_string = start_time.strftime("%Y-%m-%d %H:%M:%S")
 valid_chars = "-_.%s%s" % (string.ascii_letters, string.digits)
 bootstrapped = False
 predictdays=8
-sigdigit=4
+sigdigit=6
 
 ### classes ###
 
@@ -258,6 +258,26 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
     # print(html)
     # print("HTML END:")
     for country,div in div_list:
+        # cases
+        try:
+            ldr_cases=round(country.last_delta_ratio_cases,sigdigit)
+        except:
+            ldr_cases=country.last_delta_ratio_cases
+        # deaths
+        try:
+            ldr_deaths=round(country.last_delta_ratio_deaths,sigdigit)
+        except:
+            ldr_deaths=country.last_delta_ratio_deaths
+        # recovered
+        try:
+            ldr_recovered=round(country.last_delta_ratio_recovered,sigdigit)
+        except:
+            ldr_recovered=country.last_delta_ratio_recovered
+        # active
+        try:
+            ldr_active=round(country.last_delta_ratio_active,sigdigit)
+        except:
+            ldr_active=country.last_delta_ratio_active
         html += f"        <h3>{country.country}</h3>\n"
         html += f"""
         <table border="1" cellpadding="5">
@@ -272,25 +292,25 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
         <td>Cases</td>
         <td>{country.last_cases}</td>
         <td>{country.last_delta_cases}</td>
-        <td>{round(country.last_delta_ratio_cases,sigdigit)}</td>
+        <td>{ldr_cases}</td>
         </tr>
         <tr>
         <td>Deaths</td>
         <td>{country.last_deaths}</td>
         <td>{country.last_delta_deaths}</td>
-        <td>{round(country.last_delta_ratio_deaths,sigdigit)}</td>
+        <td>{ldr_deaths}</td>
         </tr>
         <tr>
         <td>Recovered</td>
         <td>{country.last_recovered}</td>
         <td>{country.last_delta_recovered}</td>
-        <td>{round(country.last_delta_ratio_recovered,sigdigit)}</td>
+        <td>{ldr_recovered}</td>
         </tr>
         <tr>
         <td>Active Cases</td>
         <td>{country.last_active}</td>
         <td>{country.last_delta_active}</td>
-        <td>{round(country.last_delta_ratio_active,sigdigit)}</td>
+        <td>{ldr_active}</td>
         </tr>
         </tbody>
         </table>\n"""
