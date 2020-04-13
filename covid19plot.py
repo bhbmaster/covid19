@@ -204,7 +204,7 @@ def graph2div(country_class,graph_type):
         the_type_fig=None
     country_name=i.country
     file_country_name=''.join(c for c in country_name if c in valid_chars)
-    full_path_html=f"html-plots/{file_country_name}-plot-{the_type_string}.html"
+    # full_path_html=f"html-plots/{file_country_name}-plot-{the_type_string}.html"
     fig = make_subplots(rows=2, cols=1)
     fig.update_layout(title=f"COVID19 - {country_name}")
     fig.add_trace(go.Scatter(x=i.date_list, y=i.cases_list, name="Cases", line=dict(color='firebrick', width=2),showlegend=True),row=1,col=1)
@@ -252,7 +252,7 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
         <p><b>* More Info:</b> available on <a href="https://github.com/bhbmaster/covid19">GitHub</a> and <a href="http://www.infotinks.com/coronavirus-dashboard-covid19-py/">infotinks.com</a></p>
         <p><b>* Delta</b> is change from previous day ( + is growth; - is reduction )</p>
         <p><b>* Ratio</b> is % change from previous day ( 1 or higher is growth; 0 to 1 is reduction )</p>
-        <p>* <b>Note:</b> Maximum active case prediction date is calculated using past 10 days of active cases ratio and a linear regression fit to see when it crosses 1.0.</p>\n"""
+        <p>* <b>Note:</b> Maximum active case prediction date is calculated using past {predictdays} days of active cases ratio and a linear regression fit to see when it crosses 1.0.</p>\n"""
     # print("HTML START:")
     # print(html)
     # print("HTML END:")
@@ -303,7 +303,7 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
                 day0dt = datetime.datetime.strptime(day0, "%Y-%m-%d")
                 daycrossdt=day0dt+datetime.timedelta(days=int(x_cross1_int))
                 daycross = daycrossdt.strftime("%Y-%m-%d")
-                html += f"<p>* Active Cases predicted to hit peak @ {daycross}</p>\n"
+                html += f"<p>* Active Cases peak predicted to hit peak on {daycross}. r^2 for this fit is {r_sq}</p>\n"
             except:
                 success=False
         # above prediction
@@ -330,10 +330,10 @@ def main():
 
     # last_date=data["China"][len(data["China"])-1]["date"]  # returns 2020-3-14
 
-    last_confirmed=0
-    last_deaths=0
-    last_recovered=0
-    last_active = 0
+    # last_confirmed=0
+    # last_deaths=0
+    # last_recovered=0
+    # last_active = 0
 
     list_of_countries=[]
     for x in data:
