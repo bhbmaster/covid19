@@ -138,7 +138,7 @@ class Country:
         self.last_delta_ratio_active = entrylist[self.length - 1].delta_ratio_active
         self.last_delta_ratio_recovered = entrylist[self.length - 1].delta_ratio_recovered
         self.last_delta_ratio_deaths = entrylist[self.length - 1].delta_ratio_deaths
-    # input list type, output x (date list) and y (values) and r^2 and m and b0. uses last X days to predict
+    # input list type, output x (date list) and y (values) and r² and m and b0. uses last X days to predict
     def lastXdayslinearpredict(self, list, days=10):
         success=True
         try:
@@ -258,7 +258,7 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
         <p><b>* Delta</b> is change from previous day ( + is growth; - is reduction )</p>
         <p><b>* Ratio</b> is % change from previous day ( 1 or higher is growth; 0 to 1 is reduction )</p>
         <p>* <b>Note:</b> Peak active case prediction date is calculated using a linear regression fit on "active cases ratio" and examing its past X days values to see when it crosses 1.0.</p>
-        <p>* An r^2 closer to 1.0 means a better prediction.</p>
+        <p>* An r² closer to 1.0 means a better prediction.</p>
         <p>* Ignore predictions with past dates.</p>\n"""
     # print("HTML START:")
     # print(html)
@@ -332,7 +332,7 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
                     day0dt = datetime.datetime.strptime(day0, "%Y-%m-%d")
                     daycrossdt=day0dt+datetime.timedelta(days=int(x_cross1_int))
                     daycross = daycrossdt.strftime("%Y-%m-%d")
-                    # html += f"<p>* Using past {pdays} days for prediction, Active Cases might peak on {daycross}. The r^2 for this fit is {round(r_sq,sigdigit)}</p>\n"
+                    # html += f"<p>* Using past {pdays} days for prediction, Active Cases might peak on {daycross}. The r² for this fit is {round(r_sq,sigdigit)}</p>\n"
                 except:
                     success=False
                     daycross=None
@@ -353,7 +353,7 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
             html += f"<td>{a[2]}</td>\n"
         html += """</tr>
         <tr>
-        <td>r^2</td>\n"""
+        <td>r²</td>\n"""
         for a in predict_list:
             html += f"<td>{a[3]}</td>\n"
         html += """</tr>
@@ -460,7 +460,7 @@ def main():
     # xfinal,yfinal,r_sq,m,b0 = test_country.lastXdayslinearpredict(test_country.delta_ratio_active_list,10)
     # print(f"- xfinal = {xfinal}")
     # print(f"- yfinal = {yfinal}")
-    # print(f"- r^2 = {r_sq} || y={m}x+{b0}")
+    # print(f"- r² = {r_sq} || y={m}x+{b0}")
     # x_cross1=(1.0-b0)/m
     # print(f"- predict cross 1 @ {x_cross1}")
     # print("======")
