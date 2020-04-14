@@ -16,7 +16,7 @@ from sklearn.linear_model import LinearRegression
 # By: Kostia Khlebopros
 # Site: http://www.infotinks.com/coronavirus-dashboard-covid19-py/
 # Github: https://github.com/bhbmaster/covid19
-# Last Update: 2020-04-11
+# Last Update: 2020-04-14
 
 ### constants ###
 
