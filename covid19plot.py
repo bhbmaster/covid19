@@ -25,8 +25,9 @@ start_time = datetime.datetime.now()
 start_time_string = start_time.strftime("%Y-%m-%d %H:%M:%S")
 valid_chars = "-_.%s%s" % (string.ascii_letters, string.digits)
 bootstrapped = False
-predictdays=8
 sigdigit=6
+predict_days_min=4
+predict_days_max=10
 
 ### classes ###
 
@@ -198,13 +199,13 @@ class Country:
 def graph2div(country_class,graph_type):
     i=country_class
     if graph_type=="log":           # log
-        the_type_string="LOG"
+        # the_type_string="LOG"
         the_type_fig="log"
     else:                           # normal
-        the_type_string="NORMAL"
+        # the_type_string="NORMAL"
         the_type_fig=None
     country_name=i.country
-    file_country_name=''.join(c for c in country_name if c in valid_chars)
+    # file_country_name=''.join(c for c in country_name if c in valid_chars)
     # full_path_html=f"html-plots/{file_country_name}-plot-{the_type_string}.html"
     fig = make_subplots(rows=2, cols=1)
     fig.update_layout(title=f"COVID19 - {country_name}")
@@ -245,6 +246,9 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
 	        div {{
 	            height: 100%;
 	        }}
+            td {{
+                text-align: center;
+            }}
 	    </style>
     <head/>
     <body>
@@ -317,7 +321,8 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
         </tbody>
         </table>\n"""
         # below - ratio prediction
-        for pdays in range(4,11):
+        predict_list=[]
+        for pdays in range(predict_days_min,predict_days_max+1):
             success, xfinal, yfinal, r_sq, m, b0 = country.lastXdayslinearpredict(country.delta_ratio_active_list, pdays)
             if success:
                 try:
@@ -327,13 +332,37 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
                     day0dt = datetime.datetime.strptime(day0, "%Y-%m-%d")
                     daycrossdt=day0dt+datetime.timedelta(days=int(x_cross1_int))
                     daycross = daycrossdt.strftime("%Y-%m-%d")
-                    html += f"<p>* Using past {pdays} days for prediction, Active Cases might peak on {daycross}. The r^2 for this fit is {round(r_sq,sigdigit)}</p>\n"
+                    # html += f"<p>* Using past {pdays} days for prediction, Active Cases might peak on {daycross}. The r^2 for this fit is {round(r_sq,sigdigit)}</p>\n"
                 except:
                     success=False
+                    daycross=None
+                    r_sq=None
+            predict_item=[pdays,success,daycross,None if r_sq == None else round(r_sq,sigdigit)]
+            predict_list.append(predict_item)
+        html += """<p><b>Active Case Peak Prediction</b>: using past X days of "active case ratio" in a linear regression fit algorithm</p>
+        <table border="1" cellpadding="5">
+        <tbody>
+        <tr>
+        <td>past days</td>\n"""
+        for a in predict_list:
+            html += f"<td>{a[0]}</td>\n"
+        html += """</tr>
+        <tr>
+        <td>predicted peak date</td>\n"""
+        for a in predict_list:
+            html += f"<td>{a[2]}</td>\n"
+        html += """</tr>
+        <tr>
+        <td>r^2</td>\n"""
+        for a in predict_list:
+            html += f"<td>{a[3]}</td>\n"
+        html += """</tr>
+        </tbody>
+        </table>\n"""
         # above prediction
         html += "        " + div+"\n"
-    html += "</body>\n"
-    html += "</html>"
+    html += """</body>
+    </html>\n"""
     # end of html
     # make it pretty
     prettyhtml = bs4.BeautifulSoup(html, "lxml").prettify()
