@@ -26,8 +26,8 @@ start_time_string = start_time.strftime("%Y-%m-%d %H:%M:%S")
 valid_chars = "-_.%s%s" % (string.ascii_letters, string.digits)
 bootstrapped = False
 sigdigit=6
-predict_days_min=4
-predict_days_max=10
+predict_days_min=5
+predict_days_max=15
 
 ### classes ###
 
