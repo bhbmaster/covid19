@@ -230,6 +230,10 @@ def graph2div(country_class,graph_type):
 # create html file out of div list
 
 def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
+    if type_title == "Normal":
+        other_type_title="Log"
+    else:
+        other_type_title="Normal"
     bootstrap_string="""<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">\n""" if bootstrap_on else ""
     # start of html
     # html = """<!DOCTYPE html>                # with html5 the divs are 50% height, without this they are 100%
@@ -252,7 +256,8 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
     <head/>
     <body>
         <h2>Covid19.py Plots ({type_title})</h2>
-        <p><b>Last Update:</b> {time_string}</p>
+        <p><b>Last Plot Update:</b> {time_string}</p>
+        <p><a href='covid19-{other_type_title.lower()}.html'>Click here to see {other_type_title} plots instead</a></p>
         <p><b>* More Info:</b> available on <a href="https://github.com/bhbmaster/covid19">GitHub</a> and <a href="http://www.infotinks.com/coronavirus-dashboard-covid19-py/">infotinks.com</a></p>
         <p><b>* Delta</b> is change from previous day ( + is growth; - is reduction )</p>
         <p><b>* Ratio</b> is % change from previous day ( 1 or higher is growth; 0 to 1 is reduction )</p>
@@ -284,7 +289,9 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
         except:
             ldr_active=country.last_delta_ratio_active
         # type_title comes in as Log (doesn't work) turns to LOG (works), comes in as Normal (doesn't work )turns to NORMAL (works)
-        html += f"        <h3><a href='html-plots/{country.countryposix}-plot-{type_title.upper()}.html'>{country.country}</a></h3>\n"
+        # html += f"        <h3><a href='html-plots/{country.countryposix}-plot-{type_title.upper()}.html'>{country.country}</a></h3>\n"
+        html += f"        <h3>{country.country}</h3>\n"
+        html += f"<p><a href='html-plots/{country.countryposix}-plot-NORMAL.html'>Normal</a> | <a href='html-plots/{country.countryposix}-plot-LOG.html'>Log</a></p>"
         html += f"""
         <table border="1" cellpadding="5">
         <tbody>
