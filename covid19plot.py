@@ -5,7 +5,7 @@ from plotly.subplots import make_subplots
 import plotly.offline.offline
 # import plotly.plotly as py
 import string
-# import os
+import os
 import datetime
 import bs4
 import htmlmin
@@ -23,11 +23,11 @@ from sklearn.linear_model import LinearRegression
 SITE="https://pomber.github.io/covid19/timeseries.json"
 start_time = datetime.datetime.now()
 start_time_string = start_time.strftime("%Y-%m-%d %H:%M:%S")
-valid_chars = "-_.%s%s" % (string.ascii_letters, string.digits)
 bootstrapped = False
 sigdigit=6
 predict_days_min=5
 predict_days_max=15
+valid_chars = "-_.%s%s" % (string.ascii_letters, string.digits)
 
 ### classes ###
 
@@ -88,10 +88,10 @@ class Entry:
             self.delta_ratio_deaths=None
 
 # a country class, full of entries
-
 class Country:
     def __init__(self,country,entrylist):
         self.country=country
+        self.countryposix=''.join(c for c in self.country if c in valid_chars)
         self.entrylist=entrylist
         self.date_list=[]
         self.cases_list=[]
@@ -199,14 +199,13 @@ class Country:
 def graph2div(country_class,graph_type):
     i=country_class
     if graph_type=="log":           # log
-        # the_type_string="LOG"
+        the_type_string="LOG"
         the_type_fig="log"
     else:                           # normal
-        # the_type_string="NORMAL"
+        the_type_string="NORMAL"
         the_type_fig=None
     country_name=i.country
-    # file_country_name=''.join(c for c in country_name if c in valid_chars)
-    # full_path_html=f"html-plots/{file_country_name}-plot-{the_type_string}.html"
+    full_path_html=f"html-plots/{i.countryposix}-plot-{the_type_string}.html"
     fig = make_subplots(rows=2, cols=1)
     fig.update_layout(title=f"COVID19 - {country_name}")
     fig.add_trace(go.Scatter(x=i.date_list, y=i.cases_list, name="Cases", line=dict(color='firebrick', width=2),showlegend=True),row=1,col=1)
@@ -224,7 +223,7 @@ def graph2div(country_class,graph_type):
     # above  - ratio prediction
     fig.update_yaxes(type=the_type_fig,row=1,col=1)
     fig.update_yaxes(type=None,rangemode="tozero",row=2,col=1)
-    # fig.write_html(full_path_html,auto_open=False) # write 2.5 MiB html file
+    fig.write_html(full_path_html,auto_open=False) # write 2.5 MiB html file
     div = plotly.offline.offline.plot(fig, show_link=False, include_plotlyjs=False, output_type='div')
     return div
 
@@ -284,7 +283,8 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
             ldr_active=round(country.last_delta_ratio_active,sigdigit)
         except:
             ldr_active=country.last_delta_ratio_active
-        html += f"        <h3>{country.country}</h3>\n"
+        # type_title comes in as Log (doesn't work) turns to LOG (works), comes in as Normal (doesn't work )turns to NORMAL (works)
+        html += f"        <h3><a href='html-plots/{country.countryposix}-plot-{type_title.upper()}.html'>{country.country}</a></h3>\n"
         html += f"""
         <table border="1" cellpadding="5">
         <tbody>
@@ -471,10 +471,10 @@ def main():
     n=1
     div_list_log=[]
     div_list_normal=[]
-    # if not os.path.exists("html-plots"):
-    #    os.mkdir("html-plots")
-    # if not os.path.exists("img-plots"):
-    #    os.mkdir("img-plots")
+    if not os.path.exists("html-plots"):
+        os.mkdir("html-plots")
+    if not os.path.exists("img-plots"):
+        os.mkdir("img-plots")
 
     # create divs for each country and store in lists
 
