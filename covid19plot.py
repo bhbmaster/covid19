@@ -285,7 +285,7 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
     # print("HTML START:")
     # print(html)
     # print("HTML END:")
-    place_num = 0
+    place_num = -1 # so it starts at 0
     for country,div in div_list:
         place_num += 1
         # cases
