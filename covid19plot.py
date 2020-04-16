@@ -24,7 +24,8 @@ SITE="https://pomber.github.io/covid19/timeseries.json"
 start_time = datetime.datetime.now()
 start_time_string = start_time.strftime("%Y-%m-%d %H:%M:%S")
 bootstrapped = False
-sigdigit=6
+sigdigit=5
+sigdigit_small=2
 predict_days_min=5
 predict_days_max=15
 valid_chars = "-_.%s%s" % (string.ascii_letters, string.digits)
@@ -52,6 +53,13 @@ class Entry:
         self.recovered=recovered
         # print(f"{date}, {cases}, {deaths}, {recovered}.")
         self.active=cases-deaths-recovered
+        # death & recovery %
+        if cases == 0:
+            self.death_percent=None
+            self.recovery_percent=None
+        else:
+            self.death_percent=(self.deaths/self.cases)*100.0
+            self.recovery_percent=(self.recovered/self.cases)*100.0
         if prevEntry:
             self.delta_cases=cases-prevEntry.cases
             self.delta_active=self.active-prevEntry.active
@@ -110,6 +118,9 @@ class Country:
         # deaths
         self.delta_deaths_list=[]
         self.delta_ratio_deaths_list=[]
+        # death + recovery %
+        self.death_percent_list=[]
+        self.recovery_percent_list=[]
         for i in entrylist:
             self.date_list.append(i.date)
             self.cases_list.append(i.cases)
@@ -124,20 +135,27 @@ class Country:
             self.delta_ratio_recovered_list.append(i.delta_ratio_recovered)
             self.delta_deaths_list.append(i.delta_deaths)
             self.delta_ratio_deaths_list.append(i.delta_ratio_deaths)
+            # death + recovery %
+            self.death_percent_list.append(i.death_percent)
+            self.recovery_percent_list.append(i.recovery_percent)
         self.length=len(entrylist)
-        self.last_date=entrylist[self.length-1].date
-        self.last_cases=entrylist[self.length-1].cases
-        self.last_deaths=entrylist[self.length-1].deaths
-        self.last_recovered=entrylist[self.length-1].recovered
-        self.last_active=entrylist[self.length-1].active
-        self.last_delta_cases = entrylist[self.length - 1].delta_cases
-        self.last_delta_active = entrylist[self.length - 1].delta_active
-        self.last_delta_recovered = entrylist[self.length - 1].delta_recovered
-        self.last_delta_deaths = entrylist[self.length - 1].delta_deaths
-        self.last_delta_ratio_cases = entrylist[self.length - 1].delta_ratio_cases
-        self.last_delta_ratio_active = entrylist[self.length - 1].delta_ratio_active
-        self.last_delta_ratio_recovered = entrylist[self.length - 1].delta_ratio_recovered
-        self.last_delta_ratio_deaths = entrylist[self.length - 1].delta_ratio_deaths
+        lasti=self.length-1
+        self.last_date=entrylist[lasti].date
+        self.last_cases=entrylist[lasti].cases
+        self.last_deaths=entrylist[lasti].deaths
+        self.last_recovered=entrylist[lasti].recovered
+        self.last_active=entrylist[lasti].active
+        self.last_delta_cases = entrylist[lasti].delta_cases
+        self.last_delta_active = entrylist[lasti].delta_active
+        self.last_delta_recovered = entrylist[lasti].delta_recovered
+        self.last_delta_deaths = entrylist[lasti].delta_deaths
+        self.last_delta_ratio_cases = entrylist[lasti].delta_ratio_cases
+        self.last_delta_ratio_active = entrylist[lasti].delta_ratio_active
+        self.last_delta_ratio_recovered = entrylist[lasti].delta_ratio_recovered
+        self.last_delta_ratio_deaths = entrylist[lasti].delta_ratio_deaths
+        # death + recovery %
+        self.last_death_percent = entrylist[lasti].death_percent
+        self.last_recovery_percent = entrylist[lasti].recovery_percent
     # input list type, output x (date list) and y (values) and r^2 and m and b0. uses last X days to predict
     def lastXdayslinearpredict(self, list, days=10):
         success=True
@@ -327,6 +345,19 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
         </tr>
         </tbody>
         </table>\n"""
+        # death & recovery percent
+        # deaths %
+        try:
+            lp_deaths=round(country.last_death_percent,sigdigit_small)
+        except:
+            lp_deaths=country.last_death_percent
+        # recovery %
+        try:
+            lp_recovered=round(country.last_recovery_percent,sigdigit_small)
+        except:
+            lp_recovered=country.last_recovery_percent
+        html += f"""<p>* Last percent <b>recovered</b> from all cases: {lp_recovered}%</p>
+        <p>* Last percent <b>dead</b> from all cases: {lp_deaths}%</p>\n"""
         # below - ratio prediction
         predict_list=[]
         for pdays in range(predict_days_min,predict_days_max+1):
