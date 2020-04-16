@@ -285,7 +285,9 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
     # print("HTML START:")
     # print(html)
     # print("HTML END:")
+    place_num = 0
     for country,div in div_list:
+        place_num += 1
         # cases
         try:
             ldr_cases=round(country.last_delta_ratio_cases,sigdigit)
@@ -308,7 +310,7 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
             ldr_active=country.last_delta_ratio_active
         # type_title comes in as Log (doesn't work) turns to LOG (works), comes in as Normal (doesn't work )turns to NORMAL (works)
         # html += f"        <h3><a href='html-plots/{country.countryposix}-plot-{type_title.upper()}.html'>{country.country}</a></h3>\n"
-        html += f"        <h3>{country.country}</h3>\n"
+        html += f"        <h3>#{place_num}. {country.country}</h3>\n"
         html += f"<p><a href='html-plots/{country.countryposix}-plot-NORMAL.html'>Normal</a> | <a href='html-plots/{country.countryposix}-plot-LOG.html'>Log</a></p>"
         html += f"""
         <table border="1" cellpadding="5">
