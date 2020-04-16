@@ -7,3 +7,5 @@ other/
 /run.timelog
 /run-*.out
 /test*py
+/test*ipynb
+__pycache__/*
