@@ -224,7 +224,7 @@ def graph2div(country_class,graph_type):
         the_type_fig=None
     country_name=i.country
     full_path_html=f"html-plots/{i.countryposix}-plot-{the_type_string}.html"
-    fig = make_subplots(rows=2, cols=1)
+    fig = make_subplots(rows=2, cols=2)
     fig.update_layout(title=f"COVID19 - {country_name}")
     fig.add_trace(go.Scatter(x=i.date_list, y=i.cases_list, name="Cases", line=dict(color='firebrick', width=2),showlegend=True),row=1,col=1)
     fig.add_trace(go.Scatter(x=i.date_list, y=i.deaths_list, name="Deaths", line=dict(color='red', width=2),showlegend=True),row=1,col=1)
@@ -235,12 +235,21 @@ def graph2div(country_class,graph_type):
     #fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_recovered_list, name="Ratio Diff Recovered", showlegend=True),row=2,col=1)
     fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_deaths_list, name="Ratio Diff Deaths", showlegend=True),row=2,col=1)
     # below - ratio prediction
-    # success, xfinal, yfinal, r_sq, m, b0 = i.lastXdayslinearpredict(i.delta_ratio_active_list, 10)
-    # if success:
-    #     fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name="Predicted Ratio Active Cases", line=dict(color='gray', width=1), showlegend=True), row=2,col=1)
+    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_active_list, name="Ratio Diff Active Cases", showlegend=True),row=2,col=2)
+    for ds in range(predict_days_min,predict_days_max+1):
+        success, xfinal, yfinal, r_sq, m, b0 = i.lastXdayslinearpredict(i.delta_ratio_active_list, ds)
+        if success:
+            # fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=f"Past {ds} day Linear Regression Fit (r^2={r_sq})", line=dict(color='gray', width=1), showlegend=True), row=2,col=2)
+            fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=f"Past {ds} day Linear Regression Fit (r^2={r_sq})", line=dict(width=1), showlegend=True), row=2,col=2)
     # above  - ratio prediction
+    # new plot
+    fig.add_trace(go.Scatter(x=i.date_list, y=i.death_percent_list, name="Death %", showlegend=True),row=1,col=2)
+    fig.add_trace(go.Scatter(x=i.date_list, y=i.recovery_percent_list, name="Recovery %", showlegend=True),row=1,col=2)
+    # end new plot
     fig.update_yaxes(type=the_type_fig,row=1,col=1)
     fig.update_yaxes(type=None,rangemode="tozero",row=2,col=1)
+    fig.update_yaxes(type=None,row=1,col=2) # new plot
+    fig.update_yaxes(type=None,rangemode="tozero",row=2,col=2) # new plot
     fig.write_html(full_path_html,auto_open=False) # write 2.5 MiB html file
     div = plotly.offline.offline.plot(fig, show_link=False, include_plotlyjs=False, output_type='div')
     return div
