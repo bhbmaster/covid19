@@ -245,10 +245,12 @@ def graph2div(country_class,graph_type):
     # new plot
     fig.add_trace(go.Scatter(x=i.date_list, y=i.death_percent_list, name="Death %", showlegend=True),row=1,col=2)
     fig.add_trace(go.Scatter(x=i.date_list, y=i.recovery_percent_list, name="Recovery %", showlegend=True),row=1,col=2)
+    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_active_list, name="Delta Active Cases", showlegend=True),row=1,col=2)
     # end new plot
     fig.update_yaxes(type=the_type_fig,row=1,col=1)
     fig.update_yaxes(type=None,rangemode="tozero",row=2,col=1)
-    fig.update_yaxes(type=None,row=1,col=2) # new plot
+    # fig.update_yaxes(type=None,row=1,col=2) # new plot
+    fig.update_yaxes(type="log",row=1,col=2) # new plot
     fig.update_yaxes(type=None,rangemode="tozero",row=2,col=2) # new plot
     fig.write_html(full_path_html,auto_open=False) # write 2.5 MiB html file
     div = plotly.offline.offline.plot(fig, show_link=False, include_plotlyjs=False, output_type='div')
