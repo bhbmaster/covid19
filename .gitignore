@@ -9,3 +9,4 @@ other/
 /test*py
 /test*ipynb
 __pycache__/*
+archived_data/*

@@ -12,6 +12,7 @@ import htmlmin
 import numpy as np
 from sklearn.linear_model import LinearRegression
 # from sklearn.preprocessing import PolynomialFeatures
+import pickle
 
 # By: Kostia Khlebopros
 # Site: http://www.infotinks.com/coronavirus-dashboard-covid19-py/
@@ -23,6 +24,7 @@ from sklearn.linear_model import LinearRegression
 SITE="https://pomber.github.io/covid19/timeseries.json"
 start_time = datetime.datetime.now()
 start_time_string = start_time.strftime("%Y-%m-%d %H:%M:%S")
+start_time_posix = start_time.strftime("%Y-%m-%d-%H-%M-%S")
 bootstrapped = False
 sigdigit=5
 sigdigit_small=2
@@ -425,6 +427,17 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
     with open(output_file, 'w') as file:
         file.write(minihtml)
 
+# save everything
+def save_pickle(object_to_save,filename_prefix,time_string):
+    if not os.path.exists("archived_data"):
+        os.mkdir("archived_data")
+    filename=f"archived_data/{filename_prefix}-{time_string}.pk"
+    try:
+        with open(filename,"wb") as file1:
+            pickle.dump(object_to_save,file1)
+    except:
+        print(f"* failed to save object archived_data/{filename_prefix}-{time_string}.pk")
+
 ### main ###
 
 def main():
@@ -549,6 +562,9 @@ def main():
 
     # create html from div list - normal
     divs2html(div_list_normal,"Normal",start_time_string,"covid19-normal.html",bootstrapped)
+
+    # save 
+    # save_pickle(list_of_countries,"country-class-list",start_time_posix)
 
     # complete message
     print("Generating plots done!")
