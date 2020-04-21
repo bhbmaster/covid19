@@ -16,7 +16,7 @@ from sklearn.linear_model import LinearRegression
 # By: Kostia Khlebopros
 # Site: http://www.infotinks.com/coronavirus-dashboard-covid19-py/
 # Github: https://github.com/bhbmaster/covid19
-# Last Update: 2020-04-14
+# Last Update: 2020-04-20
 
 ### constants ###
 
@@ -287,12 +287,14 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
         <h2>Covid19.py Plots ({type_title})</h2>
         <p><b>Last Plot Update:</b> {time_string}</p>
         <p><a href='covid19-{other_type_title.lower()}.html'>Click here to see {other_type_title} plots instead</a></p>
-        <p><b>* More Info:</b> available on <a href="https://github.com/bhbmaster/covid19">GitHub</a> and <a href="http://www.infotinks.com/coronavirus-dashboard-covid19-py/">infotinks.com</a></p>
-        <p><b>* Delta</b> is change from previous day ( + is growth; - is reduction )</p>
-        <p><b>* Ratio</b> is % change from previous day ( 1 or higher is growth; 0 to 1 is reduction )</p>
+        <p>* <b>More Info:</b> available on <a href="https://github.com/bhbmaster/covid19">GitHub</a> and <a href="http://www.infotinks.com/coronavirus-dashboard-covid19-py/">infotinks.com</a></p>
+        <p>* <b>Delta</b> is change from previous day ( + is growth; - is reduction )</p>
+        <p>* <b>Ratio</b> is % change from previous day ( 1 or higher is growth; 0 to 1 is reduction )</p>
         <p>* <b>Note:</b> Peak active case prediction date is calculated using a linear regression fit on "active cases ratio" and examing its past X days values to see when it crosses 1.0.</p>
         <p>* An r<sup>2</sup> closer to 1.0 means a better prediction.</p>
-        <p>* Ignore predictions with past dates.</p>\n"""
+        <p>* Ignore predictions with past dates.</p>
+        <p>* <b>Note:</b> The plotly graphs are interactive. To have better you can click on the "Normal" or "Log" link for each country to see it's own interactive plot.</p>
+        <p>There you can control control which information is plotted by clicking & double clicking on the items in the legend to isolate or disable that data.\n"""
     # print("HTML START:")
     # print(html)
     # print("HTML END:")
