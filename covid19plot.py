@@ -242,7 +242,7 @@ def graph2div(country_class,graph_type):
         success, xfinal, yfinal, r_sq, m, b0 = i.lastXdayslinearpredict(i.delta_ratio_active_list, ds)
         if success:
             # fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=f"Past {ds} day Linear Regression Fit (r^2={r_sq})", line=dict(color='gray', width=1), showlegend=True), row=2,col=2)
-            fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=f"Past {ds} day Linear Regression Fit (r^2={r_sq})", line=dict(width=1), showlegend=True), row=2,col=2)
+            fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=f"Past {ds} day Linear Regression Fit (r^2={round(r_sq,sigdigit)})", line=dict(width=1), showlegend=True), row=2,col=2)
     # above  - ratio prediction
     # new plot
     fig.add_trace(go.Scatter(x=i.date_list, y=i.death_percent_list, name="Death %", showlegend=True),row=1,col=2)
