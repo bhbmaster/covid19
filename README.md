@@ -10,7 +10,7 @@ I use a wrapper script run.sh to run covid19plot.py and save its text output to 
 Then places.sh uses those log files to get ordered list of most cases for each day. The output is saved in this html file:
 - Places: http://www.infotinks.com/covid19/places.html
 
-Requirements: view requirements.txt to view
+Requirements: view requirements.txt to see python module requirements
 
 * Tested with python 3.7 (but probably works with python 3.6 which introduced formatted strings which are used in this program. formatted strings are strigns like this: f"formatted strings {like} this")
 
@@ -48,3 +48,4 @@ Or:
 
         ./run.sh    
     
+* Space Requirements: after all of the plots generate the project directory total size might be around 1.2 to 1.5 GiB in size.
