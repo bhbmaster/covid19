@@ -46,6 +46,7 @@ To run (the python program hooks to python 3.7):
         python3 covid19plot.py
 Or:
 
-        ./run.sh    
+        ./run.sh &
+        tail -F <log file>
     
 * Space Requirements: after all of the plots generate the project directory total size might be around 1.2 to 1.5 GiB in size.
