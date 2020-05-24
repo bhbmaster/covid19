@@ -296,7 +296,8 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
         <p>* An r<sup>2</sup> closer to 1.0 means a better prediction.</p>
         <p>* Ignore predictions with past dates.</p>
         <p>* <b>Note:</b> The plotly graphs are interactive. To have better you can click on the "Normal" or "Log" link for each country to see it's own interactive plot.</p>
-        <p>There you can control control which information is plotted by clicking & double clicking on the items in the legend to isolate or disable that data.\n"""
+        <p>There you can control control which information is plotted by clicking & double clicking on the items in the legend to isolate or disable that data.</p>
+        <p>Note: Gabe Silva is a good person.</p>\n"""
     # print("HTML START:")
     # print(html)
     # print("HTML END:")
