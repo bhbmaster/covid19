@@ -1,6 +1,7 @@
 html-plots/*
 other/
 .idea/
+.vscode/
 /covid19-log.html
 /covid19-normal.html
 /places.html
@@ -10,3 +11,4 @@ other/
 /test*ipynb
 __pycache__/*
 archived_data/*
+env/

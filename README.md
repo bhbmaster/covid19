@@ -50,3 +50,12 @@ Or:
         tail -F <log file>
     
 * Space Requirements: after all of the plots generate the project directory total size might be around 1.2 to 1.5 GiB in size.
+
+# How to prepare environment with virtualenv
+
+        cd <into root directory where covid19plot.py is>
+        python3 -v venv env
+        source env/bin/activate
+        pip install -r requirements.txt
+
+Then run it using method above.
