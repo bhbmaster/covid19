@@ -263,8 +263,10 @@ def graph2div(country_class,graph_type):
 def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
     if type_title == "Normal":
         other_type_title="Log"
+        countersite="https://hitwebcounter.com/counter/counter.php?page=7650825&style=0024&nbdigits=9&type=page&initCount=1020"
     else:
         other_type_title="Normal"
+        countersite="https://hitwebcounter.com/counter/counter.php?page=7650826&style=0024&nbdigits=9&type=page&initCount=1020"
     bootstrap_string="""<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">\n""" if bootstrap_on else ""
     # start of html
     # html = """<!DOCTYPE html>                # with html5 the divs are 50% height, without this they are 100%
@@ -418,7 +420,12 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
         # above prediction
         html += "        " + div+"\n"
         html += '<p>* <b>Note:</b> The graph is projected from the source data provided here: <a href="https://github.com/CSSEGISandData/COVID-19">https://github.com/CSSEGISandData/COVID-19</a></p>\n'
-    html += """</body>
+ 
+    html += f"""<!-- hitwebcounter Code START -->
+<a href="https://www.hitwebcounter.com" target="_blank">
+<img src="{countersite}" title="Views:" Alt="hitwebcounter" border="0" >
+</a>
+</body>
     </html>\n"""
     # end of html
     # make it pretty
@@ -428,6 +435,11 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
     # write file
     with open(output_file, 'w') as file:
         file.write(minihtml)
+
+# <!-- hitwebcounter Code START -->
+# <a href="https://www.hitwebcounter.com" target="_blank">
+# <img src="https://hitwebcounter.com/counter/counter.php?page=7650826&style=0024&nbdigits=9&type=page&initCount=1020" title="Free Stats for webpages" Alt="hitwebcounter"   border="0" >
+# </a>                                    
 
 # save everything
 def save_pickle(object_to_save,filename_prefix,time_string):
