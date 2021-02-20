@@ -31,6 +31,7 @@ sigdigit_small=2
 predict_days_min=5
 predict_days_max=15
 valid_chars = "-_.%s%s" % (string.ascii_letters, string.digits)
+TESTDATA = "TestData.json"
 
 ### classes ###
 
@@ -213,6 +214,10 @@ class Country:
         return (success,xfinal,yfinal,r_sq,m,b0)
 
 ### functions ###
+
+# N day moving average (ex: 7 day average)
+def avgN(N,x,y):
+    pass
 
 # create divs of graph of a certain type from country class item
 
@@ -459,14 +464,25 @@ def main():
     print("Covid19plot.py")
     print("--------------")
 	
-
-    # get and parse data
+    #### - GET DATA - METHOD 1 - START - ####
+    # download json data (comment out this or load json; only have one)
     print(f"- Downloading json from {SITE}. (please wait)")
     with urllib.request.urlopen(SITE) as url:
         data=json.loads(url.read().decode())
     if not data:
     	print(f"- Download Failed (no data).")
-    print(f"- Download Complete")
+    print(f"- Download Complete.")
+    #### - GET DATA - METHOD 1 - END - ####
+
+    #### - GET DATA - METHOD 2 - START ####
+    # # load json data from file (comment out this or load json; only have one) - useful for testing and debugging
+    # print(f"- Loading json from {TESTDATA}. (please wait)")
+    # with open(TESTDATA) as f:
+    #     data = json.load(f)
+    # if not data:
+    #     print(f"- Loading Failed (no data).")
+    # print(f"- Loading Complete.")
+    #### - GET DATA - METHOD 2 - END ####
 
     # last_date=data["China"][len(data["China"])-1]["date"]  # returns 2020-3-14
 
