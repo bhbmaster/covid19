@@ -419,7 +419,7 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
         </table>\n"""
         # above prediction
         html += "        " + div+"\n"
-        html += '<p>* <b>Note:</b> Data Source: <a href="https://pomber.github.io/covid19/">Pomber</a>, which generates daily json from <a href="https://github.com/CSSEGISandData/COVID-19">CSSEGISandData</a> data.</p>\n'
+        # redundant (already in notes # html += '<p>* <b>Note:</b> Data Source: <a href="https://pomber.github.io/covid19/">Pomber</a>, which generates daily json from <a href="https://github.com/CSSEGISandData/COVID-19">CSSEGISandData</a> data.</p>\n'
  
     html += f"""<!-- hitwebcounter Code START -->
 <a href="https://www.hitwebcounter.com" target="_blank">
