@@ -17,7 +17,7 @@ import pickle
 # By: Kostia Khlebopros
 # Site: http://www.infotinks.com/coronavirus-dashboard-covid19-py/
 # Github: https://github.com/bhbmaster/covid19
-# Last Update: 2020-04-20
+# Last Update: 2021-02-19
 
 ### constants ###
 
@@ -299,7 +299,7 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
         <p>* Ignore predictions with past dates.</p>
         <p>* <b>Note:</b> The plotly graphs are interactive. To have better you can click on the "Normal" or "Log" link for each country to see it's own interactive plot.</p>
         <p>There you can control control which information is plotted by clicking & double clicking on the items in the legend to isolate or disable that data.</p>
-        <p>* <b>Note:</b> The graph is projected from the source data provided here: <a href="https://github.com/CSSEGISandData/COVID-19">https://github.com/CSSEGISandData/COVID-19</a></p>\n"""
+        <p>* <b>Note:</b> Data Source: <a href="https://pomber.github.io/covid19/">Pomber</a>, which generates daily json from <a href="https://github.com/CSSEGISandData/COVID-19">CSSEGISandData</a> data.</p>\n"""
     # print("HTML START:")
     # print(html)
     # print("HTML END:")
@@ -419,7 +419,7 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
         </table>\n"""
         # above prediction
         html += "        " + div+"\n"
-        html += '<p>* <b>Note:</b> The graph is projected from the source data provided here: <a href="https://github.com/CSSEGISandData/COVID-19">https://github.com/CSSEGISandData/COVID-19</a></p>\n'
+        html += '<p>* <b>Note:</b> Data Source: <a href="https://pomber.github.io/covid19/">Pomber</a>, which generates daily json from <a href="https://github.com/CSSEGISandData/COVID-19">CSSEGISandData</a> data.</p>\n'
  
     html += f"""<!-- hitwebcounter Code START -->
 <a href="https://www.hitwebcounter.com" target="_blank">
@@ -456,10 +456,17 @@ def save_pickle(object_to_save,filename_prefix,time_string):
 
 def main():
 
-    # get and parse data
+	print("Covid19plot.py")
+	print("--------------")
+	
 
+    # get and parse data
+    print(f"- Downloading json from {SITE}. (please wait)")
     with urllib.request.urlopen(SITE) as url:
         data=json.loads(url.read().decode())
+    if not data:
+    	print(f"- Download Failed (no data).")
+    print(f"- Download Complete")
 
     # last_date=data["China"][len(data["China"])-1]["date"]  # returns 2020-3-14
 

@@ -12,3 +12,4 @@ other/
 __pycache__/*
 archived_data/*
 env/
+test-*
