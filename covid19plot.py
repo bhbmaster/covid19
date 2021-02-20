@@ -275,11 +275,11 @@ def graph2div(country_class,graph_type):
     # ... daily new cases ... #
     fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_cases_list, name="Daily New Cases", showlegend=True),row=3,col=1)
     xavg,yavg = avgN(moving_average_samples,i.date_list,i.delta_cases_list)
-    fig.add_trace(go.Scatter(x=xavg, y=yavg, name="Daily New Cases (7 Day Moving Average)", showlegend=True),row=3,col=1)
+    fig.add_trace(go.Scatter(x=xavg, y=yavg, name=f"Daily New Cases ({moving_average_samples} Day Moving Average)", showlegend=True),row=3,col=1)
     # ...  daily deaths ... #
     fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_deaths_list, name="Daily New Deaths", showlegend=True),row=3,col=2)
     xavg,yavg = avgN(moving_average_samples,i.date_list,i.delta_deaths_list)
-    fig.add_trace(go.Scatter(x=xavg, y=yavg, name="Daily New Deaths (7 Day Moving Average)", showlegend=True),row=3,col=2)
+    fig.add_trace(go.Scatter(x=xavg, y=yavg, name=f"Daily New Deaths ({moving_average_samples} Day Moving Average)", showlegend=True),row=3,col=2)
     # end new ploy
     fig.update_yaxes(type=the_type_fig,row=1,col=1)
     fig.update_yaxes(type=None,rangemode="tozero",row=2,col=1)
