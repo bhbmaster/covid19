@@ -215,9 +215,22 @@ class Country:
 
 ### functions ###
 
-# N day moving average (ex: 7 day average)
+# N day moving average (ex: 7 day average). averages the y values over window size N, our array shrinks by N-1 due to this. therefore, we also truncate the x array values by N-1 from the left side (older dates are on the left side)
 def avgN(N,x,y):
-    pass
+    # example:
+    # y = [1, 2, 3, 7, 9]  # numbers
+    # N = 3                # window_size
+    # output is [2.0, 4.0, 6.333333333333333]
+    # *** get y values - moving average algo
+    mov_y = []
+    for i in range(len(y) - N + 1):
+        wind = y[i : i + N]
+        wind_avg = sum(wind) / N
+        mov_y.append(wind_avg)
+    # *** get x values - truncates N-1 number from begin
+    mov_x = x[N-1:]
+    # *** return tuple
+    return (mov_x,mov_y)
 
 # create divs of graph of a certain type from country class item
 
