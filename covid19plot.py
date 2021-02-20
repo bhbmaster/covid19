@@ -17,7 +17,7 @@ import pickle
 # By: Kostia Khlebopros
 # Site: http://www.infotinks.com/coronavirus-dashboard-covid19-py/
 # Github: https://github.com/bhbmaster/covid19
-# Last Update: 2021-02-19
+# Last Update: 2021-02-20
 
 ### constants ###
 
@@ -32,6 +32,7 @@ predict_days_min=5
 predict_days_max=15
 valid_chars = "-_.%s%s" % (string.ascii_letters, string.digits)
 TESTDATA = "TestData.json"
+moving_average_samples = 7 # 7 day moving average for daily new cases and daily deaths
 
 ### classes ###
 
@@ -89,14 +90,15 @@ class Entry:
             except:
                 self.delta_ratio_deaths=None
         else:
-            self.delta_cases=None
+            self.delta_cases=0 # hack more info below
             self.delta_active=None
             self.delta_recovered=None
-            self.delta_deaths=None
+            self.delta_deaths=0 # hack more info below
             self.delta_ratio_cases=None
             self.delta_ratio_active=None
             self.delta_ratio_recovered=None
             self.delta_ratio_deaths=None
+            # hack: used to be None but that fails average calc in moving average (as you can't sum None+ints like None+3+2). Perhaps its better to delete the entry (so the date|x and value|y are just gone. The plots should still work with those missing points).
 
 # a country class, full of entries
 class Country:
@@ -223,6 +225,7 @@ def avgN(N,x,y):
     # output is [2.0, 4.0, 6.333333333333333]
     # *** get y values - moving average algo
     mov_y = []
+    # print("DEBUG:",y)
     for i in range(len(y) - N + 1):
         wind = y[i : i + N]
         wind_avg = sum(wind) / N
@@ -244,7 +247,7 @@ def graph2div(country_class,graph_type):
         the_type_fig=None
     country_name=i.country
     full_path_html=f"html-plots/{i.countryposix}-plot-{the_type_string}.html"
-    fig = make_subplots(rows=2, cols=2)
+    fig = make_subplots(rows=3, cols=2) # used to be  make_subplots(rows=2, cols=2)
     fig.update_layout(title=f"COVID19 - {country_name}")
     fig.add_trace(go.Scatter(x=i.date_list, y=i.cases_list, name="Cases", line=dict(color='firebrick', width=2),showlegend=True),row=1,col=1)
     fig.add_trace(go.Scatter(x=i.date_list, y=i.deaths_list, name="Deaths", line=dict(color='red', width=2),showlegend=True),row=1,col=1)
@@ -256,17 +259,28 @@ def graph2div(country_class,graph_type):
     fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_deaths_list, name="Ratio Diff Deaths", showlegend=True),row=2,col=1)
     # below - ratio prediction
     fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_active_list, name="Ratio Diff Active Cases", showlegend=True),row=2,col=2)
-    for ds in range(predict_days_min,predict_days_max+1):
-        success, xfinal, yfinal, r_sq, m, b0 = i.lastXdayslinearpredict(i.delta_ratio_active_list, ds)
-        if success:
-            # fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=f"Past {ds} day Linear Regression Fit (r^2={r_sq})", line=dict(color='gray', width=1), showlegend=True), row=2,col=2)
-            fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=f"Past {ds} day Linear Regression Fit (r^2={round(r_sq,sigdigit)})", line=dict(width=1), showlegend=True), row=2,col=2)
-    # above  - ratio prediction
+    ### # ratio prediction - start
+    ### for ds in range(predict_days_min,predict_days_max+1):
+    ###     success, xfinal, yfinal, r_sq, m, b0 = i.lastXdayslinearpredict(i.delta_ratio_active_list, ds)
+    ###     if success:
+    ###         # fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=f"Past {ds} day Linear Regression Fit (r^2={r_sq})", line=dict(color='gray', width=1), showlegend=True), row=2,col=2)
+    ###         fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=f"Past {ds} day Linear Regression Fit (r^2={round(r_sq,sigdigit)})", line=dict(width=1), showlegend=True), row=2,col=2)
+    ### # ratio prediction - end
     # new plot
     fig.add_trace(go.Scatter(x=i.date_list, y=i.death_percent_list, name="Death %", showlegend=True),row=1,col=2)
     fig.add_trace(go.Scatter(x=i.date_list, y=i.recovery_percent_list, name="Recovery %", showlegend=True),row=1,col=2)
-    # fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_active_list, name="Delta Active Cases", showlegend=True),row=1,col=2) # doesnt show negative so not including
+    # fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_active_list, name="Delta Active Cases", showlegend=True),row=1,col=2) # doesn't show negative so not including
     # end new plot
+    # new plot
+    # ... daily new cases ... #
+    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_cases_list, name="Daily New Cases", showlegend=True),row=3,col=1)
+    xavg,yavg = avgN(moving_average_samples,i.date_list,i.delta_cases_list)
+    fig.add_trace(go.Scatter(x=xavg, y=yavg, name="Daily New Cases (7 Day Moving Average)", showlegend=True),row=3,col=1)
+    # ...  daily deaths ... #
+    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_deaths_list, name="Daily New Deaths", showlegend=True),row=3,col=2)
+    xavg,yavg = avgN(moving_average_samples,i.date_list,i.delta_deaths_list)
+    fig.add_trace(go.Scatter(x=xavg, y=yavg, name="Daily New Deaths (7 Day Moving Average)", showlegend=True),row=3,col=2)
+    # end new ploy
     fig.update_yaxes(type=the_type_fig,row=1,col=1)
     fig.update_yaxes(type=None,rangemode="tozero",row=2,col=1)
     fig.update_yaxes(type=None,row=1,col=2) # new plot
@@ -539,12 +553,23 @@ def main():
 
     # world total not provided so we sum everything
 
-    # get list of dates from China as it has the most most likely
+    # get list of dates from China as it has the most - most likely (thats where it started so it will have most dates)
     all_dates=[]
     for i in list_of_countries:
         if i.country == "China":
             all_dates=i.date_list # at this point all_dates is all of our dates
             break
+
+    #### - DEBUG TEST DATA - START ####
+    # # For quicker runs - for tests: only work with China, US and Canada by creating new list only w/ those countries
+    # TestCountries = [ "China", "US", "Canada" ]
+    # test_list_of_countries = []
+    # print(f"* # of countries {len(TestCountries)} (modified for debug / testing)")
+    # for i in list_of_countries:
+    #     if i.country in TestCountries:
+    #         test_list_of_countries.append(i)
+    # list_of_countries = test_list_of_countries
+    #### - DEBUG TEST DATA - END ####
 
     # now iterate thru all of the dates summing each country at the date
     i=0
