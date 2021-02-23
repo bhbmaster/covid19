@@ -18,7 +18,7 @@ from scipy.optimize import curve_fit
 # By: Kostia Khlebopros
 # Site: http://www.infotinks.com/coronavirus-dashboard-covid19-py/
 # Github: https://github.com/bhbmaster/covid19
-# Last Update: 2021-02-20
+# Last Update: 2021-02-23
 
 ### constants ###
 
@@ -338,7 +338,20 @@ def graph2div(country_class,graph_type):
     # print(f"DEBUG: fit -> {xfinal=} {yfinal=}")
     if success:
         ## fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=f"Daily New Cases Prediction Curve Fit (y={fita:.3f}x^2+{fitb:.3f}x+{fitc:.0f})", line=dict(color='gray', width=2), showlegend=True), row=3,col=1)
-        fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=f"Daily New Cases Prediction Linear Fit (r^2={round(r_sq,sigdigit)})", line=dict(color='gray', width=2), showlegend=True), row=3,col=1)
+        fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=f"Daily New Cases {days_predict_new_cases} Days Prediction", line=dict(color='gray', width=2), showlegend=True), row=3,col=1)
+        half_index = int(len(xfinal)/2)
+        # text for the fit
+        text_string=f"y={m:0.2f}x+{b0:0.0f} (r^2={r_sq:0.5f})"
+        color_text="purple"
+        fig.add_annotation(x=xfinal[half_index], y=yfinal[half_index],
+            text=text_string,
+            showarrow=True,
+            font=dict(
+                family="courier",
+                size=12,
+                color=color_text
+            ),
+            arrowhead=1, arrowsize=2, arrowcolor=color_text, arrowwidth=1, row=3,col=1)
     # ...  daily deaths ... #
     fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_deaths_list, name="Daily New Deaths", showlegend=True),row=3,col=2)
     xavg,yavg = avgN(moving_average_samples,i.date_list,i.delta_deaths_list)
@@ -392,7 +405,7 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
         <p>* <b>Note:</b> Peak active case prediction date is calculated using a linear regression fit on "active cases ratio" and examing its past X days values to see when it crosses 1.0.</p>
         <p>* An r<sup>2</sup> closer to 1.0 means a better prediction.</p>
         <p>* Ignore predictions with past dates.</p>
-        <p>* <b>Note:</b> Daily new cases moving average has a linear regression fit calculated from previous {days_predict_new_cases} days and extending same days into the future. This is to help estimate daily new cases trend. Of course, the real pattern is not linear, so it is merily a prediction.</p>
+        <p>* <b>Note:</b> Daily new cases moving average has a linear regression fit calculated from previous {days_predict_new_cases} days and extending same days into the future. This is to help estimate daily new cases trend. Of course, the real trend is not linear, so this is strictly a prediction. The predicted line has its r^2 value and y=mx+b equation annotated on the plot.</p>
         <p>* <b>Note:</b> The plotly graphs are interactive. To have better you can click on the "Normal" or "Log" link for each country to see it's own interactive plot.</p>
         <p>There you can control control which information is plotted by clicking & double clicking on the items in the legend to isolate or disable that data.</p>
         <p>* <b>Note:</b> The United States, US, recovery numbers are all nullfied to 0 on 2020-12-15 and onward. This was a decision made by the data source. More can be read here: <a href="https://github.com/CSSEGISandData/COVID-19/issues/3464">Github Issue</a> and <a href="https://covidtracking.com/about-data/faq#why-have-you-stopped-reporting-national-recoveries">Reasoning</a>.</p>
