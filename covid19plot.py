@@ -638,14 +638,14 @@ def main():
             break
 
     #### - DEBUG TEST DATA - START ####
-    # For quicker runs - for tests: only work with China, US and Canada by creating new list only w/ those countries
-    TestCountries = [ "China", "US", "Canada" ]
-    test_list_of_countries = []
-    print(f"* # of countries {len(TestCountries)} (modified for debug / testing)")
-    for i in list_of_countries:
-        if i.country in TestCountries:
-            test_list_of_countries.append(i)
-    list_of_countries = test_list_of_countries
+    # # For quicker runs - for tests: only work with China, US and Canada by creating new list only w/ those countries
+    # TestCountries = [ "China", "US", "Canada" ]
+    # test_list_of_countries = []
+    # print(f"* # of countries {len(TestCountries)} (modified for debug / testing)")
+    # for i in list_of_countries:
+    #     if i.country in TestCountries:
+    #         test_list_of_countries.append(i)
+    # list_of_countries = test_list_of_countries
     #### - DEBUG TEST DATA - END ####
 
     # now iterate thru all of the dates summing each country at the date
