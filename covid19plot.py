@@ -21,7 +21,7 @@ from scipy.optimize import curve_fit
 
 ### constants ###
 
-Version = "2021.02.23"  # Last Update
+Version = "21.02.23"  # Last Update YY-MM-DD
 SITE="https://pomber.github.io/covid19/timeseries.json"
 start_time = datetime.datetime.now()
 start_time_string = start_time.strftime("%Y-%m-%d %H:%M:%S")
@@ -407,7 +407,7 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
 	    </style>
     <head/>
     <body>
-        <h2>Covid19.py Plots ({type_title})</h2>
+        <h2>Covid19.py Plots v{Version} ({type_title})</h2>
         <p><b>Last Plot Update:</b> {time_string}</p>
         <p><a href='covid19-{other_type_title.lower()}.html'>Click here to see {other_type_title} plots instead</a></p>
         <p>* <b>More Info:</b> available on <a href="https://github.com/bhbmaster/covid19">GitHub</a> and <a href="http://www.infotinks.com/coronavirus-dashboard-covid19-py/">infotinks.com</a></p>
