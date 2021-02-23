@@ -338,15 +338,18 @@ def graph2div(country_class,graph_type):
     # print(f"DEBUG: fit -> {xfinal=} {yfinal=}")
     if success:
         # predict when cross y=0
-        y_to_cross = 0.0 # target y to cross (find which X equals at the Y value)
-        x_cross1 = (y_to_cross - float(b0)) / float(m)   # y=mx+b   ->   x=(y-b)/m
-        x_cross1_int=int(x_cross1)  # convert to int value (as we need 1 day or 3 day from day0 type of thing)
-        day0=xfinal[0]  # this is x0 essentially and its a date
-        day0dt = datetime.datetime.strptime(day0, "%Y-%m-%d")  # convert to date time date so we can add x_cross to it
-        daycrossdt=day0dt+datetime.timedelta(days=int(x_cross1_int))  # get the date when we cross by adding x_cross to day0
-        daycross = daycrossdt.strftime("%Y-%m-%d")  # convert to easy to understand text
+        if m != 0: # don't calc crossing if slope is 0 or flat, as its not existant
+            y_to_cross = 0.0 # target y to cross (find which X equals at the Y value)
+            x_cross1 = (y_to_cross - float(b0)) / float(m)   # y=mx+b   ->   x=(y-b)/m
+            x_cross1_int=int(x_cross1)  # convert to int value (as we need 1 day or 3 day from day0 type of thing)
+            day0=xfinal[0]  # this is x0 essentially and its a date
+            day0dt = datetime.datetime.strptime(day0, "%Y-%m-%d")  # convert to date time date so we can add x_cross to it
+            daycrossdt=day0dt+datetime.timedelta(days=int(x_cross1_int))  # get the date when we cross by adding x_cross to day0
+            daycross = daycrossdt.strftime("%Y-%m-%d")  # convert to easy to understand text
+        else:
+            daycross = None
         ## fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=f"Daily New Cases Prediction Curve Fit (y={fita:.3f}x^2+{fitb:.3f}x+{fitc:.0f})", line=dict(color='gray', width=2), showlegend=True), row=3,col=1)
-        fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=f"<b>Daily New Cases {days_predict_new_cases} Days Prediction</b><br>r<sup>2</sup>={r_sq:0.5f}<br>y={m:0.3f}x+{b0:0.1f} where x<sub>0</sub>='{day0}'<br>y=0 / no new cases predicted @ {daycross}", line=dict(color='gray', width=2), showlegend=True), row=3,col=1)
+        fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=f"<b>Daily New Cases {days_predict_new_cases} Days Prediction</b><br>r<sup>2</sup>={r_sq:0.5f}<br>y={m:0.3f}x+{b0:0.1f} where x<sub>0</sub>='{xfinal[0]}'<br>y=0 / no new cases predicted @ {daycross}", line=dict(color='gray', width=2), showlegend=True), row=3,col=1)
         # half_index = int(len(xfinal)/2)
         # # text for the fit
         # text_string=f"y={m:0.2f}x+{b0:0.0f} (r^2={r_sq:0.5f})"
