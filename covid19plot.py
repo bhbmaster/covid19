@@ -13,6 +13,7 @@ import numpy as np
 from sklearn.linear_model import LinearRegression
 # from sklearn.preprocessing import PolynomialFeatures
 import pickle
+from scipy.optimize import curve_fit
 
 # By: Kostia Khlebopros
 # Site: http://www.infotinks.com/coronavirus-dashboard-covid19-py/
@@ -161,6 +162,7 @@ class Country:
         # death + recovery %
         self.last_death_percent = entrylist[lasti].death_percent
         self.last_recovery_percent = entrylist[lasti].recovery_percent
+
     # input list type, output x (date list) and y (values) and r^2 and m and b0. uses last X days to predict
     def lastXdayslinearpredict(self, list, days=10):
         success=True
@@ -214,6 +216,59 @@ class Country:
             m=None
             b0=None
         return (success,xfinal,yfinal,r_sq,m,b0)
+
+    # input list type. uses last X days to predict - fit to a/(x+c) + b
+    def lastXdayscurvefit(self, list, days=10):
+        success=True
+        try:
+            # grab last 10 days or whatever
+            days=int(days)
+            x0=self.date_list[-(days+1):-1]
+            y0=list[-(days+1):-1]
+            # get first day
+            day0=x0[0]
+            # new days 0 thru 10
+            x00=[]
+            for i in range(len(x0)):
+                x00.append(i)
+            # now should have
+            # x00=0,1,2,3,4,5,6,7,8,9
+            # y0=with ten values
+            # linear fit
+            x = np.array(x00).reshape((-1, 1))
+            y = np.array(y0)
+            # print("DEBUG:",x,y)
+            fit_func = lambda x,a,b,c: a*x**2 + b*x +c # polynomial
+            # fit_func = lambda x,a,b,c: a/(x+c)+b # the curve function
+            model = curve_fit(fit_func,np.array(x00),np.array(y0))
+            # get parms from the fit
+            [ a, b, c ] = model[0]
+            # print(f"DEBUGED: {a=} {b=} {c=}")
+            xpred0=[]
+            for i in range(len(x0)*2): # how far out we predict (as many days forward as we looked back)
+                xpred0.append(i)
+            xpred = np.array(xpred0).reshape((-1,1))  # verticle xs
+            y_pred = np.array(fit_func(xpred,a,b,c))
+            # print('predicted response:', y_pred, sep='\n')
+            # convert day 0,1,2,3,4 to day0+day
+            day0dt=datetime.datetime.strptime(day0, "%Y-%m-%d")
+            xdays=[]
+            for i in xpred0:
+                newdt=day0dt+datetime.timedelta(days=int(i))  # add x number of days
+                newday=newdt.strftime("%Y-%m-%d")
+                xdays.append(newday)
+            # final answer
+            xfinal=xdays   # need to convert these to dates of same format yyyy-mm-dd
+            yfinal=[ float(i[0]) for i in y_pred.tolist() ]
+        except Exception as e:
+            # print("CURVE FIT ERROR:",e)
+            success=False
+            xfinal=None
+            yfinal=None
+            a=None
+            b=None
+            c=None
+        return (success,xfinal,yfinal,a,b,c)
 
 ### functions ###
 
@@ -276,11 +331,16 @@ def graph2div(country_class,graph_type):
     fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_cases_list, name="Daily New Cases", showlegend=True),row=3,col=1)
     xavg,yavg = avgN(moving_average_samples,i.date_list,i.delta_cases_list)
     fig.add_trace(go.Scatter(x=xavg, y=yavg, name=f"Daily New Cases ({moving_average_samples} Day Moving Average)", showlegend=True),row=3,col=1)
+    success,xfinal,yfinal,fita,fitb,fitc = i.lastXdayscurvefit(yavg,30)
+    # print(f"DEBUG: fit -> {success=} {fita=} {fitb=} {fitc=}")
+    # print(f"DEBUG: fit -> {xfinal=} {yfinal=}")
+    if success:
+        fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=f"Daily New Cases Prediction Curve Fit (y={fita:.3f}x^2+{fitb:.3f}x+{fitc:.0f})", line=dict(color='gray', width=2), showlegend=True), row=3,col=1)
     # ...  daily deaths ... #
     fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_deaths_list, name="Daily New Deaths", showlegend=True),row=3,col=2)
     xavg,yavg = avgN(moving_average_samples,i.date_list,i.delta_deaths_list)
     fig.add_trace(go.Scatter(x=xavg, y=yavg, name=f"Daily New Deaths ({moving_average_samples} Day Moving Average)", showlegend=True),row=3,col=2)
-    # end new ploy
+    # end new plot
     fig.update_yaxes(type=the_type_fig,row=1,col=1)
     fig.update_yaxes(type=None,rangemode="tozero",row=2,col=1)
     fig.update_yaxes(type=None,row=1,col=2) # new plot
