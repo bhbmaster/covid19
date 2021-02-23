@@ -352,7 +352,7 @@ def graph2div(country_class,graph_type):
             daycross = None
         i.predict_date_zero = daycross  # this variable doesn't exist in Country class, but in python you can create it regardless (we call it later when creating the HTML)
         ## fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=f"Daily New Cases Prediction Curve Fit (y={fita:.3f}x^2+{fitb:.3f}x+{fitc:.0f})", line=dict(color='gray', width=2), showlegend=True), row=3,col=1)
-        fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=f"<b>Daily New Cases {days_predict_new_cases} Days Prediction</b><br>r<sup>2</sup>={r_sq:0.5f}<br>y={m:0.3f}x+{b0:0.1f} where x<sub>0</sub>='{xfinal[0]}'<br>y=0 / no new cases predicted @ {daycross}", line=dict(color='gray', width=2), showlegend=True), row=3,col=1)
+        fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=f"<b>Daily New Cases {days_predict_new_cases} Days Prediction</b><br>r<sup>2</sup>={r_sq:0.5f}<br>y={m:0.3f}x+{b0:0.1f} where x<sub>0</sub>={xfinal[0]}<br>y=0 / no new cases predicted @ {daycross}", line=dict(color='gray', width=2), showlegend=True), row=3,col=1)
         # half_index = int(len(xfinal)/2)
         # # text for the fit
         # text_string=f"y={m:0.2f}x+{b0:0.0f} (r^2={r_sq:0.5f})"
