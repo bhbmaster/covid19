@@ -34,6 +34,7 @@ predict_days_max=15
 valid_chars = "-_.%s%s" % (string.ascii_letters, string.digits)
 TESTDATA = "TestData.json"
 moving_average_samples = 7 # 7 day moving average for daily new cases and daily deaths
+days_predict_new_cases = 30
 
 ### classes ###
 
@@ -331,11 +332,13 @@ def graph2div(country_class,graph_type):
     fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_cases_list, name="Daily New Cases", showlegend=True),row=3,col=1)
     xavg,yavg = avgN(moving_average_samples,i.date_list,i.delta_cases_list)
     fig.add_trace(go.Scatter(x=xavg, y=yavg, name=f"Daily New Cases ({moving_average_samples} Day Moving Average)", showlegend=True),row=3,col=1)
-    success,xfinal,yfinal,fita,fitb,fitc = i.lastXdayscurvefit(yavg,30)
+    ## success,xfinal,yfinal,fita,fitb,fitc = i.lastXdayscurvefit(yavg,days_predict_new_cases)
+    success, xfinal, yfinal, r_sq, m, b0 = i.lastXdayslinearpredict(yavg, days_predict_new_cases)
     # print(f"DEBUG: fit -> {success=} {fita=} {fitb=} {fitc=}")
     # print(f"DEBUG: fit -> {xfinal=} {yfinal=}")
     if success:
-        fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=f"Daily New Cases Prediction Curve Fit (y={fita:.3f}x^2+{fitb:.3f}x+{fitc:.0f})", line=dict(color='gray', width=2), showlegend=True), row=3,col=1)
+        ## fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=f"Daily New Cases Prediction Curve Fit (y={fita:.3f}x^2+{fitb:.3f}x+{fitc:.0f})", line=dict(color='gray', width=2), showlegend=True), row=3,col=1)
+        fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=f"Daily New Cases Prediction Linear Fit (r^2={round(r_sq,sigdigit)})", line=dict(color='gray', width=2), showlegend=True), row=3,col=1)
     # ...  daily deaths ... #
     fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_deaths_list, name="Daily New Deaths", showlegend=True),row=3,col=2)
     xavg,yavg = avgN(moving_average_samples,i.date_list,i.delta_deaths_list)
