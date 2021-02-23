@@ -18,10 +18,10 @@ from scipy.optimize import curve_fit
 # By: Kostia Khlebopros
 # Site: http://www.infotinks.com/coronavirus-dashboard-covid19-py/
 # Github: https://github.com/bhbmaster/covid19
-# Last Update: 2021-02-23
 
 ### constants ###
 
+Version = "2021.02.23"  # Last Update
 SITE="https://pomber.github.io/covid19/timeseries.json"
 start_time = datetime.datetime.now()
 start_time_string = start_time.strftime("%Y-%m-%d %H:%M:%S")
@@ -337,8 +337,16 @@ def graph2div(country_class,graph_type):
     # print(f"DEBUG: fit -> {success=} {fita=} {fitb=} {fitc=}")
     # print(f"DEBUG: fit -> {xfinal=} {yfinal=}")
     if success:
+        # predict when cross y=0
+        y_to_cross = 0.0 # target y to cross (find which X equals at the Y value)
+        x_cross1 = (y_to_cross - float(b0)) / float(m)   # y=mx+b   ->   x=(y-b)/m
+        x_cross1_int=int(x_cross1)  # convert to int value (as we need 1 day or 3 day from day0 type of thing)
+        day0=xfinal[0]  # this is x0 essentially and its a date
+        day0dt = datetime.datetime.strptime(day0, "%Y-%m-%d")  # convert to date time date so we can add x_cross to it
+        daycrossdt=day0dt+datetime.timedelta(days=int(x_cross1_int))  # get the date when we cross by adding x_cross to day0
+        daycross = daycrossdt.strftime("%Y-%m-%d")  # convert to easy to understand text
         ## fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=f"Daily New Cases Prediction Curve Fit (y={fita:.3f}x^2+{fitb:.3f}x+{fitc:.0f})", line=dict(color='gray', width=2), showlegend=True), row=3,col=1)
-        fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=f"<b>Daily New Cases {days_predict_new_cases} Days Prediction</b><br>y={m:0.3f}x+{b0:0.1f}<br>x0='{xfinal[0]}', r<sup>2</sup>={r_sq:0.5f}", line=dict(color='gray', width=2), showlegend=True), row=3,col=1)
+        fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=f"<b>Daily New Cases {days_predict_new_cases} Days Prediction</b><br>r<sup>2</sup>={r_sq:0.5f}<br>y={m:0.3f}x+{b0:0.1f} where x<sub>0</sub>='{day0}'<br>y=0 / no new cases predicted @ {daycross}", line=dict(color='gray', width=2), showlegend=True), row=3,col=1)
         # half_index = int(len(xfinal)/2)
         # # text for the fit
         # text_string=f"y={m:0.2f}x+{b0:0.0f} (r^2={r_sq:0.5f})"
@@ -405,7 +413,7 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
         <p>* <b>Note:</b> Peak active case prediction date is calculated using a linear regression fit on "active cases ratio" and examing its past X days values to see when it crosses 1.0.</p>
         <p>* An r<sup>2</sup> closer to 1.0 means a better prediction.</p>
         <p>* Ignore predictions with past dates.</p>
-        <p>* <b>Note:</b> Daily new cases moving average has a linear regression fit calculated from previous {days_predict_new_cases} days and extending same days into the future. This is to help estimate daily new cases trend. Of course, the real trend is not linear, so this is strictly a prediction. The predicted line has its r<sup>2</sup> fit value and y=mx+b equation annotated on the plot. x is number of days since x0, which is provided in the label. y is predicted daily new cases (technically its the predicted moving average of the daily new cases).</p>
+        <p>* <b>Note:</b> Daily new cases moving average has a linear regression fit calculated from previous {days_predict_new_cases} days and extending same days into the future. This is to help estimate daily new cases trend. Of course, the real trend is not linear, so this is strictly a prediction. The predicted line has its r<sup>2</sup> fit value and y=mx+b equation shown in the legend. x is number of days since x<sub>0</sub>, which is provided in the label. y is predicted daily new cases (technically its the predicted moving average of the daily new cases). Finally, we predict the day we reach 0 daily new cases; also shown on the legend.</p>
         <p>* <b>Note:</b> The plotly graphs are interactive. To have better you can click on the "Normal" or "Log" link for each country to see it's own interactive plot.</p>
         <p>There you can control control which information is plotted by clicking & double clicking on the items in the legend to isolate or disable that data.</p>
         <p>* <b>Note:</b> The United States, US, recovery numbers are all nullfied to 0 on 2020-12-15 and onward. This was a decision made by the data source. More can be read here: <a href="https://github.com/CSSEGISandData/COVID-19/issues/3464">Github Issue</a> and <a href="https://covidtracking.com/about-data/faq#why-have-you-stopped-reporting-national-recoveries">Reasoning</a>.</p>
@@ -566,12 +574,12 @@ def save_pickle(object_to_save,filename_prefix,time_string):
 
 def main():
 
-    print("Covid19plot.py")
-    print("--------------")
+    print(f"Covid19plot.py - v{Version}")
+    print("------------------------------")
 	
     #### - GET DATA - METHOD 1 - START - ####
     # download json data (comment out this or load json; only have one)
-    print(f"- Downloading json from {SITE}. (please wait)")
+    print(f"- Downloading json from {SITE} (please wait)")
     with urllib.request.urlopen(SITE) as url:
         data=json.loads(url.read().decode())
     if not data:
