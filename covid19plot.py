@@ -458,10 +458,10 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
         <table border="1" cellpadding="5">
         <tbody>
         <tr>
-        <td>Date: {country.last_date}</td>
-        <td>Last Value</td>
-        <td>Last Delta Change</td>
-        <td>Last Ratio Change</td>
+        <td><b>Date: {country.last_date}</b></td>
+        <td><b>Current Value</b></td>
+        <td><b>Difference From Previous Day</b> (Last Delta Change)</td>
+        <td><b>Ratio Difference From Previous Day</b> (Last Ratio Change)</td>
         </tr>
         <tr>
         <td>Cases</td>
