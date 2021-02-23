@@ -305,16 +305,16 @@ def graph2div(country_class,graph_type):
     full_path_html=f"html-plots/{i.countryposix}-plot-{the_type_string}.html"
     fig = make_subplots(rows=3, cols=2) # used to be  make_subplots(rows=2, cols=2)
     fig.update_layout(title=f"COVID19 - {country_name}")
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.cases_list, name="Cases", line=dict(color='firebrick', width=2),showlegend=True),row=1,col=1)
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.deaths_list, name="Deaths", line=dict(color='red', width=2),showlegend=True),row=1,col=1)
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.recovered_list, name="Recovered", line=dict(color='green', width=2),showlegend=True),row=1,col=1)
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.active_list, name="Active Cases (Cases - Deaths & Recovered)", line=dict(color='purple', width=2),showlegend=True),row=1,col=1)
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_cases_list, name="Ratio Diff Cases", showlegend=True),row=2,col=1)
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_active_list, name="Ratio Diff Active Cases", showlegend=True),row=2,col=1)
+    fig.add_trace(go.Scatter(x=i.date_list, y=i.cases_list, name="<b>Cases</b>", line=dict(color='firebrick', width=2),showlegend=True),row=1,col=1)
+    fig.add_trace(go.Scatter(x=i.date_list, y=i.deaths_list, name="<b>Deaths</b>", line=dict(color='red', width=2),showlegend=True),row=1,col=1)
+    fig.add_trace(go.Scatter(x=i.date_list, y=i.recovered_list, name="<b>Recovered</b>", line=dict(color='green', width=2),showlegend=True),row=1,col=1)
+    fig.add_trace(go.Scatter(x=i.date_list, y=i.active_list, name="<b>Active Cases</b> (Cases - Deaths & Recovered)", line=dict(color='purple', width=2),showlegend=True),row=1,col=1)
+    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_cases_list, name="<b>Ratio Diff Cases</b>", showlegend=True),row=2,col=1)
+    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_active_list, name="<b>Ratio Diff Active Cases</b>", showlegend=True),row=2,col=1)
     #fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_recovered_list, name="Ratio Diff Recovered", showlegend=True),row=2,col=1)
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_deaths_list, name="Ratio Diff Deaths", showlegend=True),row=2,col=1)
+    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_deaths_list, name="<b>Ratio Diff Deaths</b>", showlegend=True),row=2,col=1)
     # below - ratio prediction
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_active_list, name="Ratio Diff Active Cases", showlegend=True),row=2,col=2)
+    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_active_list, name="<b>Ratio Diff Active Cases</b>", showlegend=True),row=2,col=2)
     ### # ratio prediction - start
     ### for ds in range(predict_days_min,predict_days_max+1):
     ###     success, xfinal, yfinal, r_sq, m, b0 = i.lastXdayslinearpredict(i.delta_ratio_active_list, ds)
@@ -323,39 +323,39 @@ def graph2div(country_class,graph_type):
     ###         fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=f"Past {ds} day Linear Regression Fit (r^2={round(r_sq,sigdigit)})", line=dict(width=1), showlegend=True), row=2,col=2)
     ### # ratio prediction - end
     # new plot
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.death_percent_list, name="Death %", showlegend=True),row=1,col=2)
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.recovery_percent_list, name="Recovery %", showlegend=True),row=1,col=2)
+    fig.add_trace(go.Scatter(x=i.date_list, y=i.death_percent_list, name="<b>Death %</b>", showlegend=True),row=1,col=2)
+    fig.add_trace(go.Scatter(x=i.date_list, y=i.recovery_percent_list, name="<b>Recovery %</b>", showlegend=True),row=1,col=2)
     # fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_active_list, name="Delta Active Cases", showlegend=True),row=1,col=2) # doesn't show negative so not including
     # end new plot
     # new plot
     # ... daily new cases ... #
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_cases_list, name="Daily New Cases", showlegend=True),row=3,col=1)
+    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_cases_list, name="<b>Daily New Cases</b>", showlegend=True),row=3,col=1)
     xavg,yavg = avgN(moving_average_samples,i.date_list,i.delta_cases_list)
-    fig.add_trace(go.Scatter(x=xavg, y=yavg, name=f"Daily New Cases ({moving_average_samples} Day Moving Average)", showlegend=True),row=3,col=1)
+    fig.add_trace(go.Scatter(x=xavg, y=yavg, name=f"<b>Daily New Cases Moving Average</b> ({moving_average_samples} Day)</b>", showlegend=True),row=3,col=1)
     ## success,xfinal,yfinal,fita,fitb,fitc = i.lastXdayscurvefit(yavg,days_predict_new_cases)
     success, xfinal, yfinal, r_sq, m, b0 = i.lastXdayslinearpredict(yavg, days_predict_new_cases)
     # print(f"DEBUG: fit -> {success=} {fita=} {fitb=} {fitc=}")
     # print(f"DEBUG: fit -> {xfinal=} {yfinal=}")
     if success:
         ## fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=f"Daily New Cases Prediction Curve Fit (y={fita:.3f}x^2+{fitb:.3f}x+{fitc:.0f})", line=dict(color='gray', width=2), showlegend=True), row=3,col=1)
-        fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=f"Daily New Cases {days_predict_new_cases} Days Prediction", line=dict(color='gray', width=2), showlegend=True), row=3,col=1)
-        half_index = int(len(xfinal)/2)
-        # text for the fit
-        text_string=f"y={m:0.2f}x+{b0:0.0f} (r^2={r_sq:0.5f})"
-        color_text="purple"
-        fig.add_annotation(x=xfinal[half_index], y=yfinal[half_index],
-            text=text_string,
-            showarrow=True,
-            font=dict(
-                family="courier",
-                size=12,
-                color=color_text
-            ),
-            arrowhead=1, arrowsize=2, arrowcolor=color_text, arrowwidth=1, row=3,col=1)
+        fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=f"<b>Daily New Cases {days_predict_new_cases} Days Prediction</b><br>y={m:0.3f}x+{b0:0.1f}<br>x0='{xfinal[0]}', r<sup>2</sup>={r_sq:0.5f}", line=dict(color='gray', width=2), showlegend=True), row=3,col=1)
+        # half_index = int(len(xfinal)/2)
+        # # text for the fit
+        # text_string=f"y={m:0.2f}x+{b0:0.0f} (r^2={r_sq:0.5f})"
+        # color_text="purple"
+        # fig.add_annotation(x=xfinal[half_index], y=yfinal[half_index],
+        #     text=text_string,
+        #     showarrow=True,
+        #     font=dict(
+        #         family="courier",
+        #         size=12,
+        #         color=color_text
+        #     ),
+        #     arrowhead=1, arrowsize=2, arrowcolor=color_text, arrowwidth=1, row=3,col=1)
     # ...  daily deaths ... #
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_deaths_list, name="Daily New Deaths", showlegend=True),row=3,col=2)
+    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_deaths_list, name="<b>Daily New Deaths</b>", showlegend=True),row=3,col=2)
     xavg,yavg = avgN(moving_average_samples,i.date_list,i.delta_deaths_list)
-    fig.add_trace(go.Scatter(x=xavg, y=yavg, name=f"Daily New Deaths ({moving_average_samples} Day Moving Average)", showlegend=True),row=3,col=2)
+    fig.add_trace(go.Scatter(x=xavg, y=yavg, name=f"<b>Daily New Deaths Moving Average</b> ({moving_average_samples} Day)", showlegend=True),row=3,col=2)
     # end new plot
     fig.update_yaxes(type=the_type_fig,row=1,col=1)
     fig.update_yaxes(type=None,rangemode="tozero",row=2,col=1)
@@ -405,7 +405,7 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
         <p>* <b>Note:</b> Peak active case prediction date is calculated using a linear regression fit on "active cases ratio" and examing its past X days values to see when it crosses 1.0.</p>
         <p>* An r<sup>2</sup> closer to 1.0 means a better prediction.</p>
         <p>* Ignore predictions with past dates.</p>
-        <p>* <b>Note:</b> Daily new cases moving average has a linear regression fit calculated from previous {days_predict_new_cases} days and extending same days into the future. This is to help estimate daily new cases trend. Of course, the real trend is not linear, so this is strictly a prediction. The predicted line has its r^2 value and y=mx+b equation annotated on the plot.</p>
+        <p>* <b>Note:</b> Daily new cases moving average has a linear regression fit calculated from previous {days_predict_new_cases} days and extending same days into the future. This is to help estimate daily new cases trend. Of course, the real trend is not linear, so this is strictly a prediction. The predicted line has its r<sup>2</sup> fit value and y=mx+b equation annotated on the plot. x is number of days since x0, which is provided in the label. y is predicted daily new cases (technically its the predicted moving average of the daily new cases).</p>
         <p>* <b>Note:</b> The plotly graphs are interactive. To have better you can click on the "Normal" or "Log" link for each country to see it's own interactive plot.</p>
         <p>There you can control control which information is plotted by clicking & double clicking on the items in the legend to isolate or disable that data.</p>
         <p>* <b>Note:</b> The United States, US, recovery numbers are all nullfied to 0 on 2020-12-15 and onward. This was a decision made by the data source. More can be read here: <a href="https://github.com/CSSEGISandData/COVID-19/issues/3464">Github Issue</a> and <a href="https://covidtracking.com/about-data/faq#why-have-you-stopped-reporting-national-recoveries">Reasoning</a>.</p>
@@ -638,14 +638,14 @@ def main():
             break
 
     #### - DEBUG TEST DATA - START ####
-    # # For quicker runs - for tests: only work with China, US and Canada by creating new list only w/ those countries
-    # TestCountries = [ "China", "US", "Canada" ]
-    # test_list_of_countries = []
-    # print(f"* # of countries {len(TestCountries)} (modified for debug / testing)")
-    # for i in list_of_countries:
-    #     if i.country in TestCountries:
-    #         test_list_of_countries.append(i)
-    # list_of_countries = test_list_of_countries
+    # For quicker runs - for tests: only work with China, US and Canada by creating new list only w/ those countries
+    TestCountries = [ "China", "US", "Canada" ]
+    test_list_of_countries = []
+    print(f"* # of countries {len(TestCountries)} (modified for debug / testing)")
+    for i in list_of_countries:
+        if i.country in TestCountries:
+            test_list_of_countries.append(i)
+    list_of_countries = test_list_of_countries
     #### - DEBUG TEST DATA - END ####
 
     # now iterate thru all of the dates summing each country at the date
