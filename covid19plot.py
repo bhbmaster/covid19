@@ -163,6 +163,8 @@ class Country:
         # death + recovery %
         self.last_death_percent = entrylist[lasti].death_percent
         self.last_recovery_percent = entrylist[lasti].recovery_percent
+        # prediction of when we get 0 daily new cases (this is calculated later; but i guess if we refactor can bring it into this class)
+        self.predict_date_zero = None # calculated and set in graph2div, called from there and div2html
 
     # input list type, output x (date list) and y (values) and r^2 and m and b0. uses last X days to predict
     def lastXdayslinearpredict(self, list, days=10):
@@ -348,6 +350,7 @@ def graph2div(country_class,graph_type):
             daycross = daycrossdt.strftime("%Y-%m-%d")  # convert to easy to understand text
         else:
             daycross = None
+        i.predict_date_zero = daycross  # this variable doesn't exist in Country class, but in python you can create it regardless (we call it later when creating the HTML)
         ## fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=f"Daily New Cases Prediction Curve Fit (y={fita:.3f}x^2+{fitb:.3f}x+{fitc:.0f})", line=dict(color='gray', width=2), showlegend=True), row=3,col=1)
         fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=f"<b>Daily New Cases {days_predict_new_cases} Days Prediction</b><br>r<sup>2</sup>={r_sq:0.5f}<br>y={m:0.3f}x+{b0:0.1f} where x<sub>0</sub>='{xfinal[0]}'<br>y=0 / no new cases predicted @ {daycross}", line=dict(color='gray', width=2), showlegend=True), row=3,col=1)
         # half_index = int(len(xfinal)/2)
@@ -497,8 +500,11 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
             lp_recovered=round(country.last_recovery_percent,sigdigit_small)
         except:
             lp_recovered=country.last_recovery_percent
-        html += f"""<p>* Last percent <b>recovered</b> from all cases: {lp_recovered}%</p>
-        <p>* Last percent <b>dead</b> from all cases: {lp_deaths}%</p>\n"""
+        html += f"""<p>* Last percent <b>recovered</b> from all cases: <b>{lp_recovered}%</b></p>
+        <p>* Last percent <b>dead</b> from all cases: <b>{lp_deaths}%</b></p>\n"""
+        # below - active new cases prediction
+        html += f"<p>* Predict <b>0 New Daily Cases</b> date</b> using {days_predict_new_cases} day linear regression: <b>{country.predict_date_zero}</b></p>"
+        # above - active new cases prediction
         # below - ratio prediction
         predict_list=[]
         for pdays in range(predict_days_min,predict_days_max+1):
