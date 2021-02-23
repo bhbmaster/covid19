@@ -392,7 +392,7 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
         <p>* <b>Note:</b> Peak active case prediction date is calculated using a linear regression fit on "active cases ratio" and examing its past X days values to see when it crosses 1.0.</p>
         <p>* An r<sup>2</sup> closer to 1.0 means a better prediction.</p>
         <p>* Ignore predictions with past dates.</p>
-        <p>* <b>Note:</b> Daily new cases moving average has a linear regression fit calculated from previous {days_predict_new_cases} and extending {days_predict_new_cases} days into the future. This is to help estimate daily new cases trend. Of course, the real pattern is not linear, so it is merily a prediction.</p>
+        <p>* <b>Note:</b> Daily new cases moving average has a linear regression fit calculated from previous {days_predict_new_cases} days and extending same days into the future. This is to help estimate daily new cases trend. Of course, the real pattern is not linear, so it is merily a prediction.</p>
         <p>* <b>Note:</b> The plotly graphs are interactive. To have better you can click on the "Normal" or "Log" link for each country to see it's own interactive plot.</p>
         <p>There you can control control which information is plotted by clicking & double clicking on the items in the legend to isolate or disable that data.</p>
         <p>* <b>Note:</b> The United States, US, recovery numbers are all nullfied to 0 on 2020-12-15 and onward. This was a decision made by the data source. More can be read here: <a href="https://github.com/CSSEGISandData/COVID-19/issues/3464">Github Issue</a> and <a href="https://covidtracking.com/about-data/faq#why-have-you-stopped-reporting-national-recoveries">Reasoning</a>.</p>
