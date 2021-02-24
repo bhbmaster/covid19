@@ -13,9 +13,13 @@ Then places.sh uses those log files to get ordered list of most cases for each d
 
 - Places: http://www.infotinks.com/covid19/places.html
 
-*Requirements:* view requirements.txt to see python module requirements
+## Requirements
 
-* Tested with Python 3.7 and 3.9 - but probably works with Python 3.6 which introduced formatted strings which are used in this program. formatted strings are strigns like this: f"formatted strings {like} this".
+* View requirements.txt to see the required python modules
+
+* Tested with Python 3.7 and 3.9 - but probably works with Python 3.6 which introduced formatted strings which are used in this program. formatted strings are strigns like this: f"formatted strings {like} this"
+
+* Internet access (see Other Requirements below)
 
 ## Required Python Module
 
@@ -25,7 +29,7 @@ The required python modules can be installed using pip.
 
         pip install -r requirements.txt
 
-Or install the modules one by one using the commands below
+Or install the modules listed in `requirements.txt` one by one using the commands below:
 
 * plotly python module (used for plotting).
 
@@ -55,7 +59,7 @@ Or install the modules one by one using the commands below
 
 More info about the timeseries is available directly from the github address: https://github.com/pomber/covid19
 
-## Running The Program - Generating The Output Data
+## Execute Program - Running The Program - Generating The Output Data
 
 Just run `covid19plot.py` with `python3.7` or newer, that will gather data, parse it and generate directory html_plots/ and dump 2 graphs for each country (normal y axes and log y axes) in dir. As Total worldwide cases/recovery/deaths is not provided in the json time series, the script manually calculates from the data for each day by summing through all of the countries. It will provide both plots for TOTAL in the same dir as well. It then creates covid19-log.html and covid19-normal.html in the root directory for all of the countries, TOTAL at the top, then sorted by number of cases.
 
@@ -82,4 +86,4 @@ First create a python3 virtual environment and install the modules like so:
         source env/bin/activate
         pip install -r requirements.txt
 
-Then run it using method above.
+Then run the script using the above execute instructions.
