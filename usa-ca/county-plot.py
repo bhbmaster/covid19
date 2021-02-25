@@ -60,7 +60,8 @@ def graph():
     print(f"* {county} pop={pop} last_x_value={avgx[-1]} last_{ndays}_day_avg_y_value={avgy[-1]:0.2f}")
     fig.update_layout(title=f"California Counties Daily New Cases Per {PER:,} ({ndays} day Moving Average)")
     visible1 = "legendonly" if not county in visible_counties else None
-    legendtext=f"<b>{county}</b> ({pop:,}) <b>{avgy[-1]:0.2f}</b> new cases per {PER_TEXT} on {avgx[-1]}"
+    # legendtext=f"<b>{county}</b> ({pop:,}) <b>{avgy[-1]:0.2f}</b> new cases per {PER_TEXT} on {avgx[-1]}"
+    legendtext=f"<b>{county}</b> (pop {pop:,}) is <b>{avgy[-1]:0.2f}</b> on {avgx[-1]}"
     # fig.add_trace(go.Scatter(x=avgx, y=avgy, name=legendtext, showlegend=True,visible=visible1),row=1,col=1)
     fig.add_trace(go.Scatter(x=avgx, y=avgy, name=legendtext, showlegend=True,visible=visible1))
 
