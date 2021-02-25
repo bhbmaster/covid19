@@ -4,5 +4,4 @@ lxml
 htmlmin
 sklearn
 numpy
-pickle
 pandas
