@@ -25,6 +25,13 @@ top10 = cpops.head(SHOW_TOP_NUMBER)["County"]
 visible_counties = top10.values.tolist() # essentially its ['Los Angeles', 'San Diego', 'Orange', 'Riverside', 'San Bernardino', 'Santa Clara', 'Alameda', 'Sacramento', 'Contra Costa', 'Fresno', 'Kern', 'San Francisco']
 print(f"visible_counties={visible_counties}")
 
+# list of tuples [(county,pop) (county,pop)]
+cpops_county_list=cpops["County"].values.tolist()
+cpops_pop_list=cpops["Population"].values.tolist()
+cpop_zip=zip(cpops_county_list,cpops_pop_list)
+cpop_list=list(cpop_zip)
+cpop_list.sort(key=lambda x:x[0]) # sort by first field county so alphabet
+
 ### FUNCTIONS ###
 
 # * moving average
@@ -64,7 +71,7 @@ def graph():
 fig = go.Figure() 
 
 # * consider each county and trace it on plotly
-for county,pop in zip(cpops["County"].values.tolist(),cpops["Population"].values.tolist()):
+for county,pop in cpop_list:
     graph()
 
 # * plotly generate html output generation
