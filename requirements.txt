@@ -5,3 +5,4 @@ htmlmin
 sklearn
 numpy
 pickle
+pandas

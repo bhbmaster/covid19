@@ -86,3 +86,18 @@ pip install -r requirements.txt
 ```
 
 Then run the script using the above execute instructions.
+
+## Errors
+
+Possible errors that might be seen:
+
+### Missing _bz2 On Linux
+
+If you get an error during running `usa-ca/county-plot.py` which talks about missing _bz2 module. Then you will need install a linux package and compile python again & you will need to reinstall the python modules with pip.
+
+* Error notes: https://stackoverflow.com/questions/12806122/missing-python-bz2-module
+* Compiling new python: https://linuxize.com/post/how-to-install-python-3-9-on-debian-10/
+
+### Other Errors
+
+Might need to google your way around or contact me via "Issues" tab
