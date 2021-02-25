@@ -18,7 +18,13 @@ $PYTHON covid19plot.py >> run-$DATE.out 2>&1
 echo "`date` - end" | tee -a run.timelog >> run-$DATE.out
 # run places
 ./places.sh
+# notify main log above to do california plots
+echo "`date` - starting california counties plot" >> run-$DATE.out
 # run california plots
 cd "$DIR"/usa-ca
 $PYTHON county-plot.py >> run-$DATE.out 2>&1
+# notify main log we are done
+cd "$DIR"
+echo "`date` - finished california counties plot - completely done" >> run-$DATE.out
+# exit
 exit 0

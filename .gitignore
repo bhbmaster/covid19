@@ -16,3 +16,4 @@ env/
 test-*
 usa-ca/*html
 usa-ca/notes-*
+usa-ca/run-*.out
