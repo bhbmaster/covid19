@@ -6,7 +6,7 @@
 # How to run: adjust the cd parameter to root location of project + and use python 3.7 (or newer) to call the script
 # I call this from crontab to generate my graphs for infotinks.com (runs every day at 00:05, 06:05, 12:05 and 18:05):
 # 5 0,6,12,18 * * * /var/www/covid19/run.sh
-PYTHON="python3.7"
+PYTHON="python3.9"
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 cd "$DIR"
