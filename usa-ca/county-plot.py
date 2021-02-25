@@ -42,7 +42,7 @@ def graph():
     x=c[c.county == county]["date"].values
     y=c[c.county == county]["newcountconfirmed"].values / pop * 100_000
     avgx,avgy=avgN(ndays,x.tolist(),y.tolist())
-    print(f"{county} {pop=} lastvalue{ndays}dayavg={avgy[-1]:0.2f}")
+    print(f"{county} pop={pop} lastvalue{ndays}dayavg={avgy[-1]:0.2f}")
     fig.update_layout(title=f"California Counties Daily New Cases ({ndays} day Moving Average)")
     fig.add_trace(go.Scatter(x=avgx, y=avgy, name=county, showlegend=True),row=1,col=1)
 

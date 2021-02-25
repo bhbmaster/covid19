@@ -246,7 +246,7 @@ class Country:
             model = curve_fit(fit_func,np.array(x00),np.array(y0))
             # get parms from the fit
             [ a, b, c ] = model[0]
-            # print(f"DEBUGED: {a=} {b=} {c=}")
+            # print(f"DEBUGED: a={a} b={b} c={c}")
             xpred0=[]
             for i in range(len(x0)*2): # how far out we predict (as many days forward as we looked back)
                 xpred0.append(i)
@@ -336,8 +336,8 @@ def graph2div(country_class,graph_type):
     fig.add_trace(go.Scatter(x=xavg, y=yavg, name=f"<b>Daily New Cases Moving Average</b> ({moving_average_samples} Day)</b>", showlegend=True),row=3,col=1)
     ## success,xfinal,yfinal,fita,fitb,fitc = i.lastXdayscurvefit(yavg,days_predict_new_cases)
     success, xfinal, yfinal, r_sq, m, b0 = i.lastXdayslinearpredict(yavg, days_predict_new_cases)
-    # print(f"DEBUG: fit -> {success=} {fita=} {fitb=} {fitc=}")
-    # print(f"DEBUG: fit -> {xfinal=} {yfinal=}")
+    # print(f"DEBUG: fit -> success={success} fita={fita} fitb={fitb} fitc={fitc}")
+    # print(f"DEBUG: fit -> xfinal={xfinal} yfinal={yfinal}")
     if success:
         # predict when cross y=0
         if m != 0: # don't calc crossing if slope is 0 or flat, as its not existant
