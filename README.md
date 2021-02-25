@@ -2,7 +2,7 @@
 
 The public facing version of this site sits on my personal blog at **infotinks.com**: http://www.infotinks.com/coronavirus-dashboard-covid19-py/
 
-covid19plot.py produces the following graphs:
+**covid19plot.py produces the following graphs:**
 
 - Normal Axes plot of every country in one file: http://www.infotinks.com/covid19/covid19-normal.html
 
@@ -13,11 +13,17 @@ covid19plot.py produces the following graphs:
 Example: 
 
 ```
-./html-plots/US-plot-NORMAL.html
-./html-plots/US-plot-LOG.html
+html-plots/US-plot-NORMAL.html
+html-plots/US-plot-LOG.html
 ```
 
-I use a wrapper script `run.sh` to execute covid19plot.py which generates both of the html files to same directory - while also logging any terminal output to a log file, `run-$DATE.out` (this output is used by a log parser tool I call places.sh).
+**usa-ca/county-plot.py produces the following graphs:**
+
+- Daily New Cases in all California countys plotted to `usa-ca/county-output.html`
+
+## Wrapper run.sh Scrip & places.sh
+
+I use a wrapper script `run.sh` to execute covid19plot.py which generates both of the html files to same directory - while also logging any terminal output to a log file, `run-$DATE.out` (this output is used by a log parser tool I call places.sh). It also runs `usa-ca/county-plot.py` which generates `usa-ca/county-output.html` and redirects its logout to `usa-ca/run-$DATE.out`
 
 Then my `places.sh` uses those log files to get ordered list of most cases for each day. For any given date, one can see which country ranks amongst highest cases. The output is saved in this html file:
 

@@ -21,7 +21,7 @@ from scipy.optimize import curve_fit
 
 ### constants ###
 
-Version = "21.02.23"  # Last Update YY-MM-DD
+Version = "21.02.24"  # Last Update YY-MM-DD
 SITE="https://pomber.github.io/covid19/timeseries.json"
 start_time = datetime.datetime.now()
 start_time_string = start_time.strftime("%Y-%m-%d %H:%M:%S")
@@ -413,6 +413,7 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
         <h2>Covid19.py Plots v{Version} ({type_title})</h2>
         <p><b>Last Plot Update:</b> {time_string}</p>
         <p><a href='covid19-{other_type_title.lower()}.html'>Click here to see {other_type_title} plots instead</a></p>
+        <p><a href='usa-ca/county-output.html'>Click here to see California's Counties Daily New Cases plots instead</a></p>
         <p>* <b>More Info:</b> available on <a href="https://github.com/bhbmaster/covid19">GitHub</a> and <a href="http://www.infotinks.com/coronavirus-dashboard-covid19-py/">infotinks.com</a></p>
         <p>* <b>Delta</b> is change from previous day ( + is growth; - is reduction )</p>
         <p>* <b>Ratio</b> is % change from previous day ( 1 or higher is growth; 0 to 1 is reduction )</p>
