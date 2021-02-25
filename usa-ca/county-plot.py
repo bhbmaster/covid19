@@ -1,7 +1,7 @@
 import pandas as pd
 import plotly.graph_objects as go
-from plotly.subplots import make_subplots
 import plotly.offline.offline
+# from plotly.subplots import make_subplots
 
 ### INIT ###
 
@@ -27,7 +27,7 @@ print(f"visible_counties={visible_counties}")
 
 ### FUNCTIONS ###
 
-# moving average
+# * moving average
 def avgN(N,x,y):
     # example:
     # y = [1, 2, 3, 7, 9]  # numbers
@@ -45,27 +45,33 @@ def avgN(N,x,y):
     # *** return tuple
     return (mov_x,mov_y)
 
-# graph
+# * graph
 def graph():
     x=c[c.county == county]["date"].values
     y=c[c.county == county]["newcountconfirmed"].values / pop * PER
     avgx,avgy=avgN(ndays,x.tolist(),y.tolist())
-    print(f"* {county} pop={pop} lastxvalue={avgx[-1]} lastvalue{ndays}dayavg={avgy[-1]:0.2f}")
+    print(f"* {county} pop={pop} last_x_value={avgx[-1]} last_{ndays}_day_avg_y_value={avgy[-1]:0.2f}")
     fig.update_layout(title=f"California Counties Daily New Cases Per {PER:,} ({ndays} day Moving Average)")
     visible1 = "legendonly" if not county in visible_counties else None
     legendtext=f"<b>{county}</b> ({pop:,}) <b>{avgy[-1]:0.2f}</b> new cases per {PER_TEXT} on {avgx[-1]}"
-    fig.add_trace(go.Scatter(x=avgx, y=avgy, name=legendtext, showlegend=True,visible=visible1),row=1,col=1)
+    # fig.add_trace(go.Scatter(x=avgx, y=avgy, name=legendtext, showlegend=True,visible=visible1),row=1,col=1)
+    fig.add_trace(go.Scatter(x=avgx, y=avgy, name=legendtext, showlegend=True,visible=visible1))
 
 ### MAIN ###
 
-# plotly init
-fig = make_subplots(rows=1, cols=1)
+# * plotly init
+# fig = make_subplots(rows=1, cols=1)
+fig = go.Figure() 
 
-# consider each county and trace it on plotly
+# * consider each county and trace it on plotly
 for county,pop in zip(cpops["County"].values.tolist(),cpops["Population"].values.tolist()):
     graph()
 
-# plotly
+# * plotly generate html output generation
 fig.write_html(output_html,auto_open=False)
+
+# * html div generation (not used)
 div = plotly.offline.offline.plot(fig, show_link=False, include_plotlyjs=False, output_type='div')
-print(f"len(div)={len(div)}")
+print(f"len(div)={len(div)}") # div not used
+
+### END
