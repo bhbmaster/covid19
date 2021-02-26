@@ -3,6 +3,7 @@ import plotly.graph_objects as go
 import plotly.offline.offline
 from plotly.subplots import make_subplots
 from os import path
+import plotly.express as px # for themes/templates
 
 ### INIT ###
 
@@ -12,9 +13,13 @@ output_html="county-output.html"
 PER=100000 # we should per 100000 aka 100K
 PER_TEXT="100K"
 SHOW_TOP_NUMBER=12 # how many counties to have enabled when graph shows (others can be toggled on interactively)
+ThemeFile = "../PLOTLY_THEME"
 
 # Get Version
 Version = open(VersionFile,"r").readline().rstrip().lstrip() if path.exists(VersionFile) else "NA"
+
+# Get Theme
+Theme = open(ThemeFile,"r").readline().rstrip().lstrip() if path.exists(ThemeFile) else "none"
 
 # data input
 url_data="https://data.ca.gov/dataset/590188d5-8545-4c93-a9a0-e230f0db7290/resource/926fd08f-cc91-4828-af38-bd45de97f8c3/download/statewide_cases.csv"
@@ -91,11 +96,10 @@ def graph():
     legendtext=f"<b>{county}</b> (pop {pop:,}) is <b>{y[-1]:0.2f}</b> on {x[-1]}"
     fig.add_trace(go.Scatter(x=x, y=y, name=legendtext, showlegend=False,legendgroup=county,visible=visible1),row=2,col=2)
 
-
 ### MAIN ###
 
 # * plotly init
-print("- plotting start")
+print(f"- plotting start (theme: {Theme})")
 subplot_titles = (f"Daily New Cases per {PER_TEXT} {ndays}-day Moving Average",
                   f"Total Cases per {PER_TEXT}",
                   f"Daily New Deaths per {PER_TEXT} {ndays}-day Moving Average",
@@ -108,7 +112,7 @@ spacing=0.05
 fig = make_subplots(rows=2, cols=2, shared_xaxes=True, subplot_titles=subplot_titles, column_widths=[bigportion, smallportion],horizontal_spacing=spacing,vertical_spacing=spacing) # shared_xaxes to maintain zoom on all
 random_county = cpops_county_list[0] # we picked top one which is LA (most populous at the top)
 last_x = c[c.county == random_county]["date"].values.tolist()[-1]
-fig.update_layout(title=f"<b>California Counties Covid19 Stats</b> - Last Update {last_x} (v{Version})") # main title
+fig.update_layout(title=f"<b>California Counties Covid19 Stats</b> - Last Update {last_x} (v{Version})",template=Theme,hovermode='x unified') # main title & theme
 # fig = go.Figure() # then graph like this: fig.add_trace(go.Scatter(x=avgx, y=avgy, name=legendtext, showlegend=True,visible=visible1))
 
 # * consider each county and trace it on plotly

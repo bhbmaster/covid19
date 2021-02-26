@@ -37,6 +37,8 @@ valid_chars = "-_.%s%s" % (string.ascii_letters, string.digits)
 TESTDATA = "TestData.json"
 moving_average_samples = 7 # 7 day moving average for daily new cases and daily deaths
 days_predict_new_cases = 30
+ThemeFile = "PLOTLY_THEME"
+Theme = open(ThemeFile,"r").readline().rstrip().lstrip() if path.exists(ThemeFile) else "none"
 
 ### classes ###
 
@@ -312,7 +314,7 @@ def graph2div(country_class,graph_type):
     f"Daily Cases",f"Daily Deaths")
     spacing = 0.035
     fig = make_subplots(rows=3, cols=2, horizontal_spacing=spacing, vertical_spacing=spacing, subplot_titles=subplot_titles,shared_xaxes=True) # used to be  make_subplots(rows=2, cols=2)
-    fig.update_layout(title=f"<b>{country_name} Covid19 Stats</b> - Last Update {i.last_date} - covid19plot.py v{Version}")
+    fig.update_layout(title=f"<b>{country_name} Covid19 Stats</b> - Last Update {i.last_date} - covid19plot.py v{Version}",template=Theme,hovermode='x unified')
     fig.add_trace(go.Scatter(x=i.date_list, y=i.cases_list, name="<b>Cases</b>", line=dict(color='firebrick', width=2),showlegend=True),row=1,col=1)
     fig.add_trace(go.Scatter(x=i.date_list, y=i.deaths_list, name="<b>Deaths</b>", line=dict(color='red', width=2),showlegend=True),row=1,col=1)
     fig.add_trace(go.Scatter(x=i.date_list, y=i.recovered_list, name="<b>Recovered</b>", line=dict(color='green', width=2),showlegend=True),row=1,col=1)
@@ -593,6 +595,7 @@ def main():
 
     print(f"Covid19plot.py - v{Version}")
     print("------------------------------")
+    print(f"- Plot theme: {Theme}")
 	
     #### - GET DATA - METHOD 1 - START - ####
     # download json data (comment out this or load json; only have one)

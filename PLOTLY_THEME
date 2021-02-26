@@ -1,0 +1,4 @@
+seaborn
+# only first line is read to select theme. here are the template / theme options:
+# ["plotly", "plotly_white", "plotly_dark", "ggplot2", "seaborn", "simple_white", "none"]
+# more info: https://plotly.com/python/templates/
