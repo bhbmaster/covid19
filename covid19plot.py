@@ -23,7 +23,7 @@ from os import path
 ### constants ###
 
 VersionFile = "VERSION"  # Last Update YY.MM.DD
-Version = open(VersionFile,"r").readline() if path.exists(VersionFile) else "NA"
+Version = open(VersionFile,"r").readline().rstrip().lstrip() if path.exists(VersionFile) else "NA"
 SITE="https://pomber.github.io/covid19/timeseries.json"
 start_time = datetime.datetime.now()
 start_time_string = start_time.strftime("%Y-%m-%d %H:%M:%S")
@@ -307,18 +307,22 @@ def graph2div(country_class,graph_type):
         the_type_fig=None
     country_name=i.country
     full_path_html=f"html-plots/{i.countryposix}-plot-{the_type_string}.html"
-    fig = make_subplots(rows=3, cols=2) # used to be  make_subplots(rows=2, cols=2)
-    fig.update_layout(title=f"COVID19 - {country_name}")
+    subplot_titles = (f"Cases, Deaths, Recovered, Active",f"Death & Recovery %",
+    f"Ratio Δ of Cases, Deaths, Active",f"Ratio Δ of Active",
+    f"Daily Cases",f"Daily Deaths")
+    spacing = 0.035
+    fig = make_subplots(rows=3, cols=2, horizontal_spacing=spacing, vertical_spacing=spacing, subplot_titles=subplot_titles,shared_xaxes=True) # used to be  make_subplots(rows=2, cols=2)
+    fig.update_layout(title=f"<b>{country_name} Covid19 Stats</b> - Last Update {i.last_date} - covid19plot.py v{Version}")
     fig.add_trace(go.Scatter(x=i.date_list, y=i.cases_list, name="<b>Cases</b>", line=dict(color='firebrick', width=2),showlegend=True),row=1,col=1)
     fig.add_trace(go.Scatter(x=i.date_list, y=i.deaths_list, name="<b>Deaths</b>", line=dict(color='red', width=2),showlegend=True),row=1,col=1)
     fig.add_trace(go.Scatter(x=i.date_list, y=i.recovered_list, name="<b>Recovered</b>", line=dict(color='green', width=2),showlegend=True),row=1,col=1)
     fig.add_trace(go.Scatter(x=i.date_list, y=i.active_list, name="<b>Active Cases</b> (Cases - Deaths & Recovered)", line=dict(color='purple', width=2),showlegend=True),row=1,col=1)
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_cases_list, name="<b>Ratio Diff Cases</b>", showlegend=True),row=2,col=1)
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_active_list, name="<b>Ratio Diff Active Cases</b>", showlegend=True),row=2,col=1)
-    #fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_recovered_list, name="Ratio Diff Recovered", showlegend=True),row=2,col=1)
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_deaths_list, name="<b>Ratio Diff Deaths</b>", showlegend=True),row=2,col=1)
+    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_cases_list, name="<b>Ratio Δ Cases</b>", showlegend=True),row=2,col=1)
+    # fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_active_list, name="<b>Ratio Δ Active Cases</b>", showlegend=True),row=2,col=1)
+    #fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_recovered_list, name="Ratio Δ Recovered", showlegend=True),row=2,col=1)
+    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_deaths_list, name="<b>Ratio Δ Deaths</b>", showlegend=True),row=2,col=1)
     # below - ratio prediction
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_active_list, name="<b>Ratio Diff Active Cases</b>", showlegend=True),row=2,col=2)
+    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_active_list, name="<b>Ratio Δ Active Cases</b>", showlegend=True),row=2,col=2)
     ### # ratio prediction - start
     ### for ds in range(predict_days_min,predict_days_max+1):
     ###     success, xfinal, yfinal, r_sq, m, b0 = i.lastXdayslinearpredict(i.delta_ratio_active_list, ds)

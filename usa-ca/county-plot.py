@@ -14,7 +14,7 @@ PER_TEXT="100K"
 SHOW_TOP_NUMBER=12 # how many counties to have enabled when graph shows (others can be toggled on interactively)
 
 # Get Version
-Version = open(VersionFile,"r").readline() if path.exists(VersionFile) else "NA"
+Version = open(VersionFile,"r").readline().rstrip().lstrip() if path.exists(VersionFile) else "NA"
 
 # data input
 url_data="https://data.ca.gov/dataset/590188d5-8545-4c93-a9a0-e230f0db7290/resource/926fd08f-cc91-4828-af38-bd45de97f8c3/download/statewide_cases.csv"
@@ -83,13 +83,13 @@ def graph():
     y=orgy/pop*PER
     print(f"{FRONTSPACE}totalcountconfirmed \t x = {x[-1]} \t org_y = {orgy[-1]:0.0f} \t y_per{PER_TEXT} = {y[-1]:0.2f}")
     legendtext=f"<b>{county}</b> (pop {pop:,}) is <b>{y[-1]:0.2f}</b> on {x[-1]}"
-    fig.add_trace(go.Scatter(x=x, y=y, name=legendtext, showlegend=False,legendgroup=county,visible=visible1),row=3,col=1)
+    fig.add_trace(go.Scatter(x=x, y=y, name=legendtext, showlegend=False,legendgroup=county,visible=visible1),row=1,col=2)
     # -- total deaths per 100K -- #
     orgy=c[c.county == county]["totalcountdeaths"].values 
     y=orgy/pop*PER
     print(f"{FRONTSPACE}totalcountdeaths    \t x = {x[-1]} \t org_y = {orgy[-1]:0.0f} \t y_per{PER_TEXT} = {y[-1]:0.2f}")
     legendtext=f"<b>{county}</b> (pop {pop:,}) is <b>{y[-1]:0.2f}</b> on {x[-1]}"
-    fig.add_trace(go.Scatter(x=x, y=y, name=legendtext, showlegend=False,legendgroup=county,visible=visible1),row=4,col=1)
+    fig.add_trace(go.Scatter(x=x, y=y, name=legendtext, showlegend=False,legendgroup=county,visible=visible1),row=2,col=2)
 
 
 ### MAIN ###
@@ -97,13 +97,18 @@ def graph():
 # * plotly init
 print("- plotting start")
 subplot_titles = (f"Daily New Cases per {PER_TEXT} {ndays}-day Moving Average",
-                  f"Daily New Deaths per {PER_TEXT} {ndays}-day Moving Average",
                   f"Total Cases per {PER_TEXT}",
+                  f"Daily New Deaths per {PER_TEXT} {ndays}-day Moving Average",
                   f"Total Deaths per {PER_TEXT}")
-fig = make_subplots(rows=4, cols=1, shared_xaxes=True, subplot_titles=subplot_titles) # shared_xaxes to maintain zoom on all
+# spacings for subplots
+bigportion = 0.618 # ratio of screen space for left plots
+smallportion = 1-bigportion
+spacing=0.05
+# subplots
+fig = make_subplots(rows=2, cols=2, shared_xaxes=True, subplot_titles=subplot_titles, column_widths=[bigportion, smallportion],horizontal_spacing=spacing,vertical_spacing=spacing) # shared_xaxes to maintain zoom on all
 random_county = cpops_county_list[0] # we picked top one which is LA (most populous at the top)
 last_x = c[c.county == random_county]["date"].values.tolist()[-1]
-fig.update_layout(title=f"<b>California Counties Covid Stats - Last Update {last_x}</b> (v{Version})") # main title
+fig.update_layout(title=f"<b>California Counties Covid19 Stats</b> - Last Update {last_x} (v{Version})") # main title
 # fig = go.Figure() # then graph like this: fig.add_trace(go.Scatter(x=avgx, y=avgy, name=legendtext, showlegend=True,visible=visible1))
 
 # * consider each county and trace it on plotly
