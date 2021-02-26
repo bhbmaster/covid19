@@ -14,6 +14,7 @@ from sklearn.linear_model import LinearRegression
 # from sklearn.preprocessing import PolynomialFeatures
 import pickle
 from scipy.optimize import curve_fit
+from os import path
 
 # By: Kostia Khlebopros
 # Site: http://www.infotinks.com/coronavirus-dashboard-covid19-py/

@@ -5,6 +5,12 @@
 # Ex: we can see that China was 1st place but then US over took it in March
 # Adjust cd to location where your root directory for this project is
 # This script is called from run.sh but it can be run standalone as well.
+# -- CLEAN UP COMMANDS --
+# For this script to work we need good run-DATE.out files 
+# Good ones end with "- end", so lets look for all of the run.*out files that have it and don't have it
+# Then we can manually delete them:
+# # for i in run*out; do grep -q -- "- end" $i && echo "Found at $i" || echo "Missing at $i"; done | grep -v Found
+# Result is all of the run files missing good data, and therefore can be deleted as they are not parsable
 cd /var/www/covid19
 (
    N=$(cat $(ls -1tr | grep run.*out | tail -1) | grep "/" | tail -1 | cut -f 1 -d "/")
