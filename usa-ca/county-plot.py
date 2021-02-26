@@ -2,14 +2,19 @@ import pandas as pd
 import plotly.graph_objects as go
 import plotly.offline.offline
 from plotly.subplots import make_subplots
+from os import path
 
 ### INIT ###
 
+VersionFile = "../VERSION"  # Last Update YY.MM.DD
 ndays=7 # how many days is the moving average averaging
 output_html="county-output.html"
 PER=100000 # we should per 100000 aka 100K
 PER_TEXT="100K"
 SHOW_TOP_NUMBER=12 # how many counties to have enabled when graph shows (others can be toggled on interactively)
+
+# Get Version
+Version = open(VersionFile,"r").readline() if path.exists(VersionFile) else "NA"
 
 # data input
 url_data="https://data.ca.gov/dataset/590188d5-8545-4c93-a9a0-e230f0db7290/resource/926fd08f-cc91-4828-af38-bd45de97f8c3/download/statewide_cases.csv"
@@ -55,7 +60,7 @@ def avgN(N,x,y):
 
 # * graph
 def graph():
-    print(f"* {county} pop={pop} - last recoded values below:")
+    print(f"* {county} pop={pop} - last recorded values below:")
     visible1 = "legendonly" if not county in visible_counties else None
     x=c[c.county == county]["date"].values
     FRONTSPACE="    "
@@ -98,7 +103,7 @@ subplot_titles = (f"Daily New Cases per {PER_TEXT} {ndays}-day Moving Average",
 fig = make_subplots(rows=4, cols=1, shared_xaxes=True, subplot_titles=subplot_titles) # shared_xaxes to maintain zoom on all
 random_county = cpops_county_list[0] # we picked top one which is LA (most populous at the top)
 last_x = c[c.county == random_county]["date"].values.tolist()[-1]
-fig.update_layout(title=f"California Counties Covid Stats (Last Update: {last_x})")
+fig.update_layout(title=f"<b>California Counties Covid Stats - Last Update {last_x}</b> (v{Version})") # main title
 # fig = go.Figure() # then graph like this: fig.add_trace(go.Scatter(x=avgx, y=avgy, name=legendtext, showlegend=True,visible=visible1))
 
 # * consider each county and trace it on plotly

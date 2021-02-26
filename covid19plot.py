@@ -21,7 +21,8 @@ from scipy.optimize import curve_fit
 
 ### constants ###
 
-Version = "21.02.24"  # Last Update YY-MM-DD
+VersionFile = "VERSION"  # Last Update YY.MM.DD
+Version = open(VersionFile,"r").readline() if path.exists(VersionFile) else "NA"
 SITE="https://pomber.github.io/covid19/timeseries.json"
 start_time = datetime.datetime.now()
 start_time_string = start_time.strftime("%Y-%m-%d %H:%M:%S")
