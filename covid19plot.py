@@ -339,9 +339,9 @@ def graph2div(country_class,graph_type):
     # end new plot
     # new plot
     # ... daily new cases ... #
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_cases_list, name="<b>Daily New Cases</b>", showlegend=True),row=3,col=1)
+    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_cases_list, name="<b>New Cases</b>", showlegend=True),row=3,col=1)
     xavg,yavg = avgN(moving_average_samples,i.date_list,i.delta_cases_list)
-    fig.add_trace(go.Scatter(x=xavg, y=yavg, name=f"<b>Daily New Cases {moving_average_samples} Day Moving Avg</b>", showlegend=True),row=3,col=1)
+    fig.add_trace(go.Scatter(x=xavg, y=yavg, name=f"<b>New Cases {moving_average_samples}day Moving Avg</b>", showlegend=True),row=3,col=1)
     ## success,xfinal,yfinal,fita,fitb,fitc = i.lastXdayscurvefit(yavg,days_predict_new_cases)
     success, xfinal, yfinal, r_sq, m, b0 = i.lastXdayslinearpredict(yavg, days_predict_new_cases)
     # print(f"DEBUG: fit -> success={success} fita={fita} fitb={fitb} fitc={fitc}")
@@ -375,9 +375,9 @@ def graph2div(country_class,graph_type):
         #     ),
         #     arrowhead=1, arrowsize=2, arrowcolor=color_text, arrowwidth=1, row=3,col=1)
     # ...  daily deaths ... #
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_deaths_list, name="<b>Daily New Deaths</b>", showlegend=True),row=3,col=2)
+    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_deaths_list, name="<b>New Deaths</b>", showlegend=True),row=3,col=2)
     xavg,yavg = avgN(moving_average_samples,i.date_list,i.delta_deaths_list)
-    fig.add_trace(go.Scatter(x=xavg, y=yavg, name=f"<b>Daily New Deaths {moving_average_samples} Day Moving Avg</b>", showlegend=True),row=3,col=2)
+    fig.add_trace(go.Scatter(x=xavg, y=yavg, name=f"<b>New Deaths {moving_average_samples}day Moving Avg</b>", showlegend=True),row=3,col=2)
     # end new plot
     fig.update_yaxes(type=the_type_fig,row=1,col=1)
     fig.update_yaxes(type=None,rangemode="tozero",row=2,col=1)
