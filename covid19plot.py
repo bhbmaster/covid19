@@ -412,7 +412,7 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
 	    </style>
     <head/>
     <body>
-        <h2>Covid19.py Plots v{Version} ({type_title})</h2>
+        <h2><u>Covid19Plot.py {type_title} Plot</u> - v{Version}</h2>
         <p><b>Last Plot Update:</b> {time_string}</p>
         <p><a href='covid19-{other_type_title.lower()}.html'>Click here to see {other_type_title} plots instead</a></p>
         <p><a href='usa-ca/county-output.html'>Click here to see California's Counties Daily New Cases plots instead</a></p>
@@ -456,7 +456,7 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
             ldr_active=country.last_delta_ratio_active
         # type_title comes in as Log (doesn't work) turns to LOG (works), comes in as Normal (doesn't work )turns to NORMAL (works)
         # html += f"        <h3><a href='html-plots/{country.countryposix}-plot-{type_title.upper()}.html'>{country.country}</a></h3>\n"
-        html += f"        <h3>#{place_num}. {country.country}</h3>\n"
+        html += f"<h3><u>#{place_num}. {country.country}</u></h3>\n"
         html += f"<p><a href='html-plots/{country.countryposix}-plot-NORMAL.html'>Normal</a> | <a href='html-plots/{country.countryposix}-plot-LOG.html'>Log</a></p>"
         html += f"""
         <table border="1" cellpadding="5">
