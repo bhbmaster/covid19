@@ -18,3 +18,4 @@ usa-ca/*html
 usa-ca/notes-*
 usa-ca/run-*.out
 remote-run.sh
+remote-pull-run.sh
