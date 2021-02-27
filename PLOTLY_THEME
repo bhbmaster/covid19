@@ -1,4 +1,15 @@
-seaborn
-# only first line is read to select theme. here are the template / theme options:
+seaborn,Balto,12
+
+# Only first line is parsed. The rest is ignored and therefore are an explanation
+
+# Format:
+# theme,font family,font size
+
+# Supported themes / templates:
 # ["plotly", "plotly_white", "plotly_dark", "ggplot2", "seaborn", "simple_white", "none"]
 # more info: https://plotly.com/python/templates/
+
+# Supported fonts:
+# "Arial", "Balto", "Courier New", "Droid Sans", "Droid Serif", "Droid Sans Mono", "Gravitas One", "Old Standard TT", "Open Sans", "Overpass", "PT Sans Narrow", "Raleway", "Times New Roman"
+# more info: https://plotly.com/python/figure-labels/
+# more info - indepth: https://plotly.com/python/reference/layout/

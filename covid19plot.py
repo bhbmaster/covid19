@@ -37,8 +37,13 @@ valid_chars = "-_.%s%s" % (string.ascii_letters, string.digits)
 TESTDATA = "TestData.json"
 moving_average_samples = 7 # 7 day moving average for daily new cases and daily deaths
 days_predict_new_cases = 30
-ThemeFile = "PLOTLY_THEME"
-Theme = open(ThemeFile,"r").readline().rstrip().lstrip() if path.exists(ThemeFile) else "none"
+ThemeFile = "PLOTLY_THEME" # contents are comma sep: theme,font family,font size
+
+# get theme stuff from file
+ThemeFileContents = open(ThemeFile,"r").readline().rstrip().lstrip().split(",")
+Theme_Template = ThemeFileContents[0] if path.exists(ThemeFile) else "none"
+Theme_Font = ThemeFileContents[1] if path.exists(ThemeFile) else "Arial"
+Theme_FontSize = int(ThemeFileContents[2]) if path.exists(ThemeFile) else 12
 
 ### classes ###
 
@@ -324,20 +329,19 @@ def graph2div(country_class,graph_type):
     f"Daily Cases",f"Daily Deaths")
     spacing = 0.035
     fig = make_subplots(rows=3, cols=2, horizontal_spacing=spacing, vertical_spacing=spacing, subplot_titles=subplot_titles,shared_xaxes=True) # used to be make_subplots(rows=2, cols=2)
-    myfont="Balto" # supported fonts: "Arial", "Balto", "Courier New", "Droid Sans",, "Droid Serif", "Droid Sans Mono", "Gravitas One", "Old Standard TT", "Open Sans", "Overpass", "PT Sans Narrow", "Raleway", "Times New Roman"
-    mysize=12
+    # supported fonts: "Arial", "Balto", "Courier New", "Droid Sans",, "Droid Serif", "Droid Sans Mono", "Gravitas One", "Old Standard TT", "Open Sans", "Overpass", "PT Sans Narrow", "Raleway", "Times New Roman"
     font_options={
-        "hoverlabel_font_size": mysize,
-        # "title_font_size": mysize,
-        "legend_font_size": mysize,
-        "font_size": mysize,
-        "hoverlabel_font_family": myfont,
-        "title_font_family": myfont,
-        "legend_font_family": myfont,
-        "font_family": myfont,
+        "hoverlabel_font_size": Theme_FontSize,
+        # "title_font_size": Theme_FontSize,
+        "legend_font_size": Theme_FontSize,
+        "font_size": Theme_FontSize,
+        "hoverlabel_font_family": Theme_Font,
+        "title_font_family": Theme_Font,
+        "legend_font_family": Theme_Font,
+        "font_family": Theme_Font,
         "hoverlabel_namelength":-1  # the full line instead of the default 15
     }
-    fig.update_layout(title=f"<b>{country_name} Covid19 Stats</b> - Last Update {i.last_date} - covid19plot.py v{Version}",template=Theme,hovermode='x unified',**font_options)
+    fig.update_layout(title=f"<b>{country_name} Covid19 Stats</b> - Last Update {i.last_date} - covid19plot.py v{Version}",template=Theme_Template,hovermode='x unified',**font_options)
     fig.add_trace(go.Scatter(x=i.date_list, y=i.cases_list, name=f"<b>Cases</b><br>Last Value: {round_or_none(i.cases_list[-1],0)}", line=dict(color='firebrick', width=2),showlegend=True),row=1,col=1)
     fig.add_trace(go.Scatter(x=i.date_list, y=i.deaths_list, name=f"<b>Deaths</b><br>Last Value: {round_or_none(i.deaths_list[-1],0)}", line=dict(color='red', width=2),showlegend=True),row=1,col=1)
     fig.add_trace(go.Scatter(x=i.date_list, y=i.recovered_list, name=f"<b>Recovered</b><br>Last Value: {round_or_none(i.recovered_list[-1],0)}", line=dict(color='green', width=2),showlegend=True),row=1,col=1)
@@ -445,6 +449,7 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
         <p><b>Last Plot Update:</b> {time_string}</p>
         <p><a href='covid19-{other_type_title.lower()}.html'>Click here to see {other_type_title} plots instead</a></p>
         <p><a href='usa-ca/county-output.html'>Click here to see California's Counties Daily New Cases plots instead</a></p>
+        <p>* <b>How To Use:</b> Scroll down to the country of inquiry and view stats. To get an interactive plot open the "Normal" or "Log" link. The plots are only interactive when that countries plot is displayed seperately. The legends & traces can enabled,disabled,all,or just one by clicking and double clicking on the legend. The California county plots are also similarly interactive. </p>
         <p>* <b>More Info:</b> available on <a href="https://github.com/bhbmaster/covid19">GitHub</a> and <a href="http://www.infotinks.com/coronavirus-dashboard-covid19-py/">infotinks.com</a></p>
         <p>* <b>Delta</b> is change from previous day ( + is growth; - is reduction )</p>
         <p>* <b>Ratio</b> is % change from previous day ( 1 or higher is growth; 0 to 1 is reduction )</p>
@@ -619,7 +624,7 @@ def main():
     print("------------------------------")
     print(f"Covid19plot.py - v{Version}")
     print("------------------------------")
-    print(f"- Plot theme: {Theme}")
+    print(f"- Plot theme,font,size: {Theme_Template},{Theme_Font},{Theme_FontSize}")
 	
     #### - GET DATA - METHOD 1 - START - ####
     # download json data (comment out this or load json; only have one)
