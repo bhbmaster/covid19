@@ -449,7 +449,7 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
         <p><b>Last Plot Update:</b> {time_string}</p>
         <p><a href='covid19-{other_type_title.lower()}.html'>Click here to see {other_type_title} plots instead</a></p>
         <p><a href='usa-ca/county-output.html'>Click here to see California's Counties Daily New Cases plots instead</a></p>
-        <p>* <b>How To Use:</b> Scroll down to the country of inquiry and view stats. To get an interactive plot open the "Normal" or "Log" link. The plots are only interactive when that countries plot is displayed seperately. The legends & traces can enabled,disabled,all,or just one by clicking and double clicking on the legend. The California county plots are also similarly interactive. </p>
+        <p>* <b>How To Use:</b> Scroll down to the country of inquiry and view stats. To get an interactive plot open the "Normal" or "Log" link. The plots are only interactive when that countries plot is displayed seperately. The different lines / traces can enabled, disabled, all-enable ,or one-enabled by clicking and double clicking on the legend. The California county plots are also similarly interactive. </p>
         <p>* <b>More Info:</b> available on <a href="https://github.com/bhbmaster/covid19">GitHub</a> and <a href="http://www.infotinks.com/coronavirus-dashboard-covid19-py/">infotinks.com</a></p>
         <p>* <b>Delta</b> is change from previous day ( + is growth; - is reduction )</p>
         <p>* <b>Ratio</b> is % change from previous day ( 1 or higher is growth; 0 to 1 is reduction )</p>
