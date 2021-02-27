@@ -444,10 +444,18 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
             td {{
                 text-align: center;
             }}
+            .roundback {{
+                border-radius: 25px;
+                background: #ccc;
+                padding: 10px;
+            }}
+            .bigger {{
+                padding: 20px;
+            }}
 	    </style>
     <head/>
     <body>
-        <h2><u>Covid19Plot.py {type_title} Plot</u> - v{Version}</h2>
+        <h2 class="roundback bigger"><u>Covid19Plot.py {type_title} Plot</u> - v{Version}</h2>
         <p><b>Last Plot Update:</b> {time_string}</p>
         <p><a href='covid19-{other_type_title.lower()}.html'>Click here to see {other_type_title} plots instead</a></p>
         <p><a href='usa-ca/county-output.html'>Click here to see California's Counties Daily New Cases plots instead</a></p>
@@ -492,7 +500,7 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
             ldr_active=country.last_delta_ratio_active
         # type_title comes in as Log (doesn't work) turns to LOG (works), comes in as Normal (doesn't work )turns to NORMAL (works)
         # html += f"        <h3><a href='html-plots/{country.countryposix}-plot-{type_title.upper()}.html'>{country.country}</a></h3>\n"
-        html += f"<h3><u>#{place_num}. {country.country}</u></h3>\n"
+        html += f"<h3 class='roundback'><u>#{place_num}. {country.country}</u></h3>\n"
         html += f"<p><a href='html-plots/{country.countryposix}-plot-NORMAL.html'>Normal</a> | <a href='html-plots/{country.countryposix}-plot-LOG.html'>Log</a></p>"
         html += f"""
         <table border="1" cellpadding="5">
@@ -600,8 +608,12 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
     # make it htmlmin
     minihtml = htmlmin.minify(prettyhtml, remove_empty_space=True)
     # write file
-    with open(output_file, 'w') as file:
-        file.write(minihtml)
+    with open(output_file, 'wb') as file:
+        file.write(minihtml.encode('utf-8'))
+    # * Below method generated error on Windows because I use delta triangle but worked on MAC and LINUX
+    # * ERROR: UnicodeEncodeError: 'charmap' codec can't encode character '\u0394' in position 4132: character maps to <undefined>
+    # with open(output_file, 'w') as file:
+    #     file.write(minihtml)
 
 # <!-- hitwebcounter Code START -->
 # <a href="https://www.hitwebcounter.com" target="_blank">
