@@ -329,8 +329,8 @@ def graph2div(country_class,graph_type):
     f"Daily Cases",f"Daily Deaths")
     spacing = 0.035
     fig = make_subplots(rows=3, cols=2, horizontal_spacing=spacing, vertical_spacing=spacing, subplot_titles=subplot_titles,shared_xaxes=True) # used to be make_subplots(rows=2, cols=2)
-    # supported fonts: "Arial", "Balto", "Courier New", "Droid Sans",, "Droid Serif", "Droid Sans Mono", "Gravitas One", "Old Standard TT", "Open Sans", "Overpass", "PT Sans Narrow", "Raleway", "Times New Roman"
-    font_options={
+    # supported fonts: https://plotly.com/python/reference/layout/
+    plot_options={
         "hoverlabel_font_size": Theme_FontSize,
         # "title_font_size": Theme_FontSize,
         "legend_font_size": Theme_FontSize,
@@ -339,9 +339,11 @@ def graph2div(country_class,graph_type):
         "title_font_family": Theme_Font,
         "legend_font_family": Theme_Font,
         "font_family": Theme_Font,
-        "hoverlabel_namelength":-1  # the full line instead of the default 15
+        "hoverlabel_namelength":-1,  # the full line instead of the default 15
+        "hovermode":'x unified',
+        "template":Theme_Template
     }
-    fig.update_layout(title=f"<b>{country_name} Covid19 Stats</b> - Last Update {i.last_date} - covid19plot.py v{Version}",template=Theme_Template,hovermode='x unified',**font_options)
+    fig.update_layout(title=f"<b>{country_name} Covid19 Stats</b> - Last Update {i.last_date} - covid19plot.py v{Version}",**plot_options)
     fig.add_trace(go.Scatter(x=i.date_list, y=i.cases_list, name=f"<b>Cases</b><br>Last Value: {round_or_none(i.cases_list[-1],0)}", line=dict(color='firebrick', width=2),showlegend=True),row=1,col=1)
     fig.add_trace(go.Scatter(x=i.date_list, y=i.deaths_list, name=f"<b>Deaths</b><br>Last Value: {round_or_none(i.deaths_list[-1],0)}", line=dict(color='red', width=2),showlegend=True),row=1,col=1)
     fig.add_trace(go.Scatter(x=i.date_list, y=i.recovered_list, name=f"<b>Recovered</b><br>Last Value: {round_or_none(i.recovered_list[-1],0)}", line=dict(color='green', width=2),showlegend=True),row=1,col=1)

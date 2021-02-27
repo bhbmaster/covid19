@@ -115,8 +115,8 @@ spacing=0.05
 fig = make_subplots(rows=2, cols=2, shared_xaxes=True, subplot_titles=subplot_titles, column_widths=[bigportion, smallportion],horizontal_spacing=spacing,vertical_spacing=spacing) # shared_xaxes to maintain zoom on all
 random_county = cpops_county_list[0] # we picked top one which is LA (most populous at the top)
 last_x = c[c.county == random_county]["date"].values.tolist()[-1]
-# supported fonts: "Arial", "Balto", "Courier New", "Droid Sans",, "Droid Serif", "Droid Sans Mono", "Gravitas One", "Old Standard TT", "Open Sans", "Overpass", "PT Sans Narrow", "Raleway", "Times New Roman"
-font_options={
+# supported fonts: https://plotly.com/python/reference/layout/
+plot_options={
     "hoverlabel_font_size": Theme_FontSize,
     # "title_font_size": Theme_FontSize,
     "legend_font_size": Theme_FontSize,
@@ -125,9 +125,11 @@ font_options={
     "title_font_family": Theme_Font,
     "legend_font_family": Theme_Font,
     "font_family": Theme_Font,
-    "hoverlabel_namelength":-1  # the full line instead of the default 15
+    "hoverlabel_namelength":-1,  # the full line instead of the default 15
+    "hovermode":'x',
+    "template":Theme_Template
 }
-fig.update_layout(title=f"<b>California Counties Covid19 Stats</b> - Last Update {last_x} (v{Version})",template=Theme_Template,hovermode='x unified',**font_options) # main title & theme & hoevr options & font options unpacked
+fig.update_layout(title=f"<b>California Counties Covid19 Stats</b> - Last Update {last_x} (v{Version})",**plot_options) # main title & theme & hover options & font options unpacked
 # fig = go.Figure() # then graph like this: fig.add_trace(go.Scatter(x=avgx, y=avgy, name=legendtext, showlegend=True,visible=visible1))
 
 # * consider each county and trace it on plotly

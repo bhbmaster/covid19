@@ -1,4 +1,4 @@
-seaborn,Balto,12
+seaborn,Balto,14
 
 # Only first line is parsed. The rest is ignored and therefore are an explanation
 
@@ -12,4 +12,4 @@ seaborn,Balto,12
 # Supported fonts:
 # "Arial", "Balto", "Courier New", "Droid Sans", "Droid Serif", "Droid Sans Mono", "Gravitas One", "Old Standard TT", "Open Sans", "Overpass", "PT Sans Narrow", "Raleway", "Times New Roman"
 # more info: https://plotly.com/python/figure-labels/
-# more info - indepth: https://plotly.com/python/reference/layout/
+# more info - in depth: https://plotly.com/python/reference/layout/
