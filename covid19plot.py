@@ -279,6 +279,16 @@ class Country:
 
 ### functions ###
 
+# if need to round a number that might also be None. n is the number, places is number of decimal places. if 0 places we use thousand seperators
+def round_or_none(n,places,sep=True):
+    try:
+        if places == 0:
+            return f"{int(n):,}"
+        else:
+            return f"{n:0.{places}f}"
+    except:
+        return None
+
 # N day moving average (ex: 7 day average). averages the y values over window size N, our array shrinks by N-1 due to this. therefore, we also truncate the x array values by N-1 from the left side (older dates are on the left side)
 def avgN(N,x,y):
     # example:
@@ -313,18 +323,31 @@ def graph2div(country_class,graph_type):
     f"Ratio Δ of Cases, Deaths, Active",f"Ratio Δ of Active",
     f"Daily Cases",f"Daily Deaths")
     spacing = 0.035
-    fig = make_subplots(rows=3, cols=2, horizontal_spacing=spacing, vertical_spacing=spacing, subplot_titles=subplot_titles,shared_xaxes=True) # used to be  make_subplots(rows=2, cols=2)
-    fig.update_layout(title=f"<b>{country_name} Covid19 Stats</b> - Last Update {i.last_date} - covid19plot.py v{Version}",template=Theme,hovermode='x unified')
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.cases_list, name="<b>Cases</b>", line=dict(color='firebrick', width=2),showlegend=True),row=1,col=1)
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.deaths_list, name="<b>Deaths</b>", line=dict(color='red', width=2),showlegend=True),row=1,col=1)
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.recovered_list, name="<b>Recovered</b>", line=dict(color='green', width=2),showlegend=True),row=1,col=1)
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.active_list, name="<b>Active Cases</b> (Cases - Deaths & Recovered)", line=dict(color='purple', width=2),showlegend=True),row=1,col=1)
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_cases_list, name="<b>Ratio Δ Cases</b>", showlegend=True),row=2,col=1)
+    fig = make_subplots(rows=3, cols=2, horizontal_spacing=spacing, vertical_spacing=spacing, subplot_titles=subplot_titles,shared_xaxes=True) # used to be make_subplots(rows=2, cols=2)
+    myfont="Balto" # supported fonts: "Arial", "Balto", "Courier New", "Droid Sans",, "Droid Serif", "Droid Sans Mono", "Gravitas One", "Old Standard TT", "Open Sans", "Overpass", "PT Sans Narrow", "Raleway", "Times New Roman"
+    mysize=12
+    font_options={
+        "hoverlabel_font_size": mysize,
+        # "title_font_size": mysize,
+        "legend_font_size": mysize,
+        "font_size": mysize,
+        "hoverlabel_font_family": myfont,
+        "title_font_family": myfont,
+        "legend_font_family": myfont,
+        "font_family": myfont,
+        "hoverlabel_namelength":-1  # the full line instead of the default 15
+    }
+    fig.update_layout(title=f"<b>{country_name} Covid19 Stats</b> - Last Update {i.last_date} - covid19plot.py v{Version}",template=Theme,hovermode='x unified',**font_options)
+    fig.add_trace(go.Scatter(x=i.date_list, y=i.cases_list, name=f"<b>Cases</b><br>Last Value: {round_or_none(i.cases_list[-1],0)}", line=dict(color='firebrick', width=2),showlegend=True),row=1,col=1)
+    fig.add_trace(go.Scatter(x=i.date_list, y=i.deaths_list, name=f"<b>Deaths</b><br>Last Value: {round_or_none(i.deaths_list[-1],0)}", line=dict(color='red', width=2),showlegend=True),row=1,col=1)
+    fig.add_trace(go.Scatter(x=i.date_list, y=i.recovered_list, name=f"<b>Recovered</b><br>Last Value: {round_or_none(i.recovered_list[-1],0)}", line=dict(color='green', width=2),showlegend=True),row=1,col=1)
+    fig.add_trace(go.Scatter(x=i.date_list, y=i.active_list, name=f"<b>Active Cases</b> (Cases - Deaths & Recovered)<br>Last Value: {round_or_none(i.active_list[-1],0)}", line=dict(color='purple', width=2),showlegend=True),row=1,col=1)
+    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_cases_list, name=f"<b>Ratio Δ Cases</b><br>Last Value: {round_or_none(i.delta_ratio_cases_list[1],5)}", showlegend=True),row=2,col=1)
     # fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_active_list, name="<b>Ratio Δ Active Cases</b>", showlegend=True),row=2,col=1)
-    #fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_recovered_list, name="Ratio Δ Recovered", showlegend=True),row=2,col=1)
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_deaths_list, name="<b>Ratio Δ Deaths</b>", showlegend=True),row=2,col=1)
+    # fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_recovered_list, name="Ratio Δ Recovered", showlegend=True),row=2,col=1)
+    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_deaths_list, name=f"<b>Ratio Δ Deaths</b><br>Last Value: {round_or_none(i.delta_ratio_deaths_list[-1],5)}", showlegend=True),row=2,col=1)
     # below - ratio prediction
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_active_list, name="<b>Ratio Δ Active Cases</b>", showlegend=True),row=2,col=2)
+    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_active_list, name=f"<b>Ratio Δ Active Cases</b><br>Last Value: {round_or_none(i.delta_ratio_active_list[-1],5)}", showlegend=True),row=2,col=2)
     ### # ratio prediction - start
     ### for ds in range(predict_days_min,predict_days_max+1):
     ###     success, xfinal, yfinal, r_sq, m, b0 = i.lastXdayslinearpredict(i.delta_ratio_active_list, ds)
@@ -333,15 +356,15 @@ def graph2div(country_class,graph_type):
     ###         fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=f"Past {ds} day Linear Regression Fit (r^2={round(r_sq,sigdigit)})", line=dict(width=1), showlegend=True), row=2,col=2)
     ### # ratio prediction - end
     # new plot
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.death_percent_list, name="<b>Death %</b>", showlegend=True),row=1,col=2)
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.recovery_percent_list, name="<b>Recovery %</b>", showlegend=True),row=1,col=2)
+    fig.add_trace(go.Scatter(x=i.date_list, y=i.death_percent_list, name=f"<b>Death %</b><br>Last Value: {round_or_none(i.death_percent_list[-1],2)}%", showlegend=True),row=1,col=2)
+    fig.add_trace(go.Scatter(x=i.date_list, y=i.recovery_percent_list, name=f"<b>Recovery %</b><br>Last Value: {round_or_none(i.recovery_percent_list[-1],2)}%", showlegend=True),row=1,col=2)
     # fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_active_list, name="Delta Active Cases", showlegend=True),row=1,col=2) # doesn't show negative so not including
     # end new plot
     # new plot
     # ... daily new cases ... #
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_cases_list, name="<b>New Cases</b>", showlegend=True),row=3,col=1)
+    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_cases_list, name=f"<b>New Cases</b><br>Last Value: {round_or_none(i.delta_cases_list[-1],0)}", showlegend=True),row=3,col=1)
     xavg,yavg = avgN(moving_average_samples,i.date_list,i.delta_cases_list)
-    fig.add_trace(go.Scatter(x=xavg, y=yavg, name=f"<b>New Cases {moving_average_samples}day Moving Avg</b>", showlegend=True),row=3,col=1)
+    fig.add_trace(go.Scatter(x=xavg, y=yavg, name=f"<b>New Cases {moving_average_samples}day Moving Avg</b><br>Last Value: {round_or_none(yavg[-1],0)}", showlegend=True),row=3,col=1)
     ## success,xfinal,yfinal,fita,fitb,fitc = i.lastXdayscurvefit(yavg,days_predict_new_cases)
     success, xfinal, yfinal, r_sq, m, b0 = i.lastXdayslinearpredict(yavg, days_predict_new_cases)
     # print(f"DEBUG: fit -> success={success} fita={fita} fitb={fitb} fitc={fitc}")
@@ -375,9 +398,9 @@ def graph2div(country_class,graph_type):
         #     ),
         #     arrowhead=1, arrowsize=2, arrowcolor=color_text, arrowwidth=1, row=3,col=1)
     # ...  daily deaths ... #
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_deaths_list, name="<b>New Deaths</b>", showlegend=True),row=3,col=2)
+    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_deaths_list, name=f"<b>New Deaths</b><br>Last Value: {round_or_none(i.delta_deaths_list[-1],0)}", showlegend=True),row=3,col=2)
     xavg,yavg = avgN(moving_average_samples,i.date_list,i.delta_deaths_list)
-    fig.add_trace(go.Scatter(x=xavg, y=yavg, name=f"<b>New Deaths {moving_average_samples}day Moving Avg</b>", showlegend=True),row=3,col=2)
+    fig.add_trace(go.Scatter(x=xavg, y=yavg, name=f"<b>New Deaths {moving_average_samples}day Moving Avg</b><br>Last Value: {round_or_none(yavg[-1],0)}", showlegend=True),row=3,col=2)
     # end new plot
     fig.update_yaxes(type=the_type_fig,row=1,col=1)
     fig.update_yaxes(type=None,rangemode="tozero",row=2,col=1)
@@ -593,6 +616,7 @@ def save_pickle(object_to_save,filename_prefix,time_string):
 
 def main():
 
+    print("------------------------------")
     print(f"Covid19plot.py - v{Version}")
     print("------------------------------")
     print(f"- Plot theme: {Theme}")
