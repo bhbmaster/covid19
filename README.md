@@ -20,14 +20,19 @@ html-plots/US-plot-LOG.html
 **usa-ca/county-plot.py produces the following graphs:**
 
 - Daily New Cases in all California countys plotted to `usa-ca/county-output.html`
+## Wrapper run.sh Script & places.sh
 
-## Wrapper run.sh Scrip & places.sh
-
-I use a wrapper script `run.sh` to execute covid19plot.py which generates both of the html files to same directory - while also logging any terminal output to a log file, `run-$DATE.out` (this output is used by a log parser tool I call places.sh). It also runs `usa-ca/county-plot.py` which generates `usa-ca/county-output.html` and redirects its logout to `usa-ca/run-$DATE.out`
+I use a wrapper script `run.sh` to execute `covid19plot.py` which generates both of the html files to same directory - while also logging any terminal output to a log file, `run-$DATE.out` (this output is used by a log parser tool I call places.sh). It also runs `usa-ca/county-plot.py` which generates `usa-ca/county-output.html` and redirects its logout to `usa-ca/run-$DATE.out`
 
 Then my `places.sh` uses those log files to get ordered list of most cases for each day. For any given date, one can see which country ranks amongst highest cases. The output is saved in this html file:
 
 - Places: http://www.infotinks.com/covid19/places.html
+
+## Simple Wrapper Script
+
+Run `run-simple.sh` from root directory of the project and it will run `usa-ca/county-plot.py` and then `covid19plot.py`. Output is shown on terminal and not saved to run logs for parsing. This runs the faster script first, unlike the `run.sh` wrapper script which runs the lengthier plotter (covid19plot.py) first.
+
+From a MAC run `run-simple-open.sh` which runs the same two scripts and then opens the results in a default browser. This will work on MAC but probably not Windows or Linux as it uses `open <file>` program (if I am not mistaken that is only supported on MACs; for other OS need different program to launch files with their default application).
 
 ## Requirements
 
