@@ -325,7 +325,7 @@ def graph2div(country_class,graph_type):
     country_name=i.country
     full_path_html=f"html-plots/{i.countryposix}-plot-{the_type_string}.html"
     subplot_titles = (f"Cases, Deaths, Recovered, Active",f"Death & Recovery %",
-    f"Ratio Δ of Cases, Deaths, Active",f"Ratio Δ of Active",
+    f"Ratio Diff of Cases, Deaths, Active",f"Ratio Diff of Active",
     f"Daily Cases",f"Daily Deaths")
     spacing = 0.035
     fig = make_subplots(rows=3, cols=2, horizontal_spacing=spacing, vertical_spacing=spacing, subplot_titles=subplot_titles,shared_xaxes=True) # used to be make_subplots(rows=2, cols=2)
@@ -343,17 +343,18 @@ def graph2div(country_class,graph_type):
         "hovermode":'x unified',
         "template":Theme_Template
     }
+	# Note: instead of Diff it used to say Δ, but that renders weird on html (I tried to fix it but too much work for something small)
     fig.update_layout(title=f"<b>{country_name} Covid19 Stats</b> - Last Update {i.last_date} - covid19plot.py v{Version}",**plot_options)
     fig.add_trace(go.Scatter(x=i.date_list, y=i.cases_list, name=f"<b>Cases</b><br>New Value: {round_or_none(i.cases_list[-1],0)}", line=dict(color='firebrick', width=2),showlegend=True),row=1,col=1)
     fig.add_trace(go.Scatter(x=i.date_list, y=i.deaths_list, name=f"<b>Deaths</b><br>New Value: {round_or_none(i.deaths_list[-1],0)}", line=dict(color='red', width=2),showlegend=True),row=1,col=1)
     fig.add_trace(go.Scatter(x=i.date_list, y=i.recovered_list, name=f"<b>Recovered</b><br>New Value: {round_or_none(i.recovered_list[-1],0)}", line=dict(color='green', width=2),showlegend=True),row=1,col=1)
     fig.add_trace(go.Scatter(x=i.date_list, y=i.active_list, name=f"<b>Active Cases</b> (Cases - Deaths & Recovered)<br>New Value: {round_or_none(i.active_list[-1],0)}", line=dict(color='purple', width=2),showlegend=True),row=1,col=1)
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_cases_list, name=f"<b>Ratio Δ Cases</b><br>New Value: {round_or_none(i.delta_ratio_cases_list[1],5)}", showlegend=True),row=2,col=1)
-    # fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_active_list, name="<b>Ratio Δ Active Cases</b>", showlegend=True),row=2,col=1)
-    # fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_recovered_list, name="Ratio Δ Recovered", showlegend=True),row=2,col=1)
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_deaths_list, name=f"<b>Ratio Δ Deaths</b><br>New Value: {round_or_none(i.delta_ratio_deaths_list[-1],5)}", showlegend=True),row=2,col=1)
+    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_cases_list, name=f"<b>Ratio Diff Cases</b><br>New Value: {round_or_none(i.delta_ratio_cases_list[1],5)}", showlegend=True),row=2,col=1)
+    # fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_active_list, name="<b>Ratio Diff Active Cases</b>", showlegend=True),row=2,col=1)
+    # fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_recovered_list, name="Ratio Diff Recovered", showlegend=True),row=2,col=1)
+    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_deaths_list, name=f"<b>Ratio Diff Deaths</b><br>New Value: {round_or_none(i.delta_ratio_deaths_list[-1],5)}", showlegend=True),row=2,col=1)
     # below - ratio prediction
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_active_list, name=f"<b>Ratio Δ Active Cases</b><br>New Value: {round_or_none(i.delta_ratio_active_list[-1],5)}", showlegend=True),row=2,col=2)
+    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_active_list, name=f"<b>Ratio Diff Active Cases</b><br>New Value: {round_or_none(i.delta_ratio_active_list[-1],5)}", showlegend=True),row=2,col=2)
     ### # ratio prediction - start
     ### for ds in range(predict_days_min,predict_days_max+1):
     ###     success, xfinal, yfinal, r_sq, m, b0 = i.lastXdayslinearpredict(i.delta_ratio_active_list, ds)
@@ -508,8 +509,8 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
         <tr>
         <td><b>Data Date: {country.last_date}</b></td>
         <td><b>Current</b></td>
-        <td><b>Δ Change</b> w/ last day</td>
-        <td><b>Ratio Δ Change</b> w/ last day</td>
+        <td><b>Diff Change</b> w/ last day</td>
+        <td><b>Ratio Diff Change</b> w/ last day</td>
         </tr>
         <tr>
         <td>Cases</td>
