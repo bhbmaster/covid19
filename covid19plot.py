@@ -315,20 +315,26 @@ def avgN(N,x,y):
 # create divs of graph of a certain type from country class item
 
 def graph2div(country_class,graph_type):
+
     i=country_class
+
     if graph_type=="log":           # log
         the_type_string="LOG"
         the_type_fig="log"
     else:                           # normal
         the_type_string="NORMAL"
         the_type_fig=None
+
     country_name=i.country
     full_path_html=f"html-plots/{i.countryposix}-plot-{the_type_string}.html"
+
     subplot_titles = (f"Cases, Deaths, Recovered, Active",f"Death & Recovery %",
     f"Ratio Diff of Cases, Deaths, Active",f"Ratio Diff of Active",
     f"Daily Cases",f"Daily Deaths")
     spacing = 0.035
+
     fig = make_subplots(rows=3, cols=2, horizontal_spacing=spacing, vertical_spacing=spacing, subplot_titles=subplot_titles,shared_xaxes=True) # used to be make_subplots(rows=2, cols=2)
+
     # supported fonts: https://plotly.com/python/reference/layout/
     plot_options={
         "hoverlabel_font_size": Theme_FontSize,
@@ -343,42 +349,70 @@ def graph2div(country_class,graph_type):
         "hovermode":'x unified',
         "template":Theme_Template
     }
-	# Note: instead of Diff it used to say Δ, but that renders weird on html (I tried to fix it but too much work for something small)
+
+    # Note: instead of Diff it used to say Δ, but that renders weird on html (I tried to fix it but too much work for something small)
+
     fig.update_layout(title=f"<b>{country_name} Covid19 Stats</b> - Last Update {i.last_date} - covid19plot.py v{Version}",**plot_options)
+
     fig.add_trace(go.Scatter(x=i.date_list, y=i.cases_list, name=f"<b>Cases</b><br>New Value: {round_or_none(i.cases_list[-1],0)}", line=dict(color='firebrick', width=2),showlegend=True),row=1,col=1)
+
     fig.add_trace(go.Scatter(x=i.date_list, y=i.deaths_list, name=f"<b>Deaths</b><br>New Value: {round_or_none(i.deaths_list[-1],0)}", line=dict(color='red', width=2),showlegend=True),row=1,col=1)
+
     fig.add_trace(go.Scatter(x=i.date_list, y=i.recovered_list, name=f"<b>Recovered</b><br>New Value: {round_or_none(i.recovered_list[-1],0)}", line=dict(color='green', width=2),showlegend=True),row=1,col=1)
+
     fig.add_trace(go.Scatter(x=i.date_list, y=i.active_list, name=f"<b>Active Cases</b> (Cases - Deaths & Recovered)<br>New Value: {round_or_none(i.active_list[-1],0)}", line=dict(color='purple', width=2),showlegend=True),row=1,col=1)
+
     fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_cases_list, name=f"<b>Ratio Diff Cases</b><br>New Value: {round_or_none(i.delta_ratio_cases_list[1],5)}", showlegend=True),row=2,col=1)
+
     # fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_active_list, name="<b>Ratio Diff Active Cases</b>", showlegend=True),row=2,col=1)
+
     # fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_recovered_list, name="Ratio Diff Recovered", showlegend=True),row=2,col=1)
+
     fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_deaths_list, name=f"<b>Ratio Diff Deaths</b><br>New Value: {round_or_none(i.delta_ratio_deaths_list[-1],5)}", showlegend=True),row=2,col=1)
-    # below - ratio prediction
+
     fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_active_list, name=f"<b>Ratio Diff Active Cases</b><br>New Value: {round_or_none(i.delta_ratio_active_list[-1],5)}", showlegend=True),row=2,col=2)
-    ### # ratio prediction - start
+
+    ### # ~~~ ratio prediction - start ~~~ #
     ### for ds in range(predict_days_min,predict_days_max+1):
     ###     success, xfinal, yfinal, r_sq, m, b0 = i.lastXdayslinearpredict(i.delta_ratio_active_list, ds)
     ###     if success:
     ###         # fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=f"Past {ds} day Linear Regression Fit (r^2={r_sq})", line=dict(color='gray', width=1), showlegend=True), row=2,col=2)
     ###         fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=f"Past {ds} day Linear Regression Fit (r^2={round(r_sq,sigdigit)})", line=dict(width=1), showlegend=True), row=2,col=2)
-    ### # ratio prediction - end
-    # new plot
+    ### # ~~~ ratio prediction - end ~~~ #
+
+    # ~~~ start new plot ~~~ #
+
     fig.add_trace(go.Scatter(x=i.date_list, y=i.death_percent_list, name=f"<b>Death %</b><br>New Value: {round_or_none(i.death_percent_list[-1],2)}%", showlegend=True),row=1,col=2)
+
     fig.add_trace(go.Scatter(x=i.date_list, y=i.recovery_percent_list, name=f"<b>Recovery %</b><br>New Value: {round_or_none(i.recovery_percent_list[-1],2)}%", showlegend=True),row=1,col=2)
+
     # fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_active_list, name="Delta Active Cases", showlegend=True),row=1,col=2) # doesn't show negative so not including
-    # end new plot
-    # new plot
+
+    # ~~~ end new plot ~~~ #
+
+    # ~~~ start new plot ~~~ #
+
     # ... daily new cases ... #
+
     fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_cases_list, name=f"<b>New Cases</b><br>New Value: {round_or_none(i.delta_cases_list[-1],0)}", showlegend=True),row=3,col=1)
+
     xavg,yavg = avgN(moving_average_samples,i.date_list,i.delta_cases_list)
+
     fig.add_trace(go.Scatter(x=xavg, y=yavg, name=f"<b>New Cases {moving_average_samples}day Moving Avg</b><br>New Value: {round_or_none(yavg[-1],0)}", showlegend=True),row=3,col=1)
+
     ## success,xfinal,yfinal,fita,fitb,fitc = i.lastXdayscurvefit(yavg,days_predict_new_cases)
+
     success, xfinal, yfinal, r_sq, m, b0 = i.lastXdayslinearpredict(yavg, days_predict_new_cases)
+
     # print(f"DEBUG: fit -> success={success} fita={fita} fitb={fitb} fitc={fitc}")
     # print(f"DEBUG: fit -> xfinal={xfinal} yfinal={yfinal}")
+
     if success:
+
         # predict when cross y=0
+
         if m != 0: # don't calc crossing if slope is 0 or flat, as its not existant
+
             y_to_cross = 0.0 # target y to cross (find which X equals at the Y value)
             x_cross1 = (y_to_cross - float(b0)) / float(m)   # y=mx+b   ->   x=(y-b)/m
             x_cross1_int=int(x_cross1)  # convert to int value (as we need 1 day or 3 day from day0 type of thing)
@@ -386,11 +420,17 @@ def graph2div(country_class,graph_type):
             day0dt = datetime.datetime.strptime(day0, "%Y-%m-%d")  # convert to date time date so we can add x_cross to it
             daycrossdt=day0dt+datetime.timedelta(days=int(x_cross1_int))  # get the date when we cross by adding x_cross to day0
             daycross = daycrossdt.strftime("%Y-%m-%d")  # convert to easy to understand text
+
         else:
+
             daycross = None
+
         i.predict_date_zero = daycross  # this variable doesn't exist in Country class, but in python you can create it regardless (we call it later when creating the HTML)
+
         ## fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=f"Daily New Cases Prediction Curve Fit (y={fita:.3f}x^2+{fitb:.3f}x+{fitc:.0f})", line=dict(color='gray', width=2), showlegend=True), row=3,col=1)
+
         fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=f"<b>Daily New Cases {days_predict_new_cases} Days Prediction</b><br>r<sup>2</sup>={r_sq:0.5f}<br>y={m:0.3f}x+{b0:0.1f} where x<sub>0</sub>={xfinal[0]}<br>y=0 / no new cases predicted @ {daycross}", line=dict(color='gray', width=2), showlegend=True), row=3,col=1)
+
         # half_index = int(len(xfinal)/2)
         # # text for the fit
         # text_string=f"y={m:0.2f}x+{b0:0.0f} (r^2={r_sq:0.5f})"
@@ -404,32 +444,50 @@ def graph2div(country_class,graph_type):
         #         color=color_text
         #     ),
         #     arrowhead=1, arrowsize=2, arrowcolor=color_text, arrowwidth=1, row=3,col=1)
+
     # ...  daily deaths ... #
+
     fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_deaths_list, name=f"<b>New Deaths</b><br>New Value: {round_or_none(i.delta_deaths_list[-1],0)}", showlegend=True),row=3,col=2)
+
     xavg,yavg = avgN(moving_average_samples,i.date_list,i.delta_deaths_list)
+
     fig.add_trace(go.Scatter(x=xavg, y=yavg, name=f"<b>New Deaths {moving_average_samples}day Moving Avg</b><br>New Value: {round_or_none(yavg[-1],0)}", showlegend=True),row=3,col=2)
-    # end new plot
+
+    # ~~~ end new plot ~~~ #
+
     fig.update_yaxes(type=the_type_fig,row=1,col=1)
+
     fig.update_yaxes(type=None,rangemode="tozero",row=2,col=1)
+
     fig.update_yaxes(type=None,row=1,col=2) # new plot
+
     # fig.update_yaxes(type="log",row=1,col=2) # new plot
+
     fig.update_yaxes(type=None,rangemode="tozero",row=2,col=2) # new plot
+
     fig.write_html(full_path_html,auto_open=False) # write 2.5 MiB html file
+
     div = plotly.offline.offline.plot(fig, show_link=False, include_plotlyjs=False, output_type='div')
+
     return div
 
 # create html file out of div list
 
 def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
+
     if type_title == "Normal":
         other_type_title="Log"
         countersite="https://hitwebcounter.com/counter/counter.php?page=7650825&style=0024&nbdigits=9&type=page&initCount=1020"
     else:
         other_type_title="Normal"
         countersite="https://hitwebcounter.com/counter/counter.php?page=7650826&style=0024&nbdigits=9&type=page&initCount=1020"
+
     bootstrap_string="""<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">\n""" if bootstrap_on else ""
-    # start of html
+
+    # ~~~ start of html ~~~ #
+
     # html = """<!DOCTYPE html>                # with html5 the divs are 50% height, without this they are 100%
+
     html = f"""<html>
     <head>
         <title>Covid19Plot.py Plots {type_title} Scale</title>
@@ -473,36 +531,48 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
         <p>* <b>Note:</b> The United States, US, recovery numbers are all nullfied to 0 on 2020-12-15 and onward. This was a decision made by the data source. More can be read here: <a href="https://github.com/CSSEGISandData/COVID-19/issues/3464">Github Issue</a> and <a href="https://covidtracking.com/about-data/faq#why-have-you-stopped-reporting-national-recoveries">Reasoning</a>.</p>
         <p>* <b>World Data Source:</b> The world data is gathered directly from <a href="https://pomber.github.io/covid19/">Pomber</a> which generates a parsable <b><a href="{SITE}">json</a></b> daily. They use the data from <a href="https://github.com/CSSEGISandData/COVID-19">CSSEGISandData</a> data to generate that json.</p>
         <p>* <b>California Data Source:</b> The California county data is gathered from <a href="https://data.ca.gov/dataset/covid-19-cases/resource/926fd08f-cc91-4828-af38-bd45de97f8c3">data.ca.gov</a>, they also provide a parseable <b><a href="https://data.ca.gov/dataset/590188d5-8545-4c93-a9a0-e230f0db7290/resource/926fd08f-cc91-4828-af38-bd45de97f8c3/download/statewide_cases.csv">csv file</a></b> format.</p>\n"""
+
     # print("HTML START:")
     # print(html)
     # print("HTML END:")
+
     place_num = -1 # so it starts at 0
+
     for country,div in div_list:
+
         place_num += 1
+
         # cases
         try:
             ldr_cases=round(country.last_delta_ratio_cases,sigdigit)
         except:
             ldr_cases=country.last_delta_ratio_cases
+
         # deaths
         try:
             ldr_deaths=round(country.last_delta_ratio_deaths,sigdigit)
         except:
             ldr_deaths=country.last_delta_ratio_deaths
+
         # recovered
         try:
             ldr_recovered=round(country.last_delta_ratio_recovered,sigdigit)
         except:
             ldr_recovered=country.last_delta_ratio_recovered
+
         # active
         try:
             ldr_active=round(country.last_delta_ratio_active,sigdigit)
         except:
             ldr_active=country.last_delta_ratio_active
+
         # type_title comes in as Log (doesn't work) turns to LOG (works), comes in as Normal (doesn't work )turns to NORMAL (works)
         # html += f"        <h3><a href='html-plots/{country.countryposix}-plot-{type_title.upper()}.html'>{country.country}</a></h3>\n"
+
         html += f"<h3 class='roundback'><u>#{place_num}. {country.country}</u></h3>\n"
+
         html += f"<p><a href='html-plots/{country.countryposix}-plot-NORMAL.html'>Normal</a> | <a href='html-plots/{country.countryposix}-plot-LOG.html'>Log</a></p>"
+
         html += f"""
         <table border="1" cellpadding="5">
         <tbody>
@@ -538,27 +608,40 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
         </tr>
         </tbody>
         </table>\n"""
+
         # death & recovery percent
+
         # deaths %
         try:
             lp_deaths=round(country.last_death_percent,sigdigit_small)
         except:
             lp_deaths=country.last_death_percent
+
         # recovery %
         try:
             lp_recovered=round(country.last_recovery_percent,sigdigit_small)
         except:
             lp_recovered=country.last_recovery_percent
+
         html += f"""<p>* Last percent <b>recovered</b> from all cases: <b>{lp_recovered}%</b></p>
         <p>* Last percent <b>dead</b> from all cases: <b>{lp_deaths}%</b></p>\n"""
-        # below - active new cases prediction
+
+        #  ~~~ below - active new cases prediction ~~~ #
+
         html += f"<p>* Predict <b>0 New Daily Cases</b> date</b> using {days_predict_new_cases} day linear regression: <b>{country.predict_date_zero}</b></p>"
-        # above - active new cases prediction
-        # below - ratio prediction
+
+        # ~~~ above - active new cases prediction ~~~ #
+
+        # ~~~ below - ratio prediction ~~~ #
+
         predict_list=[]
+
         for pdays in range(predict_days_min,predict_days_max+1):
+
             success, xfinal, yfinal, r_sq, m, b0 = country.lastXdayslinearpredict(country.delta_ratio_active_list, pdays)
+
             if success:
+
                 try:
                     x_cross1 = (1.0 - float(b0)) / float(m)
                     x_cross1_int=int(x_cross1)
@@ -571,55 +654,67 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
                     success=False
                     daycross=None
                     r_sq=None
+
             predict_item=[pdays,success,daycross,None if r_sq == None else round(r_sq,sigdigit)]
+
             predict_list.append(predict_item)
+
         html += """<p><b>Active Case Peak Prediction</b>: using past X days of "active case ratio" in a linear regression fit algorithm</p>
         <table border="1" cellpadding="5">
         <tbody>
         <tr>
         <td>past days</td>\n"""
+
         for a in predict_list:
             html += f"<td>{a[0]}</td>\n"
+
         html += """</tr>
         <tr>
         <td>predicted peak date</td>\n"""
+
         for a in predict_list:
             html += f"<td>{a[2]}</td>\n"
+
         html += """</tr>
         <tr>
         <td>r<sup>2</sup></td>\n"""
+
         for a in predict_list:
             html += f"<td>{a[3]}</td>\n"
+
         html += """</tr>
         </tbody>
         </table>\n"""
-        # above prediction
+
+        # ~~~ above prediction ~~~ #
+
         html += "        " + div+"\n"
+
         # redundant (already in notes # html += '<p>* <b>Note:</b> Data Source: <a href="https://pomber.github.io/covid19/">Pomber</a>, which generates daily json from <a href="https://github.com/CSSEGISandData/COVID-19">CSSEGISandData</a> data.</p>\n'
  
     html += f"""<!-- hitwebcounter Code START -->
-<a href="https://www.hitwebcounter.com" target="_blank">
-<img src="{countersite}" title="Views:" Alt="hitwebcounter" border="0" >
-</a>
-</body>
+    <a href="https://www.hitwebcounter.com" target="_blank">
+    <img src="{countersite}" title="Views:" Alt="hitwebcounter" border="0" >
+    </a>
+    </body>
     </html>\n"""
-    # end of html
+
+    # ~~~ end of html ~~~ #
+
     # make it pretty
     prettyhtml = bs4.BeautifulSoup(html, "lxml").prettify()
+
     # make it htmlmin
     minihtml = htmlmin.minify(prettyhtml, remove_empty_space=True)
+
     # write file
     with open(output_file, 'wb') as file:
         file.write(minihtml.encode('utf-8'))
+
     # * Below method generated error on Windows because I use delta triangle but worked on MAC and LINUX
     # * ERROR: UnicodeEncodeError: 'charmap' codec can't encode character '\u0394' in position 4132: character maps to <undefined>
     # with open(output_file, 'w') as file:
     #     file.write(minihtml)
-
-# <!-- hitwebcounter Code START -->
-# <a href="https://www.hitwebcounter.com" target="_blank">
-# <img src="https://hitwebcounter.com/counter/counter.php?page=7650826&style=0024&nbdigits=9&type=page&initCount=1020" title="Free Stats for webpages" Alt="hitwebcounter"   border="0" >
-# </a>                                    
 
 # save everything
 def save_pickle(object_to_save,filename_prefix,time_string):
