@@ -320,9 +320,11 @@ def graph2div(country_class,graph_type):
 
     if graph_type=="log":           # log
         the_type_string="LOG"
+        the_type_string_camel="Log"
         the_type_fig="log"
     else:                           # normal
         the_type_string="NORMAL"
+        the_type_string_camel="Normal"
         the_type_fig=None
 
     country_name=i.country
@@ -352,7 +354,7 @@ def graph2div(country_class,graph_type):
 
     # Note: instead of Diff it used to say Δ, but that renders weird on html (I tried to fix it but too much work for something small)
 
-    fig.update_layout(title=f"<b>{country_name} Covid19 Stats</b> - Last Update {i.last_date} - covid19plot.py v{Version}",**plot_options)
+    fig.update_layout(title=f"<b>{country_name} - Covid19 {the_type_string_camel} Plots</b> - Updated {i.last_date} - covid19plot.py v{Version}",**plot_options)
 
     fig.add_trace(go.Scatter(x=i.date_list, y=i.cases_list, name=f"<b>Cases</b> : y<sub>fin</sub>={round_or_none(i.cases_list[-1],0)}", line=dict(color='firebrick', width=2),showlegend=True),row=1,col=1)
 
@@ -519,9 +521,11 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
         <p><a href='covid19-{other_type_title.lower()}.html'>Click here to see {other_type_title} plots instead</a></p>
         <p><a href='usa-ca/county-output.html'>Click here to see California's Counties Daily New Cases plots instead</a></p>
         <p>* <b>How To Use:</b> Scroll down to the country of inquiry and view stats. To get an interactive plot open the "Normal" or "Log" link. The plots are only interactive when that countries plot is displayed seperately. The different lines / traces can enabled, disabled, all-enable ,or one-enabled by clicking and double clicking on the legend. The California county plots are also similarly interactive. </p>
-        <p>* <b>More Info:</b> available on <a href="https://github.com/bhbmaster/covid19">GitHub</a> and <a href="http://www.infotinks.com/coronavirus-dashboard-covid19-py/">infotinks.com</a></p>
-        <p>* <b>Delta</b> is change from previous day ( + is growth; - is reduction )</p>
-        <p>* <b>Ratio</b> is % change from previous day ( 1 or higher is growth; 0 to 1 is reduction )</p>
+        <p>* <b>Source Code & Other Links:</b> available on <a href="https://github.com/bhbmaster/covid19">GitHub</a> and <a href="http://www.infotinks.com/coronavirus-dashboard-covid19-py/">infotinks.com</a></p>
+        <p>* <b>Diff Change</b> or <b>Delta</b> is change from previous day ( + is growth; - is reduction )</p>
+        <p>* <b>Ratio Diff Change</b> or <b>Ratio</b> is % change from previous day ( 1 or higher is growth; 0 to 1 is reduction )</p>
+        <p>* <b>Note:</b> Each countries covid stats and plots are shown one by one. Countries are sorted by total cases in increasing order, so the country in #1 is the leader in most covid cases to date.</p>
+        <p>* <b>Note:</b> The very first 'country' to be shown is actually not a country but the world total represented as "TOTAL". It will always have the highest number of cases, as its the sum of all countries, so its takes spot #0 at the very top.
         <p>* <b>Note:</b> Peak active case prediction date is calculated using a linear regression fit on "active cases ratio" and examing its past X days values to see when it crosses 1.0.</p>
         <p>* An r<sup>2</sup> closer to 1.0 means a better prediction.</p>
         <p>* Ignore predictions with past dates.</p>
