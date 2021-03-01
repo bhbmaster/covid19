@@ -152,7 +152,7 @@ def graph():
         daycross = daycrossdt.strftime("%Y-%m-%d")
         print(f"{FRONTSPACE}- predicted cross   \t y = {m:0.4f}x+{b0:0.2f} \t r^2={r_sq:0.4f} \t {daycross=}")
         # plot
-        legendtext=f"<b>{county}</b> - predict 0 daily cases @ {daycross} by {predictdays}-day linear fit"
+        legendtext=f"<b>{county}</b> - predict 0 daily cases @ <b>{daycross}</b> by {predictdays}-day linear fit"
         fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=legendtext+f"", showlegend=False,legendgroup=county,visible=visible1),row=1,col=1)
     # -- newcountdeaths per 100K (moving average) -- #
     orgy=c[c.county == county]["newcountdeaths"].values
