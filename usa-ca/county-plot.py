@@ -4,6 +4,9 @@ import plotly.offline.offline
 from plotly.subplots import make_subplots
 from os import path
 import plotly.express as px # for themes/templates
+import numpy as np
+from sklearn.linear_model import LinearRegression
+import datetime
 
 ### INIT ###
 
@@ -14,6 +17,7 @@ PER=100000 # we should per 100000 aka 100K
 PER_TEXT="100K"
 SHOW_TOP_NUMBER=12 # how many counties to have enabled when graph shows (others can be toggled on interactively)
 ThemeFile = "../PLOTLY_THEME" # contents are comma sep: theme,font family,font size
+predictdays=30
 
 # Get Version
 Version = open(VersionFile,"r").readline().rstrip().lstrip() if path.exists(VersionFile) else "NA"
@@ -66,6 +70,61 @@ def avgN(N,x,y):
     # *** return tuple
     return (mov_x,mov_y)
 
+# input x dates and y values lists, output x (date list) and y (values) and r^2 and m and b0. uses last X days to predict
+def lastXdayslinearpredict(x_dates, y_values, days=10):
+    success=True
+    try:
+        # grab last 10 days or whatever
+        days=int(days)
+        x0=x_dates[-(days+1):-1]
+        y0=y_values[-(days+1):-1]
+        # get first day
+        day0=x0[0]
+        # new days 0 thru 10
+        x00=[]
+        for i in range(len(x0)):
+            x00.append(i)
+        # now should have
+        # x00=0,1,2,3,4,5,6,7,8,9
+        # y0=with ten values
+        # linear fit
+        x = np.array(x00).reshape((-1, 1))
+        y = np.array(y0)
+        model = LinearRegression()
+        model.fit(x, y)
+        r_sq = model.score(x, y)
+        b0=model.intercept_
+        m=float(model.coef_)
+        # print('* day 0:', day0)
+        # print('* coefficient of determination:', r_sq)
+        # print('* intercept:', b0)
+        # print('* slope:', m)
+        xpred0=[]
+        for i in range(len(x0)*2):
+            xpred0.append(i)
+        xpred=np.array(xpred0).reshape((-1,1))
+        y_pred = model.predict(xpred)
+        # print('predicted response:', y_pred, sep='\n')
+        # convert day 0,1,2,3,4 to day0+day
+        day0dt=datetime.datetime.strptime(day0, "%Y-%m-%d")
+        xdays=[]
+        for i in xpred0:
+            newdt=day0dt+datetime.timedelta(days=int(i))  # add x number of days
+            newday=newdt.strftime("%Y-%m-%d")
+            xdays.append(newday)
+        # final answer
+        xfinal=xdays   # need to convert these to dates of same format yyyy-mm-dd
+        yfinal=y_pred.tolist()
+    except Exception as e:
+        print("LINEAR FIT ERROR:",e)
+        success=False
+        xfinal=None
+        yfinal=None
+        r_sq=None
+        m=None
+        b0=None
+    return (success,xfinal,yfinal,r_sq,m,b0)
+
 # * graph
 def graph():
     print(f"* {county} pop={pop} - last recorded values below:")
@@ -79,6 +138,22 @@ def graph():
     print(f"{FRONTSPACE}newcountconfirmed   \t x = {avgx[-1]} \t org_y = {orgy[-1]:0.0f} \t {ndays}day_avg_y_per{PER_TEXT} = {avgy[-1]:0.2f}")
     legendtext=f"<b>{county}</b> (pop {pop:,}) is <b>{avgy[-1]:0.2f}</b> on {avgx[-1]}"
     fig.add_trace(go.Scatter(x=avgx, y=avgy, name=legendtext, showlegend=True,legendgroup=county,visible=visible1),row=1,col=1)
+    # linear regresion
+    (success,xfinal,yfinal,r_sq,m,b0) = lastXdayslinearpredict(avgx,avgy,predictdays)
+    # print(f"DEBUG: {success=},{xfinal=},{yfinal=},{r_sq=},{m=},{b0=}")
+    if success:
+        # y = mx + b ---> (y-b)/m = 0
+        y_to_cross = 0
+        x_cross1 = (y_to_cross - float(b0)) / float(m) 
+        x_cross1_int=int(x_cross1)
+        day0=xfinal[0]
+        day0dt = datetime.datetime.strptime(day0, "%Y-%m-%d")
+        daycrossdt=day0dt+datetime.timedelta(days=int(x_cross1_int))
+        daycross = daycrossdt.strftime("%Y-%m-%d")
+        print(f"{FRONTSPACE}- predicted cross   \t y = {m:0.4f}x+{b0:0.2f} \t r^2={r_sq:0.4f} \t {daycross=}")
+        # plot
+        legendtext=f"<b>{county}</b> - predict 0 daily cases @ {daycross} by {predictdays}-day linear fit"
+        fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=legendtext+f"", showlegend=False,legendgroup=county,visible=visible1),row=1,col=1)
     # -- newcountdeaths per 100K (moving average) -- #
     orgy=c[c.county == county]["newcountdeaths"].values
     y=orgy/pop*PER
