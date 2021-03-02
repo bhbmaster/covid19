@@ -486,6 +486,8 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
 
     bootstrap_string="""<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">\n""" if bootstrap_on else ""
 
+    country_count=len(div_list)-1
+
     # ~~~ start of html ~~~ #
 
     # html = """<!DOCTYPE html>                # with html5 the divs are 50% height, without this they are 100%
@@ -539,7 +541,7 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
         <a id="search_anchor"></a>
         <h3 class="roundback">Country Quick Nav</h3>
           <div id="search_links_div" class="dropdown-content">
-            <input type="text" placeholder="Search..." id="search_textbox" onkeyup="filterFunction()">
+            <input type="text" placeholder="Search {country_count} Countries..." id="search_textbox" onkeyup="filterFunction()">
              * <a href='#TOTAL' class='countrylinks'>(0) TOTAL</a>
             """
     # create all of the a links for the diff countries (alphabetical)
@@ -833,7 +835,7 @@ def main():
         # print(f"- {x} on {last_date} has {confirmed} confirmed {deaths} deaths {recovered} recovered {active} active")
 
     # print(f"* TOTALS on {last_date} are {last_confirmed} confirmed {last_deaths} deaths {last_recovered} recovered {last_active} active")
-    print(f"* # of countries {len(list_of_countries)}")
+    print(f"* {len(list_of_countries)} countries + 1 world total = {len(list_of_countries)+1}")
 
     # get world total country
 
@@ -850,7 +852,7 @@ def main():
     # # For quicker runs - for tests: only work with China, US and Canada by creating new list only w/ those countries
     # TestCountries = [ "China", "US", "Canada" ]
     # test_list_of_countries = []
-    # print(f"* # of countries {len(TestCountries)} (modified for debug / testing)")
+    # print(f"* {len(TestCountries)} countries + 1 world total = {len(TestCountries)+1} (modified for debug / testing)")
     # for i in list_of_countries:
     #     if i.country in TestCountries:
     #         test_list_of_countries.append(i)
