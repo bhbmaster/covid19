@@ -540,15 +540,19 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
         <h3 class="roundback">Country Quick Nav</h3>
           <div id="search_links_div" class="dropdown-content">
             <input type="text" placeholder="Search..." id="search_textbox" onkeyup="filterFunction()">
-             * <a href='#TOTAL' class='countrylinks'>TOTAL</a>
+             * <a href='#TOTAL' class='countrylinks'>(0) TOTAL</a>
             """
     # create all of the a links for the diff countries (alphabetical)
 
-    searchbox_divlist = div_list[1:] # excluding total as we will put it at the front (see above its already there)
-    searchbox_divlist.sort(key=lambda x: x[0].countryposix)
+    search_list = [] # [(place,name,posixname),...]
+    for index,value in enumerate(div_list):
+        search_list.append( (index,value[0].country,value[0].countryposix) )
 
-    for country,div in searchbox_divlist:
-        html += f" * <a href='#{country.countryposix}' class='countrylinks'>{country.country}</a>"
+    searchbox_divlist = search_list[1:] # excluding TOTAL as we want that at front (already did; see above)
+    searchbox_divlist.sort(key=lambda x: x[2])
+
+    for place_number,country_name,country_posix_name in searchbox_divlist:
+        html += f" * <a href='#{country_posix_name}' class='countrylinks'>({place_number}) {country_name}</a>"
 
     html += """</div>\n"""
 
