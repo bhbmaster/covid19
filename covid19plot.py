@@ -498,10 +498,10 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
         {bootstrap_string}
         <meta name="author" content="Kostia Khlebopros">
         <!-- pace.js progress bar js & css style : local version present, but we load from cloud for speed -->
-        <script src="https://cdn.jsdelivr.net/npm/pace-js@latest/pace.min.js"></script> </script> 
+        <script src="https://cdn.jsdelivr.net/npm/pace-js@latest/pace.min.js"></script>
         <link href="pace-big-counter.css" rel="stylesheet">
         <!-- plotly and jquery : local version present, but we load from cloud for speed -->
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
         <style>
             h2, h3, p, table, input {{
@@ -929,11 +929,11 @@ def main():
     # create the html
 
     # create html from div list - normal
-    print("Creating 'covid19-normal.html'")
+    print("Creating 'covid19-normal.html', please wait.")
     divs2html(div_list_normal,"Normal",start_time_string,"covid19-normal.html",bootstrapped)
 
     # create html from div list - log
-    print("Creating 'covid19-log.html'")
+    print("Creating 'covid19-log.html', please wait.")
     divs2html(div_list_log,"Log",start_time_string,"covid19-log.html",bootstrapped)
 
     # save 
