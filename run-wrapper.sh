@@ -9,9 +9,9 @@ cd /var/www/covid19/
 echo "* Starting Remote Plot Generation"
 ./run.sh &
 sleep 1
-PSCMD='"'"'ps aux | grep -E "run.sh|covid19plot|county-plot" | grep -vE "grep|defunc"'"'"'
+PSCMD='ps aux | grep -E "run.sh|covid19plot|county-plot" | grep -vE "grep|defunc"'
 PSOUT=$(/bin/bash -c "$PSCMD")
-PIDS=$(echo "$PSOUT" | awk '"'"'{print $2}'"'"')
+PIDS=$(echo "$PSOUT" | awk '{print $2}')
 echo "* Background Job PIDs: "$(echo "$PIDS")" <-- log in to `hostname` and kill those PIDs to stop it"
 echo "# $PSCMD"
 echo "$PSOUT"
