@@ -30,11 +30,13 @@ Then my `places.sh` uses those log files to get ordered list of most cases for e
 
 *Sidenote:* The version of python is specified with the `PYTHON` variable at the beginning of the run.sh script. This is important for my linux server because the `python` program points to `python2.7` by default, so I must specify python 3 by using the `python3.x` program call (such as `python3.9`)
 
+*Sidenote:* Created two wrapper scripts for `run.sh`, `run-wrapper.sh` & `run-and-pull-wrapper.sh`. One just kicks off `run.sh`, prints the PIDS, and follows the log. The latter updates the latest code from git using `git pull` and then kicks off `run.sh`, prints the PIDS and follows the log. Canceling the log follow, doesn't cancel the operation - you will need to kill the posted PIDs.
+
 ## Simple Wrapper Script
 
-Run `run-simple.sh` from root directory of the project and it will run `usa-ca/county-plot.py` and then `covid19plot.py`. Output is shown on terminal and not saved to run logs for parsing. This runs the faster script first, unlike the `run.sh` wrapper script which runs the lengthier plotter (covid19plot.py) first.
+Run `run-simple-mac.sh` from root directory of the project and it will run `usa-ca/county-plot.py` and then `covid19plot.py`. Output is shown on terminal and not saved to run logs for parsing. This runs the faster script first, unlike the `run.sh` wrapper script which runs the lengthier plotter (covid19plot.py) first.
 
-From a MAC run `run-simple-open.sh` which runs the same two scripts and then opens the results in a default browser. This will work on MAC but probably not Windows or Linux as it uses `open <file>` program (if I am not mistaken that is only supported on MACs; for other OS need different program to launch files with their default application).
+From a MAC run `run-simple-open-mac.sh` which runs the same two scripts and then opens the results in a default browser. This will work on MAC but probably not Windows or Linux as it uses `open <file>` program (if I am not mistaken that is only supported on MACs; for other OS need different program to launch files with their default application).
 
 *Sidenote:* These scripts call the default python program using python. So if that calls `python2.7` for you, this script will fail. To fix that, you will need to edit the script to call `python3.x`, such as `python3.9`, instead just `python`.
 
