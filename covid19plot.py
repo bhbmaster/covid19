@@ -518,7 +518,7 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
 	    </style>
     <head/>
     <body>
-        <h2 class="roundback bigger"><u>Covid19Plot.py {type_title} Plot</u> - v{Version}</h2>
+        <h2 class="roundback bigger"><u>Covid19Plot.py Country {type_title} Plots</u> - v{Version}</h2>
         <p><b>Last Plot Update:</b> {time_string}</p>
         <p><a href='covid19-{other_type_title.lower()}.html'>Click here to see {other_type_title} plots instead</a></p>
         <p><a href='usa-ca/county-output.html'>Click here to see California's Counties Daily New Cases plots instead</a></p>
