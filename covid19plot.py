@@ -496,11 +496,17 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
     <head>
         <title>Covid19Plot.py Plots {type_title} Scale</title>
         {bootstrap_string}
+        <meta name="author" content="Kostia Khlebopros">
+        <!-- pace.js progress bar js & css style : local version present, but we load from cloud for speed -->
+        <script src="https://cdn.jsdelivr.net/npm/pace-js@latest/pace.min.js"></script> </script> 
+        <link href="pace-big-counter.css" rel="stylesheet">
+        <!-- plotly and jquery : local version present, but we load from cloud for speed -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js">
         <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
         <style>
-	        h2, h3, p, table, input {{
-	            margin-left: 40px;
-	        }}
+            h2, h3, p, table, input {{
+                margin-left: 40px;
+            }}
             td {{
                 text-align: center;
             }}
@@ -515,11 +521,12 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
             .dropdown-content {{
                 margin-left: 40px;
             }}
-	    </style>
+        </style>
     <head/>
     <body>
         <h2 class="roundback bigger"><u>Covid19Plot.py Country {type_title} Plots</u> - v{Version}</h2>
         <p><b>Last Plot Update:</b> {time_string}</p>
+        <p>* <b>Caution:</b> Page takes a moment to load, as it a large HTML file (over 20 MiB). Loading progress shown as percentage at top right corner. It might hover around 99% please be patient as it will finish. If progress percentage not shown, just wait for browser to awknowledge page is done loading.</p>
         <p><a href='covid19-{other_type_title.lower()}.html'>Click here to see {other_type_title} plots instead</a></p>
         <p><a href='usa-ca/county-output.html'>Click here to see California's Counties Daily New Cases plots instead</a></p>
         <p>* <b>How To Use:</b> Scroll down to the country of inquiry and view stats. To get an interactive plot open the "Normal" or "Log" link. The plots are only interactive when that countries plot is displayed seperately. The different lines / traces can enabled, disabled, all-enable ,or one-enabled by clicking and double clicking on the legend. The California county plots are also similarly interactive. </p>
@@ -921,17 +928,19 @@ def main():
 
     # create the html
 
-    # create html from div list - log
-    divs2html(div_list_log,"Log",start_time_string,"covid19-log.html",bootstrapped)
-
     # create html from div list - normal
+    print("Creating 'covid19-normal.html'")
     divs2html(div_list_normal,"Normal",start_time_string,"covid19-normal.html",bootstrapped)
+
+    # create html from div list - log
+    print("Creating 'covid19-log.html'")
+    divs2html(div_list_log,"Log",start_time_string,"covid19-log.html",bootstrapped)
 
     # save 
     # save_pickle(list_of_countries,"country-class-list",start_time_posix)
 
     # complete message
-    print("Generating plots done!")
+    print("Generating plots & html done!")
 
 if __name__ == "__main__":
     main()
