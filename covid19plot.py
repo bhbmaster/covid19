@@ -501,9 +501,6 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
 	        h2, h3, p, table, input {{
 	            margin-left: 40px;
 	        }}
-	        /* div {{
-	            height: 100%;
-	        }} */
             td {{
                 text-align: center;
             }}
@@ -514,6 +511,9 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
             }}
             .bigger {{
                 padding: 20px;
+            }}
+            .dropdown-content {{
+                margin-left: 40px;
             }}
 	    </style>
     <head/>
@@ -835,7 +835,7 @@ def main():
         # print(f"- {x} on {last_date} has {confirmed} confirmed {deaths} deaths {recovered} recovered {active} active")
 
     # print(f"* TOTALS on {last_date} are {last_confirmed} confirmed {last_deaths} deaths {last_recovered} recovered {last_active} active")
-    print(f"* {len(list_of_countries)} countries + 1 world total = {len(list_of_countries)+1}")
+    print(f"* {len(list_of_countries)} countries + 1 world total = {len(list_of_countries)+1} total plots")
 
     # get world total country
 
@@ -852,7 +852,7 @@ def main():
     # # For quicker runs - for tests: only work with China, US and Canada by creating new list only w/ those countries
     # TestCountries = [ "China", "US", "Canada" ]
     # test_list_of_countries = []
-    # print(f"* {len(TestCountries)} countries + 1 world total = {len(TestCountries)+1} (modified for debug / testing)")
+    # print(f"* {len(TestCountries)} countries + 1 world total = {len(TestCountries)+1} total plots (modified for debug / testing)")
     # for i in list_of_countries:
     #     if i.country in TestCountries:
     #         test_list_of_countries.append(i)
