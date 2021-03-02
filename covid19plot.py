@@ -496,12 +496,12 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
         {bootstrap_string}
         <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
         <style>
-	        h2, h3, p, table {{
+	        h2, h3, p, table, input {{
 	            margin-left: 40px;
 	        }}
-	        div {{
+	        /* div {{
 	            height: 100%;
-	        }}
+	        }} */
             td {{
                 text-align: center;
             }}
@@ -535,7 +535,22 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
         <p>* <b>Note:</b> Active Cases is calculated by subtracting Recovered and Deaths from total Cases.</p>
         <p>* <b>Note:</b> The United States, US, recovery numbers are all nullfied to 0 on 2020-12-15 and onward. This was a decision made by the data source. More can be read here: <a href="https://github.com/CSSEGISandData/COVID-19/issues/3464">Github Issue</a> and <a href="https://covidtracking.com/about-data/faq#why-have-you-stopped-reporting-national-recoveries">Reasoning</a>.</p>
         <p>* <b>World Data Source:</b> The world data is gathered directly from <a href="https://pomber.github.io/covid19/">Pomber</a> which generates a parsable <b><a href="{SITE}">json</a></b> daily. They use the data from <a href="https://github.com/CSSEGISandData/COVID-19">CSSEGISandData</a> data to generate that json.</p>
-        <p>* <b>California Data Source:</b> The California county data is gathered from <a href="https://data.ca.gov/dataset/covid-19-cases/resource/926fd08f-cc91-4828-af38-bd45de97f8c3">data.ca.gov</a>, they also provide a parseable <b><a href="https://data.ca.gov/dataset/590188d5-8545-4c93-a9a0-e230f0db7290/resource/926fd08f-cc91-4828-af38-bd45de97f8c3/download/statewide_cases.csv">csv file</a></b> format.</p>\n"""
+        <p>* <b>California Data Source:</b> The California county data is gathered from <a href="https://data.ca.gov/dataset/covid-19-cases/resource/926fd08f-cc91-4828-af38-bd45de97f8c3">data.ca.gov</a>, they also provide a parseable <b><a href="https://data.ca.gov/dataset/590188d5-8545-4c93-a9a0-e230f0db7290/resource/926fd08f-cc91-4828-af38-bd45de97f8c3/download/statewide_cases.csv">csv file</a></b> format.</p>
+        <a id="search_anchor"></a>
+        <h3 class="roundback">Country Quick Nav</h3>
+          <div id="search_links_div" class="dropdown-content">
+            <input type="text" placeholder="Search..." id="search_textbox" onkeyup="filterFunction()">
+             * <a href='#TOTAL' class='countrylinks'>TOTAL</a>
+            """
+    # create all of the a links for the diff countries (alphabetical)
+
+    searchbox_divlist = div_list[1:] # excluding total as we will put it at the front (see above its already there)
+    searchbox_divlist.sort(key=lambda x: x[0].countryposix)
+
+    for country,div in searchbox_divlist:
+        html += f" * <a href='#{country.countryposix}' class='countrylinks'>{country.country}</a>"
+
+    html += """</div>\n"""
 
     # print("HTML START:")
     # print(html)
@@ -574,7 +589,7 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
         # type_title comes in as Log (doesn't work) turns to LOG (works), comes in as Normal (doesn't work )turns to NORMAL (works)
         # html += f"        <h3><a href='html-plots/{country.countryposix}-plot-{type_title.upper()}.html'>{country.country}</a></h3>\n"
 
-        html += f"<h3 class='roundback'><u>#{place_num}. {country.country}</u></h3>\n"
+        html += f"<a id='{country.countryposix}'></a><h3 class='roundback'><u>#{place_num}. {country.country}</u> - <a href='#search_anchor'>Back To Search</a></h3>\n"
 
         html += f"<p><a href='html-plots/{country.countryposix}-plot-NORMAL.html'>Normal</a> | <a href='html-plots/{country.countryposix}-plot-LOG.html'>Log</a></p>"
 
@@ -701,8 +716,26 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
     <a href="https://www.hitwebcounter.com" target="_blank">
     <img src="{countersite}" title="Views:" Alt="hitwebcounter" border="0" >
     </a>
-    </body>
-    </html>\n"""
+    </body>"""
+    html += """
+    <script>
+        function filterFunction() {
+          var input, filter, ul, li, a, i;
+          input = document.getElementById("search_textbox");
+          filter = input.value.toUpperCase();
+          div = document.getElementById("search_links_div");
+          a = div.getElementsByTagName("a");
+          for (i = 0; i < a.length; i++) {
+            txtValue = a[i].textContent || a[i].innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+              a[i].style.display = "";
+            } else {
+              a[i].style.display = "none";
+            }
+          }
+        }
+    </script>
+    </html>"""
 
     # ~~~ end of html ~~~ #
 
