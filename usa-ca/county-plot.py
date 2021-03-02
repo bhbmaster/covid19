@@ -136,7 +136,7 @@ def graph():
     y=orgy/pop*PER
     avgx,avgy=avgN(ndays,x.tolist(),y.tolist())
     print(f"{FRONTSPACE}newcountconfirmed   \t x = {avgx[-1]} \t org_y = {orgy[-1]:0.0f} \t {ndays}day_avg_y_per{PER_TEXT} = {avgy[-1]:0.2f}")
-    legendtext=f"<b>{county}</b> (pop {pop:,}) is <b>{avgy[-1]:0.2f}</b> on {avgx[-1]}"
+    legendtext=f"<b>{county}</b> (pop {pop:,}) y<sub>final</sub>=<b>{avgy[-1]:0.2f}</b>"
     fig.add_trace(go.Scatter(x=avgx, y=avgy, name=legendtext, showlegend=True,legendgroup=county,visible=visible1),row=1,col=1)
     # linear regresion
     (success,xfinal,yfinal,r_sq,m,b0) = lastXdayslinearpredict(avgx,avgy,predictdays)
@@ -159,19 +159,19 @@ def graph():
     y=orgy/pop*PER
     avgx,avgy=avgN(ndays,x.tolist(),y.tolist())
     print(f"{FRONTSPACE}newcountdeaths      \t x = {avgx[-1]} \t org_y = {orgy[-1]:0.0f} \t {ndays}day_avg_y_per{PER_TEXT} = {avgy[-1]:0.2f}")
-    legendtext=f"<b>{county}</b> (pop {pop:,}) is <b>{avgy[-1]:0.2f}</b> on {avgx[-1]}"
+    legendtext=f"<b>{county}</b> (pop {pop:,}) y<sub>final</sub>=<b>{avgy[-1]:0.2f}</b>"
     fig.add_trace(go.Scatter(x=avgx, y=avgy, name=legendtext, showlegend=False,legendgroup=county,visible=visible1),row=2,col=1)
     # -- total cases per 100K -- #
     orgy=c[c.county == county]["totalcountconfirmed"].values
     y=orgy/pop*PER
     print(f"{FRONTSPACE}totalcountconfirmed \t x = {x[-1]} \t org_y = {orgy[-1]:0.0f} \t y_per{PER_TEXT} = {y[-1]:0.2f}")
-    legendtext=f"<b>{county}</b> (pop {pop:,}) is <b>{y[-1]:0.2f}</b> on {x[-1]}"
+    legendtext=f"<b>{county}</b> (pop {pop:,}) y<sub>final</sub>=<b>{y[-1]:0.2f}</b>"
     fig.add_trace(go.Scatter(x=x, y=y, name=legendtext, showlegend=False,legendgroup=county,visible=visible1),row=1,col=2)
     # -- total deaths per 100K -- #
     orgy=c[c.county == county]["totalcountdeaths"].values 
     y=orgy/pop*PER
     print(f"{FRONTSPACE}totalcountdeaths    \t x = {x[-1]} \t org_y = {orgy[-1]:0.0f} \t y_per{PER_TEXT} = {y[-1]:0.2f}")
-    legendtext=f"<b>{county}</b> (pop {pop:,}) is <b>{y[-1]:0.2f}</b> on {x[-1]}"
+    legendtext=f"<b>{county}</b> (pop {pop:,}) y<sub>final</sub>=<b>{y[-1]:0.2f}</b>"
     fig.add_trace(go.Scatter(x=x, y=y, name=legendtext, showlegend=False,legendgroup=county,visible=visible1),row=2,col=2)
 
 ### MAIN ###
