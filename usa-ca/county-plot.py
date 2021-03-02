@@ -38,9 +38,10 @@ print(c.describe())
 cpops = pd.read_csv(file_pop,index_col="Rank")
 # cpops = cpops.head(15)
 
-# top 12 most populous counties
+# get top 10 (or SHOW_TOP_NUMBER) of counties based on population + select which ones to show enabled on legend
 top10 = cpops.head(SHOW_TOP_NUMBER)["County"]
 visible_counties = top10.values.tolist() # essentially its ['Los Angeles', 'San Diego', 'Orange', 'Riverside', 'San Bernardino', 'Santa Clara', 'Alameda', 'Sacramento', 'Contra Costa', 'Fresno', 'Kern', 'San Francisco']
+visible_counties = ['Los Angeles', 'Santa Clara', 'San Mateo', 'San Francisco']
 print(f"visible_counties={visible_counties}")
 
 # list of tuples [(county,pop) (county,pop)]
