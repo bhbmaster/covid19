@@ -119,11 +119,11 @@ covid19plot# ls --hide "run*" --hide "*html" -R -l
 -rwxr-xr-x 1 root root  1364 Feb 25 16:30 places.sh             # parses output files generated from run.sh & generates places.html 
 -rw-r--r-- 1 root root    44 Feb 24 16:47 requirements.txt      # python requirements
 
--rwxr-xr-x 1 root root     1709 Mar  1 22:10 run.sh          # for infotinks server -  covid19plot.py and county-plot.py, creates run-$DATE-out log files, and runs place.sh
+-rwxr-xr-x 1 root root     1709 Mar  1 22:10 run.sh          # for infotinks server -  covid19plot.py and county-plot.py, creates run-$DATE-out log files, and runs place.sh (crontab calls this)
+-rwxr-xr-x 1 root root      814 Mar  1 22:14 run-and-pull-wrapper.sh     # for infotinks server - sync code from git and kick off run.sh into background and follow log
+-rwxr-xr-x 1 root root      688 Mar  1 22:14 run-wrapper.sh              # for infotinks server - kick off run.sh into background and follow log
 -rw-r--r-- 1 root root    22166 Mar  2 10:28 run-$DATE.out  # several of these exist, output from run.sh parsed by places.sh
 
--rwxr-xr-x 1 root root      814 Mar  1 22:14 run-and-pull-wrapper.sh     # for infotinks server - sync code from git and run covid19plot.py and county-plot.py (logs not saved)
--rwxr-xr-x 1 root root      688 Mar  1 22:14 run-wrapper.sh              # for infotinks server - run covid19plot.py and county-plot.py (logs not saved)
 
 -rwxr-xr-x 1 root root      326 Mar  1 22:10 run-simple-mac.sh           # run code on mac 
 -rwxr-xr-x 1 root root      268 Mar  1 22:10 run-simple-open-mac.sh      # run code on mac and open html plots
