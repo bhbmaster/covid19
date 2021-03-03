@@ -98,6 +98,57 @@ pip install -r requirements.txt
 
 Then run the script using the above execute instructions.
 
+## File Structure
+
+Here are the dirs and files
+
+```bash
+covid19plot# ls --hide "run*" --hide "*html" -R -l
+
+~~~.:~~~
+
+-rwxr-xr-x 1 root root 42888 Mar  2 18:55 covid19plot.py        # main code - plots countrys and creates html output
+
+-rw-r--r-- 1 root root 27340556 Mar  2 18:07 covid19-log.html     # log plots of country covid stats
+-rw-r--r-- 1 root root 27338240 Mar  2 18:07 covid19-normal.html  # normal plots of country covid stats
+-rw-r--r-- 1 root root  7189726 Mar  2 18:07 places.html          # ranking countries from highest to lowest cases each day
+
+-rw-r--r-- 1 root root   646 Mar  2 00:35 PLOTLY_THEME          # theme file
+-rw-r--r-- 1 root root  6155 Mar  1 22:10 README.md             # this readme
+-rw-r--r-- 1 root root     9 Mar  2 10:26 VERSION               # version
+-rwxr-xr-x 1 root root  1364 Feb 25 16:30 places.sh             # parses output files generated from run.sh & generates places.html 
+-rw-r--r-- 1 root root    44 Feb 24 16:47 requirements.txt      # python requirements
+
+-rwxr-xr-x 1 root root     1709 Mar  1 22:10 run.sh          # for infotinks server -  covid19plot.py and county-plot.py, creates run-$DATE-out log files, and runs place.sh
+-rw-r--r-- 1 root root    22166 Mar  2 10:28 run-$DATE.out  # several of these exist, output from run.sh parsed by places.sh
+
+-rwxr-xr-x 1 root root      814 Mar  1 22:14 run-and-pull-wrapper.sh     # for infotinks server - sync code from git and run covid19plot.py and county-plot.py (logs not saved)
+-rwxr-xr-x 1 root root      688 Mar  1 22:14 run-wrapper.sh              # for infotinks server - run covid19plot.py and county-plot.py (logs not saved)
+
+-rwxr-xr-x 1 root root      326 Mar  1 22:10 run-simple-mac.sh           # run code on mac 
+-rwxr-xr-x 1 root root      268 Mar  1 22:10 run-simple-open-mac.sh      # run code on mac and open html plots
+
+drwxr-xr-x 2 root root  4096 Mar  2 18:07 usa-ca                # where counties are
+drwxr-xr-x 2 root root  4096 Mar  2 18:55 code                  # code dir
+drwxr-xr-x 3 root root  4096 Feb 24 16:52 example-output        # example output           
+drwxr-xr-x 2 root root 20480 Jan 22 06:11 html-plots            # where each countries log and normal plots go
+drwxr-xr-x 2 root root  4096 Apr 14  2020 img-plots             # old dir, not used anymore (images too big). code is commented out
+
+~~~./code:~~~
+-rw-r--r-- 1 root root 8217593 Mar  2 18:55 CountryTestData.json      # test data for countries
+-rw-r--r-- 1 root root   89476 Mar  2 18:55 jquery.min.js             # local version of jquery (however, we use cloud)
+-rw-r--r-- 1 root root     778 Mar  2 18:55 pace-big-counter.css      # css style for pace progress bar (we use this)
+-rw-r--r-- 1 root root   12736 Mar  2 18:55 pace.min.js               # local version of pace.js (however, we use cloud)
+-rw-r--r-- 1 root root 3478132 Mar  2 18:55 plotly-latest.min.js      # local version of plotly (however, we use cloud)
+
+~~~./usa-ca:~~~
+-rw-r--r-- 1 root root 12833 Mar  2 17:41 county-plot.py         # main code - plots california counties and creates html output
+-rw-r--r-- 1 root root  1069 Feb 24 16:18 county-pop.csv         # csv showing each counties population (called by county-plot.py)
+
+-rw-r--r-- 1 root root 6169982 Mar  2 18:07 county-output.html   # html output of county-plot.pt
+-rw-r--r-- 1 root root  649588 Feb 24 16:51 run-$DATE.out  # saved log output of county-plot.py created by ../run.sh
+```
+
 ## Errors
 
 Possible errors that might be seen:
