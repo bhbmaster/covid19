@@ -18,6 +18,15 @@ PER_TEXT="100K"
 SHOW_TOP_NUMBER=12 # how many counties to have enabled when graph shows (others can be toggled on interactively)
 ThemeFile = "../PLOTLY_THEME" # contents are comma sep: theme,font family,font size
 predictdays=30
+COLOR_LIST = px.colors.qualitative.Alphabet # this sets the colorway option in layout
+COLOR_LIST_LEN = len(COLOR_LIST) # we will use the mod of this later
+updatedate_dt = datetime.datetime.now()
+updatedate_str = updatedate_dt.strftime("%Y-%m-%d %H:%M:%S")
+
+
+# colorway options:
+# >>> dir(px.colors.qualitative)
+# ['Alphabet', 'Alphabet_r', 'Antique', 'Antique_r', 'Bold', 'Bold_r', 'D3', 'D3_r', 'Dark2', 'Dark24', 'Dark24_r', 'Dark2_r', 'G10', 'G10_r', 'Light24', 'Light24_r', 'Pastel', 'Pastel1', 'Pastel1_r', 'Pastel2', 'Pastel2_r', 'Pastel_r', 'Plotly', 'Plotly_r', 'Prism', 'Prism_r', 'Safe', 'Safe_r', 'Set1', 'Set1_r', 'Set2', 'Set2_r', 'Set3', 'Set3_r', 'T10', 'T10_r', 'Vivid', 'Vivid_r', '__all__', '__builtins__', '__cached__', '__doc__', '__file__', '__loader__', '__name__', '__package__', '__spec__', '_cols', '_contents', '_k', '_swatches', 'swatches']
 
 # Get Version
 Version = open(VersionFile,"r").readline().rstrip().lstrip() if path.exists(VersionFile) else "NA"
@@ -128,18 +137,26 @@ def lastXdayslinearpredict(x_dates, y_values, days=10):
 
 # * graph
 def graph():
+    global color_index
     print(f"* {county} pop={pop} - last recorded values below:")
     visible1 = "legendonly" if not county in visible_counties else None
     x=c[c.county == county]["date"].values
     FRONTSPACE="    "
+    #####################################################
     # -- newcountconfirmed per 100K (moving average) -- #
+    #####################################################
+    if color_index != None: color_index += 1 # go to next color index (if we use it save it and use modulus of length)
     orgy=c[c.county == county]["newcountconfirmed"].values
     y=orgy/pop*PER
     avgx,avgy=avgN(ndays,x.tolist(),y.tolist())
     print(f"{FRONTSPACE}newcountconfirmed   \t x = {avgx[-1]} \t org_y = {orgy[-1]:0.0f} \t {ndays}day_avg_y_per{PER_TEXT} = {avgy[-1]:0.2f}")
     legendtext=f"<b>{county}</b> pop={pop:,} NewC<sub>final</sub>=<b>{avgy[-1]:0.2f}</b>"
     fig.add_trace(go.Scatter(x=avgx, y=avgy, name=legendtext, showlegend=True,legendgroup=county,visible=visible1),row=1,col=1)
-    # linear regresion
+    used_colors_index = color_index # saving current color used (it follows thru the index of the colorway)
+    #########################
+    # linear regresion line #
+    #########################
+    if color_index != None: color_index += 1 # go to next color index (if we use it save it and use modulus of length)
     (success,xfinal,yfinal,r_sq,m,b0) = lastXdayslinearpredict(avgx,avgy,predictdays)
     # print(f"DEBUG: {success=},{xfinal=},{yfinal=},{r_sq=},{m=},{b0=}")
     if success:
@@ -154,21 +171,36 @@ def graph():
         print(f"{FRONTSPACE}- predicted cross   \t y = {m:0.4f}x+{b0:0.2f} \t r^2={r_sq:0.4f} \t {daycross=}")
         # plot
         legendtext=f"<b>{county}</b> - predict 0 daily cases @ <b>{daycross}</b> by {predictdays}-day linear fit"
-        fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=legendtext+f"", showlegend=False,legendgroup=county,visible=visible1),row=1,col=1)
+        if color_index == None:
+            # if color_index is -1 we didn't set it and we will use the default color methods (next color in colorway)
+            fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=legendtext+f"", showlegend=False,legendgroup=county,visible=visible1,line=dict(dash='dash')),row=1,col=1)
+        else:
+            color_index_to_use = used_colors_index % COLOR_LIST_LEN # we circulate thru the color_way so we use modulus
+            color_to_use = COLOR_LIST[color_index_to_use] # call that color via index from colorway list
+            fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=legendtext+f"", showlegend=False,legendgroup=county,visible=visible1,line=dict(color=color_to_use,dash='dash')),row=1,col=1)
+    ##################################################
     # -- newcountdeaths per 100K (moving average) -- #
+    ##################################################
+    if color_index != None: color_index += 1 # go to next color index (if we use it save it and use modulus of length)
     orgy=c[c.county == county]["newcountdeaths"].values
     y=orgy/pop*PER
     avgx,avgy=avgN(ndays,x.tolist(),y.tolist())
     print(f"{FRONTSPACE}newcountdeaths      \t x = {avgx[-1]} \t org_y = {orgy[-1]:0.0f} \t {ndays}day_avg_y_per{PER_TEXT} = {avgy[-1]:0.2f}")
     legendtext=f"<b>{county}</b> pop={pop:,} NewD<sub>final</sub>=<b>{avgy[-1]:0.2f}</b>"
     fig.add_trace(go.Scatter(x=avgx, y=avgy, name=legendtext, showlegend=False,legendgroup=county,visible=visible1),row=2,col=1)
+    ##############################
     # -- total cases per 100K -- #
+    ##############################
+    if color_index != None: color_index += 1 # go to next color index (if we use it save it and use modulus of length)
     orgy=c[c.county == county]["totalcountconfirmed"].values
     y=orgy/pop*PER
     print(f"{FRONTSPACE}totalcountconfirmed \t x = {x[-1]} \t org_y = {orgy[-1]:0.0f} \t y_per{PER_TEXT} = {y[-1]:0.2f}")
     legendtext=f"<b>{county}</b> pop={pop:,} TotC<sub>final</sub>=<b>{y[-1]:0.2f}</b>"
     fig.add_trace(go.Scatter(x=x, y=y, name=legendtext, showlegend=False,legendgroup=county,visible=visible1),row=1,col=2)
+    ###############################
     # -- total deaths per 100K -- #
+    ###############################
+    if color_index != None: color_index += 1 # go to next color index (if we use it save it and use modulus of length)
     orgy=c[c.county == county]["totalcountdeaths"].values 
     y=orgy/pop*PER
     print(f"{FRONTSPACE}totalcountdeaths    \t x = {x[-1]} \t org_y = {orgy[-1]:0.0f} \t y_per{PER_TEXT} = {y[-1]:0.2f}")
@@ -194,21 +226,24 @@ last_x = c[c.county == random_county]["date"].values.tolist()[-1]
 # supported fonts: https://plotly.com/python/reference/layout/
 plot_options={
     "hoverlabel_font_size": Theme_FontSize,
-    # "title_font_size": Theme_FontSize,
-    "legend_font_size": Theme_FontSize,
+    "title_font_size": Theme_FontSize+2,
+    "legend_font_size": Theme_FontSize-1,
     "font_size": Theme_FontSize,
     "hoverlabel_font_family": Theme_Font,
     "title_font_family": Theme_Font,
     "legend_font_family": Theme_Font,
     "font_family": Theme_Font,
-    "hoverlabel_namelength":-1,  # the full line instead of the default 15
-    "hovermode":'x',
-    "template":Theme_Template
+    "hoverlabel_namelength": -1,  # the full line instead of the default 15
+    "hovermode": 'x',
+    "template": Theme_Template,
+    "colorway": COLOR_LIST
 }
-fig.update_layout(title=f"<b>California Counties Covid19 Stats</b> - Last Update {last_x} (v{Version})",**plot_options) # main title & theme & hover options & font options unpacked
+
+fig.update_layout(title=f"<b>California Counties Covid19 Stats</b> (v{Version})<br>Last Data Point: {last_x} , Updated On: {updatedate_str}",**plot_options) # main title & theme & hover options & font options unpacked
 # fig = go.Figure() # then graph like this: fig.add_trace(go.Scatter(x=avgx, y=avgy, name=legendtext, showlegend=True,visible=visible1))
 
 # * consider each county and trace it on plotly
+color_index = -1 # color index, if we set to None then we alternate colors for every trace. if we set to -1 here then we match color of prediction
 for county,pop in cpop_list:
     graph()
 
@@ -219,5 +254,6 @@ fig.write_html(output_html,auto_open=False)
 div = plotly.offline.offline.plot(fig, show_link=False, include_plotlyjs=False, output_type='div')
 print(f"len(div)={len(div)}") # div not used
 print("- plotting end")
+print("DEBUG: colorway=",plot_options["colorway"])
 
 ### END
