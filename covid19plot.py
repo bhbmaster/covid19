@@ -340,7 +340,7 @@ def graph2div(country_class,graph_type):
     # supported fonts: https://plotly.com/python/reference/layout/
     plot_options={
         "hoverlabel_font_size": Theme_FontSize,
-        # "title_font_size": Theme_FontSize,
+        "title_font_size": Theme_FontSize+2,
         "legend_font_size": Theme_FontSize,
         "font_size": Theme_FontSize,
         "hoverlabel_font_family": Theme_Font,
@@ -354,7 +354,7 @@ def graph2div(country_class,graph_type):
 
     # Note: instead of Diff it used to say Δ, but that renders weird on html (I tried to fix it but too much work for something small)
 
-    fig.update_layout(title=f"<b>{country_name} - Covid19 {the_type_string_camel} Plots</b> - Updated {i.last_date} - covid19plot.py v{Version}",**plot_options)
+    fig.update_layout(title=f"<b>{country_name} - Covid19 {the_type_string_camel} Plots</b> - covid19plot.py v{Version}<br><b>Last Data Point:</b> {i.last_date} , <b>Updated On:</b> {start_time_string}",**plot_options)
 
     fig.add_trace(go.Scatter(x=i.date_list, y=i.cases_list, name=f"<b>Cases</b> : y<sub>fin</sub>={round_or_none(i.cases_list[-1],0)}", line=dict(color='firebrick', width=2),showlegend=True),row=1,col=1)
 
@@ -487,6 +487,7 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
     bootstrap_string="""<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">\n""" if bootstrap_on else ""
 
     country_count=len(div_list)-1
+    last_date=div_list[0][0].last_date   # first countries/items last date should be the same as the rest
 
     # ~~~ start of html ~~~ #
 
@@ -525,7 +526,7 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
     <head/>
     <body>
         <h2 class="roundback bigger"><u>Covid19Plot.py Country {type_title} Plots</u> - v{Version}</h2>
-        <p><b>Last Plot Update:</b> {time_string}</p>
+        <p><b>Last Data Point:</b> {last_date} , <b>Updated On:</b> {time_string}</p>
         <p>* <b>Caution - Page might take a long moment to load: </b> this is a large HTML file (over 27 MiB). The loading progress percentage is at top right corner; it might hover around 99%, please be patient as it will finish. If the progress percentage not shown, just wait for browser to awknowledge the page is done loading.</p>
         <p>* <b>Other Plots:</b></p>
         <p>- <a href='covid19-{other_type_title.lower()}.html'>Click here to see {other_type_title} plots instead</a></p>

@@ -239,7 +239,7 @@ plot_options={
     "colorway": COLOR_LIST
 }
 
-fig.update_layout(title=f"<b>California Counties Covid19 Stats</b> (v{Version})<br>Last Data Point: {last_x} , Updated On: {updatedate_str}",**plot_options) # main title & theme & hover options & font options unpacked
+fig.update_layout(title=f"<b>California Counties Covid19 Stats</b> (v{Version})<br><b>Last Data Point:</b> {last_x} , <b>Updated On:</b> {updatedate_str}",**plot_options) # main title & theme & hover options & font options unpacked
 # fig = go.Figure() # then graph like this: fig.add_trace(go.Scatter(x=avgx, y=avgy, name=legendtext, showlegend=True,visible=visible1))
 
 # * consider each county and trace it on plotly
@@ -254,6 +254,6 @@ fig.write_html(output_html,auto_open=False)
 div = plotly.offline.offline.plot(fig, show_link=False, include_plotlyjs=False, output_type='div')
 print(f"len(div)={len(div)}") # div not used
 print("- plotting end")
-print("DEBUG: colorway=",plot_options["colorway"])
+# print("DEBUG: colorway=",plot_options["colorway"])
 
 ### END
