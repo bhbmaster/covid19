@@ -34,7 +34,7 @@ sigdigit_small=2
 predict_days_min=5
 predict_days_max=15
 valid_chars = "-_.%s%s" % (string.ascii_letters, string.digits)
-TESTDATA = "TestData.json"
+TESTDATA = "code/CountryTestData.json"
 moving_average_samples = 7 # 7 day moving average for daily new cases and daily deaths
 days_predict_new_cases = 30
 ThemeFile = "PLOTLY_THEME" # contents are comma sep: theme,font family,font size
@@ -499,7 +499,7 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
         <meta name="author" content="Kostia Khlebopros">
         <!-- pace.js progress bar js & css style : local version present, but we load from cloud for speed -->
         <script src="https://cdn.jsdelivr.net/npm/pace-js@latest/pace.min.js"></script>
-        <link href="./js/pace-big-counter.css" rel="stylesheet">
+        <link href="./code/pace-big-counter.css" rel="stylesheet">
         <!-- plotly and jquery : local version present, but we load from cloud for speed -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
