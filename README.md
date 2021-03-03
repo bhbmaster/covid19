@@ -4,9 +4,9 @@ The public facing version of this site sits on my personal blog at **infotinks.c
 
 **covid19plot.py produces the following graphs:**
 
-- Normal Axes plot of every country in one file: http://www.infotinks.com/covid19/covid19-normal.html
+- Normal Axes plot of every country in one file - output: http://www.infotinks.com/covid19/covid19-normal.html
 
-- Log Axes plot of every country in one file: http://www.infotinks.com/covid19/covid19-log.html
+- Log Axes plot of every country in one file - output: http://www.infotinks.com/covid19/covid19-log.html
 
 - Each country generates its own seperate normal and log plot into the `html-plots/` directory. As these are smaller the browser has an easier time allowing interaction with these plots
 
@@ -19,14 +19,15 @@ html-plots/US-plot-LOG.html
 
 **usa-ca/county-plot.py produces the following graphs:**
 
-- Daily New Cases in all California countys plotted to `usa-ca/county-output.html`
+- Daily New Cases in all California countys plotted to `usa-ca/county-output.html` - output: http://www.infotinks.com/covid19/usa-ca/county-output.html
+
 ## Wrapper run.sh Script & places.sh
 
 The wrapper script `run.sh` execute `covid19plot.py` which generates both of the html files to same directory - while also logging any terminal output to a log file, `run-$DATE.out` (this output is used by a log parser tool I call places.sh). It also runs `usa-ca/county-plot.py` which generates `usa-ca/county-output.html` and redirects its logout to `usa-ca/run-$DATE.out`
 
 Then my `places.sh` uses those log files to get ordered list of most cases for each day. For any given date, one can see which country ranks amongst highest cases. The output is saved in this html file:
 
-- Places: http://www.infotinks.com/covid19/places.html
+- Places output: http://www.infotinks.com/covid19/places.html
 
 *Sidenote:* The version of python is specified with the `PYTHON` variable at the beginning of the run.sh script. This is important for my linux server because the `python` program points to `python2.7` by default, so I must specify python 3 by using the `python3.x` program call (such as `python3.9`)
 
