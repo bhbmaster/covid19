@@ -529,8 +529,8 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
         <p><b>Last Data Point:</b> {last_date} , <b>Updated On:</b> {time_string}</p>
         <p>* <b>Caution - Page might take a long moment to load: </b> this is a large HTML file (over 27 MiB). The loading progress percentage is at top right corner; it might hover around 99%, please be patient as it will finish. If the progress percentage not shown, just wait for browser to awknowledge the page is done loading.</p>
         <p>* <b>Other Plots:</b></p>
-        <p>- <a href='covid19-{other_type_title.lower()}.html'>Click here to see {other_type_title} plots instead</a></p>
-        <p>- <a href='usa-ca/county-output.html'>Click here to see California's Counties Daily New Cases plots instead</a></p>
+        <p>- <a href='covid19-{other_type_title.lower()}.html'>Click here to see <b>Covid19Plot.py Country {other_type_title} Plots</b>.</a></p>
+        <p>- <a href='usa-ca/county-output.html'>Click here to see <b>California's Counties Daily New Cases Plots</b>.</a></p>
         <p>* <b>How To Use:</b> Scroll down to the country of inquiry via "Quick Navigation" or scroll manually. To get an interactive plot open the "Normal" or "Log" link - which opens the countries plot seperately, the plots are fully interactive when displayed seperately. The different lines / traces can enabled, disabled, all-enabled ,or one-enabled by clicking and double clicking on the legend items. The California county plots are also similarly interactive.</p>
         <p>* <b>Source Code & Other Links:</b> available on <a href="https://github.com/bhbmaster/covid19">GitHub</a> and <a href="http://www.infotinks.com/coronavirus-dashboard-covid19-py/">infotinks.com</a></p>
         <p>* <b>Diff Change</b> or <b>Delta</b> is change from previous day ( + is growth; - is reduction )</p>
