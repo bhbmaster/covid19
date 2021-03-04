@@ -335,7 +335,7 @@ def graph2div(country_class,graph_type):
     f"Daily Cases",f"Daily Deaths")
     spacing = 0.035
 
-    fig = make_subplots(rows=3, cols=2, horizontal_spacing=spacing, vertical_spacing=spacing, subplot_titles=subplot_titles,shared_xaxes=True) # used to be make_subplots(rows=2, cols=2)
+    fig = make_subplots(rows=2, cols=2, horizontal_spacing=spacing, vertical_spacing=spacing, subplot_titles=subplot_titles,shared_xaxes=True) # used to be make_subplots(rows=2, cols=2), then made it (3,2) ,then  middle row back to (2,2)
 
     # supported fonts: https://plotly.com/python/reference/layout/
     plot_options={
@@ -364,17 +364,17 @@ def graph2div(country_class,graph_type):
 
     fig.add_trace(go.Scatter(x=i.date_list, y=i.active_list, name=f"<b>Active Cases</b> : y<sub>fin</sub>={round_or_none(i.active_list[-1],0)}", line=dict(color='purple', width=2),showlegend=True),row=1,col=1)
 
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_cases_list, name=f"<b>Ratio Diff Cases</b> : y<sub>fin</sub>={round_or_none(i.delta_ratio_cases_list[1],5)}", showlegend=True),row=2,col=1)
+    ## OLD-MIDDLE-ROW ## fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_cases_list, name=f"<b>Ratio Diff Cases</b> : y<sub>fin</sub>={round_or_none(i.delta_ratio_cases_list[1],5)}", showlegend=True),row=2,col=1)
 
     # fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_active_list, name="<b>Ratio Diff Active Cases</b>", showlegend=True),row=2,col=1)
 
     # fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_recovered_list, name="Ratio Diff Recovered", showlegend=True),row=2,col=1)
 
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_deaths_list, name=f"<b>Ratio Diff Deaths</b> : y<sub>fin</sub>={round_or_none(i.delta_ratio_deaths_list[-1],5)}", showlegend=True),row=2,col=1)
+    ## OLD-MIDDLE-ROW ## fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_deaths_list, name=f"<b>Ratio Diff Deaths</b> : y<sub>fin</sub>={round_or_none(i.delta_ratio_deaths_list[-1],5)}", showlegend=True),row=2,col=1)
 
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_active_list, name=f"<b>Ratio Diff Active Cases</b> : y<sub>fin</sub>={round_or_none(i.delta_ratio_active_list[-1],5)}", showlegend=True),row=2,col=2)
+    ## OLD-MIDDLE-ROW ## fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_active_list, name=f"<b>Ratio Diff Active Cases</b> : y<sub>fin</sub>={round_or_none(i.delta_ratio_active_list[-1],5)}", showlegend=True),row=2,col=2)
 
-    ### # ~~~ ratio prediction - start ~~~ #
+    ## OLD-MIDDLE-ROW ## ### # ~~~ ratio prediction - start ~~~ #
     ### for ds in range(predict_days_min,predict_days_max+1):
     ###     success, xfinal, yfinal, r_sq, m, b0 = i.lastXdayslinearpredict(i.delta_ratio_active_list, ds)
     ###     if success:
@@ -396,11 +396,11 @@ def graph2div(country_class,graph_type):
 
     # ... daily new cases ... #
 
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_cases_list, name=f"<b>New Cases</b> : y<sub>fin</sub>={round_or_none(i.delta_cases_list[-1],0)}", showlegend=True),row=3,col=1)
+    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_cases_list, name=f"<b>New Cases</b> : y<sub>fin</sub>={round_or_none(i.delta_cases_list[-1],0)}", showlegend=True),row=2,col=1) # when had OLD-MIDDLE-ROW this was row=3,col=1
 
     xavg,yavg = avgN(moving_average_samples,i.date_list,i.delta_cases_list)
 
-    fig.add_trace(go.Scatter(x=xavg, y=yavg, name=f"<b>New Cases {moving_average_samples}day Moving Avg</b> : y<sub>fin</sub>={round_or_none(yavg[-1],0)}", showlegend=True),row=3,col=1)
+    fig.add_trace(go.Scatter(x=xavg, y=yavg, name=f"<b>New Cases {moving_average_samples}day Moving Avg</b> : y<sub>fin</sub>={round_or_none(yavg[-1],0)}", showlegend=True),row=2,col=1) # when had OLD-MIDDLE-ROW this was row=3,col=1
 
     ## success,xfinal,yfinal,fita,fitb,fitc = i.lastXdayscurvefit(yavg,days_predict_new_cases)
 
@@ -431,7 +431,7 @@ def graph2div(country_class,graph_type):
 
         ## fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=f"Daily New Cases Prediction Curve Fit (y={fita:.3f}x^2+{fitb:.3f}x+{fitc:.0f})", line=dict(color='gray', width=2), showlegend=True), row=3,col=1)
 
-        fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=f"<b>Daily New Cases {days_predict_new_cases} Days Prediction</b><br>r<sup>2</sup>={r_sq:0.5f}<br>y={m:0.3f}x+{b0:0.1f} where x<sub>0</sub>={xfinal[0]}<br>y=0 / no new cases predicted @ {daycross}", line=dict(color='gray', width=2), showlegend=True), row=3,col=1)
+        fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=f"<b>Daily New Cases {days_predict_new_cases} Days Prediction</b><br>r<sup>2</sup>={r_sq:0.5f}<br>y={m:0.3f}x+{b0:0.1f} where x<sub>0</sub>={xfinal[0]}<br>y=0 / no new cases predicted @ {daycross}", line=dict(color='gray', width=2), showlegend=True), row=2,col=1) # when had OLD-MIDDLE-ROW this was row=3,col=1
 
         # half_index = int(len(xfinal)/2)
         # # text for the fit
@@ -449,11 +449,11 @@ def graph2div(country_class,graph_type):
 
     # ...  daily deaths ... #
 
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_deaths_list, name=f"<b>New Deaths</b> : y<sub>fin</sub>={round_or_none(i.delta_deaths_list[-1],0)}", showlegend=True),row=3,col=2)
+    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_deaths_list, name=f"<b>New Deaths</b> : y<sub>fin</sub>={round_or_none(i.delta_deaths_list[-1],0)}", showlegend=True),row=2,col=2) # when had OLD-MIDDLE-ROW this was row=3,col=1
 
     xavg,yavg = avgN(moving_average_samples,i.date_list,i.delta_deaths_list)
 
-    fig.add_trace(go.Scatter(x=xavg, y=yavg, name=f"<b>New Deaths {moving_average_samples}day Moving Avg</b> : y<sub>fin</sub>={round_or_none(yavg[-1],0)}", showlegend=True),row=3,col=2)
+    fig.add_trace(go.Scatter(x=xavg, y=yavg, name=f"<b>New Deaths {moving_average_samples}day Moving Avg</b> : y<sub>fin</sub>={round_or_none(yavg[-1],0)}", showlegend=True),row=2,col=2) # when had OLD-MIDDLE-ROW this was row=3,col=1
 
     # ~~~ end new plot ~~~ #
 
@@ -527,7 +527,7 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
     <body>
         <h2 class="roundback bigger"><u>Covid19Plot.py Country {type_title} Plots</u> - v{Version}</h2>
         <p><b>Last Data Point:</b> {last_date} , <b>Updated On:</b> {time_string}</p>
-        <p>* <b>Caution - Page might take a long moment to load: </b> this is a large HTML file (over 27 MiB). The loading progress percentage is at top right corner; it might hover around 99%, please be patient as it will finish. If the progress percentage not shown, just wait for browser to awknowledge the page is done loading.</p>
+        <p>* <b>Caution - Page might take a long moment to load: </b> this is a large HTML file (over 20 MiB). The loading progress percentage is at top right corner; it might hover around 99%, please be patient as it will finish. If the progress percentage not shown, just wait for browser to awknowledge the page is done loading.</p>
         <p>* <b>Other Plots:</b></p>
         <p>- <a href='covid19-{other_type_title.lower()}.html'>Click here to see <b>Covid19Plot.py Country {other_type_title} Plots</b>.</a></p>
         <p>- <a href='usa-ca/county-output.html'>Click here to see <b>California's Counties Daily New Cases Plots</b>.</a></p>
