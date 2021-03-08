@@ -18,7 +18,7 @@ PER_TEXT="100K"
 SHOW_TOP_NUMBER=12 # how many counties to have enabled when graph shows (others can be toggled on interactively)
 ThemeFile = "../PLOTLY_THEME" # contents are comma sep: theme,font family,font size
 predictdays=30
-COLOR_LIST = px.colors.qualitative.Alphabet # this sets the colorway option in layout
+COLOR_LIST = px.colors.qualitative.Vivid # this sets the colorway option in layout
 COLOR_LIST_LEN = len(COLOR_LIST) # we will use the mod of this later
 updatedate_dt = datetime.datetime.now()
 updatedate_str = updatedate_dt.strftime("%Y-%m-%d %H:%M:%S")
@@ -142,21 +142,30 @@ def graph():
     visible1 = "legendonly" if not county in visible_counties else None
     x=c[c.county == county]["date"].values
     FRONTSPACE="    "
+    color_text=""
+
     #####################################################
     # -- newcountconfirmed per 100K (moving average) -- #
     #####################################################
-    if color_index != None: color_index += 1 # go to next color index (if we use it save it and use modulus of length)
+    if color_index != None:
+        # go to next color index (if we use it save it and use modulus of length)
+        color_index += 1
+        color_text=f"\tcolor={color_index}"
     orgy=c[c.county == county]["newcountconfirmed"].values
     y=orgy/pop*PER
     avgx,avgy=avgN(ndays,x.tolist(),y.tolist())
-    print(f"{FRONTSPACE}newcountconfirmed   \t x = {avgx[-1]} \t org_y = {orgy[-1]:0.0f} \t {ndays}day_avg_y_per{PER_TEXT} = {avgy[-1]:0.2f}")
+    print(f"{FRONTSPACE}newcountconfirmed   \t x = {avgx[-1]} \t org_y = {orgy[-1]:0.0f} \t {ndays}day_avg_y_per{PER_TEXT} = {avgy[-1]:0.2f}{color_text}")
     legendtext=f"<b>{county}</b> pop={pop:,} NewC<sub>final</sub>=<b>{avgy[-1]:0.2f}</b>"
     fig.add_trace(go.Scatter(x=avgx, y=avgy, name=legendtext, showlegend=True,legendgroup=county,visible=visible1),row=1,col=1)
     used_colors_index = color_index # saving current color used (it follows thru the index of the colorway)
+
     #########################
     # linear regresion line #
     #########################
-    if color_index != None: color_index += 1 # go to next color index (if we use it save it and use modulus of length)
+    if color_index != None:
+        # go to next color index (if we use it save it and use modulus of length)
+        color_index += 1
+        color_text=f"\tcolor={color_index}"
     (success,xfinal,yfinal,r_sq,m,b0) = lastXdayslinearpredict(avgx,avgy,predictdays)
     # print(f"DEBUG: {success=},{xfinal=},{yfinal=},{r_sq=},{m=},{b0=}")
     if success:
@@ -168,7 +177,7 @@ def graph():
         day0dt = datetime.datetime.strptime(day0, "%Y-%m-%d")
         daycrossdt=day0dt+datetime.timedelta(days=int(x_cross1_int))
         daycross = daycrossdt.strftime("%Y-%m-%d")
-        print(f"{FRONTSPACE}- predicted cross   \t y = {m:0.4f}x+{b0:0.2f} \t r^2={r_sq:0.4f} \t {daycross=}")
+        print(f"{FRONTSPACE}- predicted cross   \t y = {m:0.4f}x+{b0:0.2f} \t r^2={r_sq:0.4f} \t {daycross=}{color_text}")
         # plot
         legendtext=f"<b>{county}</b> - predict 0 daily cases @ <b>{daycross}</b> by {predictdays}-day linear fit"
         if color_index == None:
@@ -178,34 +187,56 @@ def graph():
             color_index_to_use = used_colors_index % COLOR_LIST_LEN # we circulate thru the color_way so we use modulus
             color_to_use = COLOR_LIST[color_index_to_use] # call that color via index from colorway list
             fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=legendtext+f"", showlegend=False,legendgroup=county,visible=visible1,line=dict(color=color_to_use,dash='dash')),row=1,col=1)
+
     ##################################################
     # -- newcountdeaths per 100K (moving average) -- #
     ##################################################
-    if color_index != None: color_index += 1 # go to next color index (if we use it save it and use modulus of length)
+    if color_index != None:
+        # go to next color index (if we use it save it and use modulus of length)
+        color_index += 1
+        color_text=f"\tcolor={color_index}"
     orgy=c[c.county == county]["newcountdeaths"].values
     y=orgy/pop*PER
     avgx,avgy=avgN(ndays,x.tolist(),y.tolist())
-    print(f"{FRONTSPACE}newcountdeaths      \t x = {avgx[-1]} \t org_y = {orgy[-1]:0.0f} \t {ndays}day_avg_y_per{PER_TEXT} = {avgy[-1]:0.2f}")
+    print(f"{FRONTSPACE}newcountdeaths      \t x = {avgx[-1]} \t org_y = {orgy[-1]:0.0f} \t {ndays}day_avg_y_per{PER_TEXT} = {avgy[-1]:0.2f}{color_text}")
     legendtext=f"<b>{county}</b> pop={pop:,} NewD<sub>final</sub>=<b>{avgy[-1]:0.2f}</b>"
-    fig.add_trace(go.Scatter(x=avgx, y=avgy, name=legendtext, showlegend=False,legendgroup=county,visible=visible1),row=2,col=1)
+    if color_index == None:
+        fig.add_trace(go.Scatter(x=avgx, y=avgy, name=legendtext, showlegend=False,legendgroup=county,visible=visible1),row=2,col=1)
+    else:
+        fig.add_trace(go.Scatter(x=avgx, y=avgy, name=legendtext, showlegend=False,legendgroup=county,visible=visible1,line=dict(color=color_to_use)),row=2,col=1)
+
     ##############################
     # -- total cases per 100K -- #
     ##############################
-    if color_index != None: color_index += 1 # go to next color index (if we use it save it and use modulus of length)
+    if color_index != None:
+        # go to next color index (if we use it save it and use modulus of length)
+        color_index += 1
+        color_text=f"\tcolor={color_index}"
     orgy=c[c.county == county]["totalcountconfirmed"].values
     y=orgy/pop*PER
-    print(f"{FRONTSPACE}totalcountconfirmed \t x = {x[-1]} \t org_y = {orgy[-1]:0.0f} \t y_per{PER_TEXT} = {y[-1]:0.2f}")
+    print(f"{FRONTSPACE}totalcountconfirmed \t x = {x[-1]} \t org_y = {orgy[-1]:0.0f} \t y_per{PER_TEXT} = {y[-1]:0.2f}{color_text}")
     legendtext=f"<b>{county}</b> pop={pop:,} TotC<sub>final</sub>=<b>{y[-1]:0.2f}</b>"
-    fig.add_trace(go.Scatter(x=x, y=y, name=legendtext, showlegend=False,legendgroup=county,visible=visible1),row=1,col=2)
+    if color_index == None:
+        fig.add_trace(go.Scatter(x=x, y=y, name=legendtext, showlegend=False,legendgroup=county,visible=visible1),row=1,col=2)
+    else:
+        fig.add_trace(go.Scatter(x=x, y=y, name=legendtext, showlegend=False,legendgroup=county,visible=visible1,line=dict(color=color_to_use)),row=1,col=2)
+
+
     ###############################
     # -- total deaths per 100K -- #
     ###############################
-    if color_index != None: color_index += 1 # go to next color index (if we use it save it and use modulus of length)
+    if color_index != None:
+        # go to next color index (if we use it save it and use modulus of length)
+        color_index += 1
+        color_text=f"\tcolor={color_index}"
     orgy=c[c.county == county]["totalcountdeaths"].values 
     y=orgy/pop*PER
-    print(f"{FRONTSPACE}totalcountdeaths    \t x = {x[-1]} \t org_y = {orgy[-1]:0.0f} \t y_per{PER_TEXT} = {y[-1]:0.2f}")
+    print(f"{FRONTSPACE}totalcountdeaths    \t x = {x[-1]} \t org_y = {orgy[-1]:0.0f} \t y_per{PER_TEXT} = {y[-1]:0.2f}{color_text}")
     legendtext=f"<b>{county}</b> pop={pop:,} TotD<sub>final</sub>=<b>{y[-1]:0.2f}</b>"
-    fig.add_trace(go.Scatter(x=x, y=y, name=legendtext, showlegend=False,legendgroup=county,visible=visible1),row=2,col=2)
+    if color_index == None:
+        fig.add_trace(go.Scatter(x=x, y=y, name=legendtext, showlegend=False,legendgroup=county,visible=visible1),row=2,col=2)
+    else:
+        fig.add_trace(go.Scatter(x=x, y=y, name=legendtext, showlegend=False,legendgroup=county,visible=visible1,line=dict(color=color_to_use)),row=2,col=2)
 
 ### MAIN ###
 
