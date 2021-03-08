@@ -164,3 +164,8 @@ If you get an error during running `usa-ca/county-plot.py` which talks about mis
 ### Other Errors
 
 Might need to google your way around or contact me via "Issues" tab
+
+## To Do
+
+* added population info to country and create new plot html or add subplot with per 100K
+* fix color of counties in the county plots (its correct in top left plot) 
