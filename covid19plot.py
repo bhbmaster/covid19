@@ -604,7 +604,7 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
         # type_title comes in as Log (doesn't work) turns to LOG (works), comes in as Normal (doesn't work )turns to NORMAL (works)
         # html += f"        <h3><a href='html-plots/{country.countryposix}-plot-{type_title.upper()}.html'>{country.country}</a></h3>\n"
 
-        html += f"<a id='{country.countryposix}'></a><h3 class='roundback'><u>#{place_num}. {country.country}</u> - <a href='#search_anchor'>Back To Search</a></h3>\n"
+        html += f"<a id='{country.countryposix}'></a><h3 class='roundback'><u>#{place_num}. {country.country}</u> - <a href='#search_anchor'>Back To Search / Top</a></h3>\n"
 
         html += f"<p><a href='html-plots/{country.countryposix}-plot-NORMAL.html'>Normal</a> | <a href='html-plots/{country.countryposix}-plot-LOG.html'>Log</a></p>"
 
