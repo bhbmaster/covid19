@@ -37,9 +37,14 @@ Theme_Template = ThemeFileContents[0] if path.exists(ThemeFile) else "none"
 Theme_Font = ThemeFileContents[1] if path.exists(ThemeFile) else "Arial"
 Theme_FontSize = int(ThemeFileContents[2]) if path.exists(ThemeFile) else 12
 
-# data input
-url_data="https://data.ca.gov/dataset/590188d5-8545-4c93-a9a0-e230f0db7290/resource/926fd08f-cc91-4828-af38-bd45de97f8c3/download/statewide_cases.csv"
+# population file
 file_pop="county-pop.csv" # values from around 2020 good enough
+
+# data input - TODO: implement new CSV
+# url_data="https://data.ca.gov/dataset/590188d5-8545-4c93-a9a0-e230f0db7290/resource/926fd08f-cc91-4828-af38-bd45de97f8c3/download/statewide_cases.csv" # after March 12 2021 this data is deprecated with new data at new site
+# old data site https://data.ca.gov/dataset/covid-19-cases points to new site https://data.chhs.ca.gov/dataset/covid-19-time-series-metrics-by-county-and-state
+url_data="https://data.chhs.ca.gov/dataset/f333528b-4d38-4814-bebb-12db1f10f535/resource/046cdd2b-31e5-4d34-9ed3-b48cdbc4be7a/download/covid19cases_test.csv" # NEW
+raise Exception("Script stopping now until TODO implemented")
 
 c=pd.read_csv(url_data)
 print(c.describe())
