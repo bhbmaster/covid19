@@ -8,6 +8,9 @@ import numpy as np
 from sklearn.linear_model import LinearRegression
 import datetime
 
+# POSSIBLE-TODO: consider removing county-pop.csv depedence as that is downloaded from new covid cases csv. its optional as population doesn't change much and it still works
+# POSSIBLE-TODO: maybe include california state as a whole as that data is supplied in new covid csv as well
+
 ### INIT ###
 
 VersionFile = "../VERSION"  # Last Update YY.MM.DD
@@ -22,7 +25,8 @@ COLOR_LIST = px.colors.qualitative.Vivid # this sets the colorway option in layo
 COLOR_LIST_LEN = len(COLOR_LIST) # we will use the mod of this later
 updatedate_dt = datetime.datetime.now()
 updatedate_str = updatedate_dt.strftime("%Y-%m-%d %H:%M:%S")
-
+csv_file = "CA-covid19cases_test.csv"
+csv_file_parsable = "CA-covid19cases_test-parsable.csv"
 
 # colorway options:
 # >>> dir(px.colors.qualitative)
@@ -37,17 +41,19 @@ Theme_Template = ThemeFileContents[0] if path.exists(ThemeFile) else "none"
 Theme_Font = ThemeFileContents[1] if path.exists(ThemeFile) else "Arial"
 Theme_FontSize = int(ThemeFileContents[2]) if path.exists(ThemeFile) else 12
 
-# population file
+# population file - NOTE: Now technically we don't need this as the information is in the CSV file
 file_pop="county-pop.csv" # values from around 2020 good enough
 
-# data input - TODO: implement new CSV
+# data input
 # url_data="https://data.ca.gov/dataset/590188d5-8545-4c93-a9a0-e230f0db7290/resource/926fd08f-cc91-4828-af38-bd45de97f8c3/download/statewide_cases.csv" # after March 12 2021 this data is deprecated with new data at new site
 # old data site https://data.ca.gov/dataset/covid-19-cases points to new site https://data.chhs.ca.gov/dataset/covid-19-time-series-metrics-by-county-and-state
 url_data="https://data.chhs.ca.gov/dataset/f333528b-4d38-4814-bebb-12db1f10f535/resource/046cdd2b-31e5-4d34-9ed3-b48cdbc4be7a/download/covid19cases_test.csv" # NEW
-raise Exception("Script stopping now until TODO implemented")
 
 c=pd.read_csv(url_data)
+print(f"RECEIVED DATA (saved to {csv_file}):")
+print()
 print(c.describe())
+c.to_csv(csv_file)
 
 cpops = pd.read_csv(file_pop,index_col="Rank")
 # cpops = cpops.head(15)
@@ -56,7 +62,9 @@ cpops = pd.read_csv(file_pop,index_col="Rank")
 top10 = cpops.head(SHOW_TOP_NUMBER)["County"]
 visible_counties = top10.values.tolist() # essentially its ['Los Angeles', 'San Diego', 'Orange', 'Riverside', 'San Bernardino', 'Santa Clara', 'Alameda', 'Sacramento', 'Contra Costa', 'Fresno', 'Kern', 'San Francisco']
 visible_counties = ['Los Angeles', 'Santa Clara', 'San Mateo', 'San Francisco']
+print()
 print(f"visible_counties={visible_counties}")
+print()
 
 # list of tuples [(county,pop) (county,pop)]
 cpops_county_list=cpops["County"].values.tolist()
@@ -64,6 +72,32 @@ cpops_pop_list=cpops["Population"].values.tolist()
 cpop_zip=zip(cpops_county_list,cpops_pop_list)
 cpop_list=list(cpop_zip)
 cpop_list.sort(key=lambda x:x[0]) # sort by first field county so alphabet
+
+# print(c.head())
+# print(cpops.head())
+
+# START - convert new format to old format - START
+# code converting new style csv to old style, so functions understand it
+cols_to_select=["date","area","cases","cumulative_cases","deaths","cumulative_deaths"]
+clean_c = c[c["date"]!="NaN"][c["area_type"]=="County"].dropna(subset=cols_to_select) # remove cols we care about that have NaN (its mostly happens in dates) & we only need Counties not State (although maybe in future can have all of california?)
+prefinal_c = clean_c[cols_to_select] # now make data frame that only has cols we need
+rename_dict={
+    "date": "date",
+    "area": "county",
+    "cases": "newcountconfirmed",
+    "cumulative_cases":"totalcountconfirmed",
+    "deaths":"newcountdeaths",
+    "cumulative_deaths":"totalcountdeaths"
+}
+final_c = prefinal_c.rename(columns=rename_dict) # now rename the cols to what we had in previous deprecated format
+c = final_c.sort_values(by=['date']) # sort by date
+print(f"CONVERTED TO PARSABLE DATA (saved to {csv_file_parsable}):")
+print()
+print(c.describe())
+c.to_csv(csv_file_parsable)
+# END - convert new format to old format - END
+
+# raise Exception("Script stopping now until TODO implemented") # easy way to stop code while editing/fixing
 
 ### FUNCTIONS ###
 
@@ -146,6 +180,7 @@ def graph():
     print(f"* {county} pop={pop} - last recorded values below:")
     visible1 = "legendonly" if not county in visible_counties else None
     x=c[c.county == county]["date"].values
+    # print(f"DEBUG: {x=}")
     FRONTSPACE="    "
     color_text=""
 
@@ -173,7 +208,10 @@ def graph():
         color_text=f"\tcolor={color_index}"
     (success,xfinal,yfinal,r_sq,m,b0) = lastXdayslinearpredict(avgx,avgy,predictdays)
     # print(f"DEBUG: {success=},{xfinal=},{yfinal=},{r_sq=},{m=},{b0=}")
-    if success:
+    # if success:
+    entered_prediction_if_loop = False # was used when dates were backwards and m was 0 so we didnt get prediction lines but got the other lines, however, i realized that even after we sorted the dates and it all worked out... what if we get a flat slope m=0 then issue could still happen, so i put this boolean in just in case
+    if success and m != 0:
+        entered_prediction_if_loop = True
         # y = mx + b ---> (y-b)/m = 0
         y_to_cross = 0
         x_cross1 = (y_to_cross - float(b0)) / float(m) 
@@ -208,7 +246,8 @@ def graph():
     if color_index == None:
         fig.add_trace(go.Scatter(x=avgx, y=avgy, name=legendtext, showlegend=False,legendgroup=county,visible=visible1),row=2,col=1)
     else:
-        fig.add_trace(go.Scatter(x=avgx, y=avgy, name=legendtext, showlegend=False,legendgroup=county,visible=visible1,line=dict(color=color_to_use)),row=2,col=1)
+        if entered_prediction_if_loop:
+            fig.add_trace(go.Scatter(x=avgx, y=avgy, name=legendtext, showlegend=False,legendgroup=county,visible=visible1,line=dict(color=color_to_use)),row=2,col=1)
 
     ##############################
     # -- total cases per 100K -- #
@@ -224,7 +263,8 @@ def graph():
     if color_index == None:
         fig.add_trace(go.Scatter(x=x, y=y, name=legendtext, showlegend=False,legendgroup=county,visible=visible1),row=1,col=2)
     else:
-        fig.add_trace(go.Scatter(x=x, y=y, name=legendtext, showlegend=False,legendgroup=county,visible=visible1,line=dict(color=color_to_use)),row=1,col=2)
+        if entered_prediction_if_loop:
+            fig.add_trace(go.Scatter(x=x, y=y, name=legendtext, showlegend=False,legendgroup=county,visible=visible1,line=dict(color=color_to_use)),row=1,col=2)
 
 
     ###############################
@@ -241,12 +281,15 @@ def graph():
     if color_index == None:
         fig.add_trace(go.Scatter(x=x, y=y, name=legendtext, showlegend=False,legendgroup=county,visible=visible1),row=2,col=2)
     else:
-        fig.add_trace(go.Scatter(x=x, y=y, name=legendtext, showlegend=False,legendgroup=county,visible=visible1,line=dict(color=color_to_use)),row=2,col=2)
+        if entered_prediction_if_loop:
+            fig.add_trace(go.Scatter(x=x, y=y, name=legendtext, showlegend=False,legendgroup=county,visible=visible1,line=dict(color=color_to_use)),row=2,col=2)
 
 ### MAIN ###
 
 # * plotly init
+print()
 print(f"- plotting start (theme,font,size: {Theme_Template},{Theme_Font},{Theme_FontSize})")
+print()
 subplot_titles = (f"Daily New Cases per {PER_TEXT} {ndays}-day Moving Average",
                   f"Total Cases per {PER_TEXT}",
                   f"Daily New Deaths per {PER_TEXT} {ndays}-day Moving Average",
@@ -282,13 +325,15 @@ fig.update_layout(title=f"<b>California Counties Covid19 Stats</b> (v{Version})<
 color_index = -1 # color index, if we set to None then we alternate colors for every trace. if we set to -1 here then we match color of prediction
 for county,pop in cpop_list:
     graph()
+    print()
 
 # * plotly generate html output generation
 fig.write_html(output_html,auto_open=False)
 
 # * html div generation (not used)
 div = plotly.offline.offline.plot(fig, show_link=False, include_plotlyjs=False, output_type='div')
-print(f"len(div)={len(div)}") # div not used
+print(f"size of type & div type(div)={type(div)} len(div)={len(div)}") # div not used
+print()
 print("- plotting end")
 # print("DEBUG: colorway=",plot_options["colorway"])
 
