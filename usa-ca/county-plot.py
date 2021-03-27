@@ -9,7 +9,6 @@ from sklearn.linear_model import LinearRegression
 import datetime
 
 # POSSIBLE-TODO: consider removing county-pop.csv depedence as that is downloaded from new covid cases csv. its optional as population doesn't change much and it still works
-# POSSIBLE-TODO: maybe include california state as a whole as that data is supplied in new covid csv as well
 
 ### INIT ###
 
@@ -61,7 +60,7 @@ cpops = pd.read_csv(file_pop,index_col="Rank")
 # get top 10 (or SHOW_TOP_NUMBER) of counties based on population + select which ones to show enabled on legend
 top10 = cpops.head(SHOW_TOP_NUMBER)["County"]
 visible_counties = top10.values.tolist() # essentially its ['Los Angeles', 'San Diego', 'Orange', 'Riverside', 'San Bernardino', 'Santa Clara', 'Alameda', 'Sacramento', 'Contra Costa', 'Fresno', 'Kern', 'San Francisco']
-visible_counties = ['Los Angeles', 'Santa Clara', 'San Mateo', 'San Francisco']
+visible_counties = ['Los Angeles', 'Santa Clara', 'San Mateo', 'San Francisco', '0-California-State']
 print()
 print(f"visible_counties={visible_counties}")
 print()
@@ -90,7 +89,16 @@ rename_dict={
     "cumulative_deaths":"totalcountdeaths"
 }
 final_c = prefinal_c.rename(columns=rename_dict) # now rename the cols to what we had in previous deprecated format
-c = final_c.sort_values(by=['date']) # sort by date
+# adding california in - start
+# GET CALIFORNIA STATE
+cali0 = c[c["date"]!="NaN"][c["area_type"]=="State"].dropna(subset=cols_to_select)
+cali1 = cali0[cols_to_select]
+cali2 = cali1.rename(columns=rename_dict)
+cali3 = cali2.replace("California","0-California-State")
+final_c_and_cali = final_c.append(cali3,ignore_index=True) # since indexes never got messed with this in these processes we can just remove ignore_index and keep its default as False but it doesn't hurt to keep
+# sidenote manually added in this line to county-pop.csv - whatever its not the prettiest i don't care: # 59,0-California-State,40129160
+# adding california in - finish
+c = final_c_and_cali.sort_values(by=['date']) # sort by date
 print(f"CONVERTED TO PARSABLE DATA (saved to {csv_file_parsable}):")
 print()
 print(c.describe())

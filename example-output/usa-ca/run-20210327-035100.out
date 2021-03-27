@@ -1,0 +1,446 @@
+RECEIVED DATA (saved to CA-covid19cases_test.csv):
+
+         population         cases  ...  reported_tests  cumulative_reported_tests
+count  2.660900e+04  27060.000000  ...    19825.000000               1.982500e+04
+mean   1.360311e+06    262.817073  ...     5257.610189               6.602780e+05
+std    5.298942e+06   1925.086150  ...    25904.186204               3.568596e+06
+min    1.117000e+03      0.000000  ...   -45467.000000               0.000000e+00
+25%    4.428900e+04      0.000000  ...       96.000000               9.492000e+03
+50%    1.930980e+05      9.000000  ...      443.000000               4.616600e+04
+75%    7.825450e+05     68.000000  ...     1674.000000               2.163880e+05
+max    4.012916e+07  60278.000000  ...   473076.000000               5.211606e+07
+
+[8 rows x 15 columns]
+
+visible_counties=['Los Angeles', 'Santa Clara', 'San Mateo', 'San Francisco', '0-California-State']
+
+CONVERTED TO PARSABLE DATA (saved to CA-covid19cases_test-parsable.csv):
+
+       newcountconfirmed  totalcountconfirmed  newcountdeaths  totalcountdeaths
+count        27000.00000         2.700000e+04    27000.000000      27000.000000
+mean           263.38163         3.475936e+04        4.246593        652.061037
+std           1927.18597         2.178826e+05       30.103138       3813.530690
+min              0.00000         0.000000e+00        0.000000          0.000000
+25%              0.00000         2.700000e+01        0.000000          0.000000
+50%              9.00000         8.290000e+02        0.000000         14.000000
+75%             68.00000         9.478250e+03        1.000000        166.000000
+max          60278.00000         3.555915e+06      910.000000      57336.000000
+
+- plotting start (theme,font,size: seaborn,Balto,14)
+
+* 0-California-State pop=40129160 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 2.61	color=0
+    - predicted cross   	 y = -0.2030x+9.51 	 r^2=0.9895 	 daycross='2021-04-10'	color=1
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=2
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 3555915 	 y_per100K = 8861.17	color=3
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 57336 	 y_per100K = 142.88	color=4
+
+* Alameda pop=1656754 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 2.39	color=5
+    - predicted cross   	 y = -0.1940x+8.56 	 r^2=0.9873 	 daycross='2021-04-08'	color=6
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=7
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 82945 	 y_per100K = 5006.48	color=8
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 1206 	 y_per100K = 72.79	color=9
+
+* Alpine pop=1039 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 13.75	color=10
+    - predicted cross   	 y = -0.6668x+28.00 	 r^2=0.2143 	 daycross='2021-04-05'	color=11
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=12
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 84 	 y_per100K = 8084.70	color=13
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 0 	 y_per100K = 0.00	color=14
+
+* Amador pop=38429 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 1.86	color=15
+    - predicted cross   	 y = -0.3076x+11.47 	 r^2=0.9026 	 daycross='2021-04-01'	color=16
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=17
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 3530 	 y_per100K = 9185.77	color=18
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 45 	 y_per100K = 117.10	color=19
+
+* Butte pop=225817 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 3.42	color=20
+    - predicted cross   	 y = -0.1281x+6.81 	 r^2=0.8204 	 daycross='2021-04-17'	color=21
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=22
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 11270 	 y_per100K = 4990.77	color=23
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 188 	 y_per100K = 83.25	color=24
+
+* Calaveras pop=45514 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 3.14	color=25
+    - predicted cross   	 y = 0.0063x+5.83 	 r^2=0.0013 	 daycross='2018-08-11'	color=26
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=27
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 1982 	 y_per100K = 4354.70	color=28
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 50 	 y_per100K = 109.86	color=29
+
+* Colusa pop=21454 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 2.00	color=30
+    - predicted cross   	 y = -0.2250x+6.53 	 r^2=0.7808 	 daycross='2021-03-24'	color=31
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=32
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 1888 	 y_per100K = 8800.22	color=33
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 14 	 y_per100K = 65.26	color=34
+
+* Contra Costa pop=1142251 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 2.90	color=35
+    - predicted cross   	 y = -0.2312x+11.04 	 r^2=0.9846 	 daycross='2021-04-11'	color=36
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=37
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 64606 	 y_per100K = 5656.02	color=38
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 757 	 y_per100K = 66.27	color=39
+
+* Del Norte pop=27495 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 7.79	color=40
+    - predicted cross   	 y = -0.0028x+15.18 	 r^2=0.0001 	 daycross='2036-02-15'	color=41
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=42
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 1095 	 y_per100K = 3982.54	color=43
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 6 	 y_per100K = 21.82	color=44
+
+* El Dorado pop=188563 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 2.42	color=45
+    - predicted cross   	 y = -0.1151x+6.74 	 r^2=0.6154 	 daycross='2021-04-22'	color=46
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=47
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 9331 	 y_per100K = 4948.48	color=48
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 105 	 y_per100K = 55.68	color=49
+
+* Fresno pop=984521 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 3.76	color=50
+    - predicted cross   	 y = -0.3244x+16.27 	 r^2=0.9144 	 daycross='2021-04-14'	color=51
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=52
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 98602 	 y_per100K = 10015.23	color=53
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 1593 	 y_per100K = 161.80	color=54
+
+* Glenn pop=27976 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 5.62	color=55
+    - predicted cross   	 y = -0.1135x+12.11 	 r^2=0.2807 	 daycross='2021-06-09'	color=56
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=57
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 2302 	 y_per100K = 8228.48	color=58
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 17 	 y_per100K = 60.77	color=59
+
+* Humboldt pop=135940 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 2.31	color=60
+    - predicted cross   	 y = -0.1974x+10.32 	 r^2=0.7149 	 daycross='2021-04-16'	color=61
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=62
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 3423 	 y_per100K = 2518.02	color=63
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 34 	 y_per100K = 25.01	color=64
+
+* Imperial pop=180701 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 2.85	color=65
+    - predicted cross   	 y = -0.1664x+8.96 	 r^2=0.7237 	 daycross='2021-04-17'	color=66
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=67
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 27352 	 y_per100K = 15136.61	color=68
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 699 	 y_per100K = 386.83	color=69
+
+* Inyo pop=17977 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 6.36	color=70
+    - predicted cross   	 y = -0.7959x+29.13 	 r^2=0.9318 	 daycross='2021-03-31'	color=71
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=72
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 1369 	 y_per100K = 7615.29	color=73
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 35 	 y_per100K = 194.69	color=74
+
+* Kern pop=887641 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 2.78	color=75
+    - predicted cross   	 y = -0.3295x+13.04 	 r^2=0.9506 	 daycross='2021-04-03'	color=76
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=77
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 93857 	 y_per100K = 10573.76	color=78
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 1206 	 y_per100K = 135.87	color=79
+
+* Kings pop=150691 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 4.17	color=80
+    - predicted cross   	 y = -0.2916x+17.56 	 r^2=0.7690 	 daycross='2021-04-24'	color=81
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=82
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 22472 	 y_per100K = 14912.64	color=83
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 237 	 y_per100K = 157.28	color=84
+
+* Lake pop=64195 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 4.90	color=85
+    - predicted cross   	 y = -0.0951x+10.43 	 r^2=0.3381 	 daycross='2021-06-12'	color=86
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=87
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 3312 	 y_per100K = 5159.28	color=88
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 43 	 y_per100K = 66.98	color=89
+
+* Lassen pop=30818 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.46	color=90
+    - predicted cross   	 y = -0.3834x+9.61 	 r^2=0.6344 	 daycross='2021-03-20'	color=91
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=92
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 5129 	 y_per100K = 16642.87	color=93
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 1 	 y_per100K = 3.24	color=94
+
+* Los Angeles pop=10081570 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 2.25	color=95
+    - predicted cross   	 y = -0.1880x+8.36 	 r^2=0.9773 	 daycross='2021-04-08'	color=96
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=97
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 1177490 	 y_per100K = 11679.63	color=98
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 23051 	 y_per100K = 228.64	color=99
+
+* Madera pop=155433 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 3.03	color=100
+    - predicted cross   	 y = -0.4623x+17.83 	 r^2=0.8668 	 daycross='2021-04-02'	color=101
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=102
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 15937 	 y_per100K = 10253.29	color=103
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 210 	 y_per100K = 135.11	color=104
+
+* Marin pop=259943 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 2.69	color=105
+    - predicted cross   	 y = -0.2141x+9.28 	 r^2=0.8030 	 daycross='2021-04-07'	color=106
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=107
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 13538 	 y_per100K = 5208.06	color=108
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 219 	 y_per100K = 84.25	color=109
+
+* Mariposa pop=17420 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 4.10	color=110
+    - predicted cross   	 y = 0.1058x+0.32 	 r^2=0.5859 	 daycross='2021-02-20'	color=111
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=112
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 386 	 y_per100K = 2215.84	color=113
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 5 	 y_per100K = 28.70	color=114
+
+* Mendocino pop=87224 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 3.60	color=115
+    - predicted cross   	 y = 0.0006x+4.63 	 r^2=0.0001 	 daycross='2000-09-13'	color=116
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=117
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 3664 	 y_per100K = 4200.68	color=118
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 45 	 y_per100K = 51.59	color=119
+
+* Merced pop=271382 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 5.95	color=120
+    - predicted cross   	 y = -0.4963x+23.03 	 r^2=0.8221 	 daycross='2021-04-10'	color=121
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=122
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 29576 	 y_per100K = 10898.29	color=123
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 416 	 y_per100K = 153.29	color=124
+
+* Modoc pop=8907 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 3.21	color=125
+    - predicted cross   	 y = -0.3689x+10.16 	 r^2=0.8036 	 daycross='2021-03-22'	color=126
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=127
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 343 	 y_per100K = 3850.90	color=128
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 3 	 y_per100K = 33.68	color=129
+
+* Mono pop=14310 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 7.99	color=130
+    - predicted cross   	 y = 0.2199x+7.13 	 r^2=0.3443 	 daycross='2021-01-22'	color=131
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=132
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 1235 	 y_per100K = 8630.33	color=133
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 3 	 y_per100K = 20.96	color=134
+
+* Monterey pop=433410 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 1.68	color=135
+    - predicted cross   	 y = -0.2121x+8.65 	 r^2=0.7279 	 daycross='2021-04-04'	color=136
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=137
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 42220 	 y_per100K = 9741.35	color=138
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 336 	 y_per100K = 77.52	color=139
+
+* Napa pop=139623 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 4.19	color=140
+    - predicted cross   	 y = -0.2223x+11.21 	 r^2=0.7084 	 daycross='2021-04-14'	color=141
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=142
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 9321 	 y_per100K = 6675.83	color=143
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 78 	 y_per100K = 55.86	color=144
+
+* Nevada pop=99244 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 3.60	color=145
+    - predicted cross   	 y = -0.2459x+12.17 	 r^2=0.8402 	 daycross='2021-04-13'	color=146
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=147
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 4202 	 y_per100K = 4234.01	color=148
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 84 	 y_per100K = 84.64	color=149
+
+* Orange pop=3168044 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 1.86	color=150
+    - predicted cross   	 y = -0.1636x+6.84 	 r^2=0.9575 	 daycross='2021-04-05'	color=151
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=152
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 248871 	 y_per100K = 7855.67	color=153
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 4655 	 y_per100K = 146.94	color=154
+
+* Placer pop=385512 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 3.11	color=155
+    - predicted cross   	 y = -0.1226x+9.49 	 r^2=0.4656 	 daycross='2021-05-11'	color=156
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=157
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 20639 	 y_per100K = 5353.66	color=158
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 252 	 y_per100K = 65.37	color=159
+
+* Plumas pop=18660 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.77	color=160
+    - predicted cross   	 y = 0.0726x+3.29 	 r^2=0.1358 	 daycross='2021-01-09'	color=161
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=162
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 654 	 y_per100K = 3504.82	color=163
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 4 	 y_per100K = 21.44	color=164
+
+* Riverside pop=2411439 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 2.17	color=165
+    - predicted cross   	 y = -0.2056x+8.96 	 r^2=0.9089 	 daycross='2021-04-07'	color=166
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=167
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 282492 	 y_per100K = 11714.66	color=168
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 4078 	 y_per100K = 169.11	color=169
+
+* Sacramento pop=1524553 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 4.45	color=170
+    - predicted cross   	 y = -0.1205x+10.41 	 r^2=0.8939 	 daycross='2021-05-20'	color=171
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=172
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 96823 	 y_per100K = 6350.91	color=173
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 1505 	 y_per100K = 98.72	color=174
+
+* San Benito pop=60376 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 2.60	color=175
+    - predicted cross   	 y = -0.1913x+9.33 	 r^2=0.7370 	 daycross='2021-04-12'	color=176
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=177
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 5850 	 y_per100K = 9689.28	color=178
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 61 	 y_per100K = 101.03	color=179
+
+* San Bernardino pop=2149031 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 1.97	color=180
+    - predicted cross   	 y = -0.1809x+7.93 	 r^2=0.9605 	 daycross='2021-04-07'	color=181
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=182
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 285134 	 y_per100K = 13268.03	color=183
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 4222 	 y_per100K = 196.46	color=184
+
+* San Diego pop=3316073 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 2.00	color=185
+    - predicted cross   	 y = -0.2482x+10.51 	 r^2=0.9839 	 daycross='2021-04-06'	color=186
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=187
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 268623 	 y_per100K = 8100.64	color=188
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 3520 	 y_per100K = 106.15	color=189
+
+* San Francisco pop=874961 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 2.06	color=190
+    - predicted cross   	 y = -0.1388x+6.19 	 r^2=0.9038 	 daycross='2021-04-08'	color=191
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=192
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 35154 	 y_per100K = 4017.78	color=193
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 468 	 y_per100K = 53.49	color=194
+
+* San Joaquin pop=742603 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 5.48	color=195
+    - predicted cross   	 y = -0.1404x+13.74 	 r^2=0.4937 	 daycross='2021-05-31'	color=196
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=197
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 68089 	 y_per100K = 9168.96	color=198
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 1196 	 y_per100K = 161.06	color=199
+
+* San Luis Obispo pop=282165 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 4.86	color=200
+    - predicted cross   	 y = -0.1475x+11.03 	 r^2=0.6696 	 daycross='2021-05-08'	color=201
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=202
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 20076 	 y_per100K = 7114.99	color=203
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 250 	 y_per100K = 88.60	color=204
+
+* San Mateo pop=767423 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 2.77	color=205
+    - predicted cross   	 y = -0.1416x+7.45 	 r^2=0.9785 	 daycross='2021-04-16'	color=206
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=207
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 40147 	 y_per100K = 5231.40	color=208
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 348 	 y_per100K = 45.35	color=209
+
+* Santa Barbara pop=444829 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 4.17	color=210
+    - predicted cross   	 y = -0.3312x+13.53 	 r^2=0.9721 	 daycross='2021-04-04'	color=211
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=212
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 32857 	 y_per100K = 7386.43	color=213
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 439 	 y_per100K = 98.69	color=214
+
+* Santa Clara pop=1927470 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 3.08	color=215
+    - predicted cross   	 y = -0.2384x+10.63 	 r^2=0.9402 	 daycross='2021-04-08'	color=216
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=217
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 113877 	 y_per100K = 5908.11	color=218
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 1868 	 y_per100K = 96.91	color=219
+
+* Santa Cruz pop=273962 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 1.62	color=220
+    - predicted cross   	 y = -0.2013x+8.21 	 r^2=0.9063 	 daycross='2021-04-04'	color=221
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=222
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 15170 	 y_per100K = 5537.26	color=223
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 201 	 y_per100K = 73.37	color=224
+
+* Shasta pop=179212 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 2.47	color=225
+    - predicted cross   	 y = -0.1386x+7.78 	 r^2=0.7576 	 daycross='2021-04-20'	color=226
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=227
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 11262 	 y_per100K = 6284.18	color=228
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 181 	 y_per100K = 101.00	color=229
+
+* Sierra pop=3040 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=230
+    - predicted cross   	 y = -0.0627x+2.48 	 r^2=0.0601 	 daycross='2021-04-03'	color=231
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=232
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 50 	 y_per100K = 1644.74	color=233
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 0 	 y_per100K = 0.00	color=234
+
+* Siskiyou pop=43468 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 1.31	color=235
+    - predicted cross   	 y = -0.3518x+12.17 	 r^2=0.9474 	 daycross='2021-03-29'	color=236
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=237
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 1491 	 y_per100K = 3430.11	color=238
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 6 	 y_per100K = 13.80	color=239
+
+* Solano pop=441829 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 2.65	color=240
+    - predicted cross   	 y = -0.1848x+9.33 	 r^2=0.9081 	 daycross='2021-04-14'	color=241
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=242
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 30583 	 y_per100K = 6921.91	color=243
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 193 	 y_per100K = 43.68	color=244
+
+* Sonoma pop=499772 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 2.32	color=245
+    - predicted cross   	 y = -0.2947x+11.83 	 r^2=0.9690 	 daycross='2021-04-04'	color=246
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=247
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 29060 	 y_per100K = 5814.65	color=248
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 310 	 y_per100K = 62.03	color=249
+
+* Stanislaus pop=543194 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 5.39	color=250
+    - predicted cross   	 y = -0.2485x+16.80 	 r^2=0.6610 	 daycross='2021-05-01'	color=251
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=252
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 52321 	 y_per100K = 9632.10	color=253
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 678 	 y_per100K = 124.82	color=254
+
+* Sutter pop=96109 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 6.39	color=255
+    - predicted cross   	 y = -0.1805x+12.14 	 r^2=0.8917 	 daycross='2021-05-01'	color=256
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=257
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 9069 	 y_per100K = 9436.16	color=258
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 104 	 y_per100K = 108.21	color=259
+
+* Tehama pop=63912 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 4.92	color=260
+    - predicted cross   	 y = 0.0563x+7.36 	 r^2=0.1313 	 daycross='2020-10-16'	color=261
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=262
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 4719 	 y_per100K = 7383.59	color=263
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 52 	 y_per100K = 81.36	color=264
+
+* Trinity pop=12700 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=265
+    - predicted cross   	 y = -0.1171x+4.02 	 r^2=0.2711 	 daycross='2021-03-29'	color=266
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=267
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 310 	 y_per100K = 2440.94	color=268
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 3 	 y_per100K = 23.62	color=269
+
+* Tulare pop=461898 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 2.41	color=270
+    - predicted cross   	 y = -0.3101x+12.76 	 r^2=0.9808 	 daycross='2021-04-05'	color=271
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=272
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 48148 	 y_per100K = 10423.95	color=273
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 811 	 y_per100K = 175.58	color=274
+
+* Tuolumne pop=54045 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 2.38	color=275
+    - predicted cross   	 y = -0.4463x+12.62 	 r^2=0.5749 	 daycross='2021-03-23'	color=276
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=277
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 3962 	 y_per100K = 7330.93	color=278
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 57 	 y_per100K = 105.47	color=279
+
+* Ventura pop=847263 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 3.57	color=280
+    - predicted cross   	 y = -0.3478x+14.05 	 r^2=0.9698 	 daycross='2021-04-04'	color=281
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=282
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 79045 	 y_per100K = 9329.45	color=283
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 952 	 y_per100K = 112.36	color=284
+
+* Yolo pop=217352 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 2.37	color=285
+    - predicted cross   	 y = -0.1646x+9.29 	 r^2=0.8091 	 daycross='2021-04-20'	color=286
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=287
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 13287 	 y_per100K = 6113.13	color=288
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 194 	 y_per100K = 89.26	color=289
+
+* Yuba pop=76360 - last recorded values below:
+    newcountconfirmed   	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 2.99	color=290
+    - predicted cross   	 y = -0.3006x+13.92 	 r^2=0.6318 	 daycross='2021-04-10'	color=291
+    newcountdeaths      	 x = 2021-03-25 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=292
+    totalcountconfirmed 	 x = 2021-03-25 	 org_y = 5647 	 y_per100K = 7395.23	color=293
+    totalcountdeaths    	 x = 2021-03-25 	 org_y = 42 	 y_per100K = 55.00	color=294
+
+size of type & div type(div)=<class 'str'> len(div)=3392937
+
+- plotting end
