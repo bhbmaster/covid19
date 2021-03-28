@@ -185,6 +185,7 @@ def lastXdayslinearpredict(x_dates, y_values, days=10):
 
 # * graph
 def graph():
+
     global color_index
     print(f"* {county} pop={pop} - last recorded values below:")
     visible1 = "legendonly" if not county in visible_counties else None
@@ -197,6 +198,7 @@ def graph():
     #####################################################
     # -- newcountconfirmed per 100K (moving average) -- #
     #####################################################
+
     if color_index != None:
         # go to next color index (if we use it save it and use modulus of length)
         color_index += 1
@@ -216,67 +218,52 @@ def graph():
     #########################
     # linear regresion line #
     #########################
+
     if color_index != None:
         # go to next color index (if we use it save it and use modulus of length)
         color_index += 1
         color_text=f"\tcolor={color_index}"
 
+    # we use this code bit twice, so might as well make inner function and it only makes sense in graphing so yup here it will lie as an inner function
+    def plot_regression(figure,X,Y,extralabel=""):
+        # for any plot
+        (success,xfinal,yfinal,r_sq,m,b0) = lastXdayslinearpredict(X,Y,predictdays) # predict days is from global
+        # print(f"DEBUG PR ({extralabel}): {success=},{xfinal=},{yfinal=},{r_sq=},{m=},{b0=}")
+        # if success:
+        entered_prediction_if_loop = False # was used when dates were backwards and m was 0 so we didnt get prediction lines but got the other lines, however, i realized that even after we sorted the dates and it all worked out... what if we get a flat slope m=0 then issue could still happen, so i put this boolean in just in case
+        if success and m != 0:
+            entered_prediction_if_loop = True
+            # y = mx + b ---> (y-b)/m = 0
+            y_to_cross = 0
+            x_cross1 = (y_to_cross - float(b0)) / float(m)
+            x_cross1_int=int(x_cross1)
+            day0=xfinal[0]
+            day0dt = datetime.datetime.strptime(day0, "%Y-%m-%d")
+            daycrossdt=day0dt+datetime.timedelta(days=int(x_cross1_int))
+            daycross = daycrossdt.strftime("%Y-%m-%d")
+            print(f"{FRONTSPACE}- predicted cross ({extralabel})   \t y = {m:0.4f}x+{b0:0.2f} \t r^2={r_sq:0.4f} \t {daycross=}{color_text}")
+            # plot
+            legendtext=f"<b>{county}</b> - predict 0 daily cases @ <b>{daycross}</b> by {predictdays}-day linear fit"
+            if color_index == None:
+                # if color_index is -1 we didn't set it and we will use the default color methods (next color in colorway)
+                figure.add_trace(go.Scatter(x=xfinal, y=yfinal, name=legendtext, showlegend=False,legendgroup=county,visible=visible1,line=dict(dash='dash')),row=1,col=1)
+            else:
+                color_index_to_use = used_colors_index % COLOR_LIST_LEN # we circulate thru the color_way so we use modulus
+                color_to_use = COLOR_LIST[color_index_to_use] # call that color via index from colorway list
+                figure.add_trace(go.Scatter(x=xfinal, y=yfinal, name=legendtext, showlegend=False,legendgroup=county,visible=visible1,line=dict(color=color_to_use,dash='dash')),row=1,col=1)
+        return entered_prediction_if_loop, color_to_use  # return if we successfully predicted (meaning slope isnt 0 and the prediction function returned some good stuff)
+
     # for relative plot
-    (success,xfinal,yfinal,r_sq,m,b0) = lastXdayslinearpredict(avgx,avgy,predictdays)
-    # print(f"DEBUG: {success=},{xfinal=},{yfinal=},{r_sq=},{m=},{b0=}")
-    # if success:
-    entered_prediction_if_loop = False # was used when dates were backwards and m was 0 so we didnt get prediction lines but got the other lines, however, i realized that even after we sorted the dates and it all worked out... what if we get a flat slope m=0 then issue could still happen, so i put this boolean in just in case
-    if success and m != 0:
-        entered_prediction_if_loop = True
-        # y = mx + b ---> (y-b)/m = 0
-        y_to_cross = 0
-        x_cross1 = (y_to_cross - float(b0)) / float(m)
-        x_cross1_int=int(x_cross1)
-        day0=xfinal[0]
-        day0dt = datetime.datetime.strptime(day0, "%Y-%m-%d")
-        daycrossdt=day0dt+datetime.timedelta(days=int(x_cross1_int))
-        daycross = daycrossdt.strftime("%Y-%m-%d")
-        print(f"{FRONTSPACE}- predicted cross (relative)   \t y = {m:0.4f}x+{b0:0.2f} \t r^2={r_sq:0.4f} \t {daycross=}{color_text}")
-        # plot
-        legendtext=f"<b>{county}</b> - predict 0 daily cases @ <b>{daycross}</b> by {predictdays}-day linear fit"
-        if color_index == None:
-            # if color_index is -1 we didn't set it and we will use the default color methods (next color in colorway)
-            fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=legendtext, showlegend=False,legendgroup=county,visible=visible1,line=dict(dash='dash')),row=1,col=1)
-        else:
-            color_index_to_use = used_colors_index % COLOR_LIST_LEN # we circulate thru the color_way so we use modulus
-            color_to_use = COLOR_LIST[color_index_to_use] # call that color via index from colorway list
-            fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=legendtext, showlegend=False,legendgroup=county,visible=visible1,line=dict(color=color_to_use,dash='dash')),row=1,col=1)
-
+    entered_prediction_if_loop, color_to_use = plot_regression(fig,avgx,avgy,"relative")
     # for normal plot
-    (success_1,xfinal_1,yfinal_1,r_sq_1,m_1,b0_1) = lastXdayslinearpredict(avgx_1,avgy_1,predictdays)
-    # print(f"DEBUG: {success_1=},{xfinal_1=},{yfinal_1=},{r_sq_1=},{m_1=},{b0_1=}")
-    # if success:
-    entered_prediction_if_loop_1 = False # was used when dates were backwards and m was 0 so we didnt get prediction lines but got the other lines, however, i realized that even after we sorted the dates and it all worked out... what if we get a flat slope m=0 then issue could still happen, so i put this boolean in just in case
-    if success_1 and m_1 != 0:
-        entered_prediction_if_loop_1 = True
-        # y = mx + b ---> (y-b)/m = 0
-        y_to_cross_1 = 0
-        x_cross1_1 = (y_to_cross_1 - float(b0_1)) / float(m_1)
-        x_cross1_int_1=int(x_cross1_1)
-        day0_1=xfinal_1[0]
-        day0dt_1 = datetime.datetime.strptime(day0_1, "%Y-%m-%d")
-        daycrossdt_1=day0dt_1+datetime.timedelta(days=int(x_cross1_int_1))
-        daycross_1 = daycrossdt_1.strftime("%Y-%m-%d")
-        print(f"{FRONTSPACE}- predicted cross (normal)   \t y = {m_1:0.4f}x+{b0_1:0.2f} \t r^2={r_sq_1:0.4f} \t {daycross_1=}{color_text}")
-        # plot
-        legendtext_1=f"<b>{county}</b> - predict 0 daily cases @ <b>{daycross_1}</b> by {predictdays}-day linear fit"
-        if color_index == None:
-            # if color_index is -1 we didn't set it and we will use the default color methods (next color in colorway)
-            fig_1.add_trace(go.Scatter(x=xfinal_1, y=yfinal_1, name=legendtext_1, showlegend=False,legendgroup=county,visible=visible1,line=dict(dash='dash')),row=1,col=1)
-        else:
-            color_index_to_use_1 = used_colors_index % COLOR_LIST_LEN # we circulate thru the color_way so we use modulus
-            color_to_use_1 = COLOR_LIST[color_index_to_use_1] # call that color via index from colorway list
-            fig_1.add_trace(go.Scatter(x=xfinal_1, y=yfinal_1, name=legendtext_1, showlegend=False,legendgroup=county,visible=visible1,line=dict(color=color_to_use_1,dash='dash')),row=1,col=1)
-
+    entered_prediction_if_loop_1, color_to_use_1 = plot_regression(fig_1,avgx_1,avgy_1,"normal")
+    # - sidenote the result of the relative output should equal same for normal
+    # entered_prediction_if_loop, color_to_use should equal entered_prediction_if_loop_1, color_to_use_1
 
     ##################################################
     # -- newcountdeaths per 100K (moving average) -- #
     ##################################################
+
     if color_index != None:
         # go to next color index (if we use it save it and use modulus of length)
         color_index += 1
@@ -295,11 +282,13 @@ def graph():
     else:
         if entered_prediction_if_loop:
             fig.add_trace(go.Scatter(x=avgx, y=avgy, name=legendtext, showlegend=False,legendgroup=county,visible=visible1,line=dict(color=color_to_use)),row=2,col=1)
-            fig_1.add_trace(go.Scatter(x=avgx_1, y=avgy_1, name=legendtext_1, showlegend=False,legendgroup=county,visible=visible1,line=dict(color=color_to_use)),row=2,col=1)
+        if entered_prediction_if_loop_1:
+            fig_1.add_trace(go.Scatter(x=avgx_1, y=avgy_1, name=legendtext_1, showlegend=False,legendgroup=county,visible=visible1,line=dict(color=color_to_use_1)),row=2,col=1)
 
     ##############################
     # -- total cases per 100K -- #
     ##############################
+
     if color_index != None:
         # go to next color index (if we use it save it and use modulus of length)
         color_index += 1
@@ -316,12 +305,13 @@ def graph():
     else:
         if entered_prediction_if_loop:
             fig.add_trace(go.Scatter(x=x, y=y, name=legendtext, showlegend=False,legendgroup=county,visible=visible1,line=dict(color=color_to_use)),row=1,col=2)
-            fig_1.add_trace(go.Scatter(x=x, y=y_1, name=legendtext_1, showlegend=False,legendgroup=county,visible=visible1,line=dict(color=color_to_use)),row=1,col=2)
-
+        if entered_prediction_if_loop_1:
+            fig_1.add_trace(go.Scatter(x=x, y=y_1, name=legendtext_1, showlegend=False,legendgroup=county,visible=visible1,line=dict(color=color_to_use_1)),row=1,col=2)
 
     ###############################
     # -- total deaths per 100K -- #
     ###############################
+
     if color_index != None:
         # go to next color index (if we use it save it and use modulus of length)
         color_index += 1
@@ -338,7 +328,8 @@ def graph():
     else:
         if entered_prediction_if_loop:
             fig.add_trace(go.Scatter(x=x, y=y, name=legendtext, showlegend=False,legendgroup=county,visible=visible1,line=dict(color=color_to_use)),row=2,col=2)
-            fig_1.add_trace(go.Scatter(x=x, y=y_1, name=legendtext_1, showlegend=False,legendgroup=county,visible=visible1,line=dict(color=color_to_use)),row=2,col=2)
+        if entered_prediction_if_loop_1:
+            fig_1.add_trace(go.Scatter(x=x, y=y_1, name=legendtext_1, showlegend=False,legendgroup=county,visible=visible1,line=dict(color=color_to_use_1)),row=2,col=2)
 
 ### MAIN ###
 
