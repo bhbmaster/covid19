@@ -19,7 +19,12 @@ html-plots/US-plot-LOG.html
 
 **usa-ca/county-plot.py produces the following graphs:**
 
-- Daily New Cases in all California countys plotted to `usa-ca/county-output.html` - output: http://www.infotinks.com/covid19/usa-ca/county-output.html
+- Daily New Cases in all California countys plotted to `usa-ca/county-output.html` and `usa-ca/county-output-raw.html`
+- Relative per Population Plot: http://www.infotinks.com/covid19/usa-ca/county-output.html
+- Normal Plot: http://www.infotinks.com/covid19/usa-ca/county-output-raw.html
+- `usa-ca/county-output.html` shows the values of the counties and California state relative to the population per 100K and with 7 day moving average
+- `usa-ca/county-output-raw.html` shows the raw values of the counties and California state with 7 day moving average
+- Also it generates the raw csv data that was downloaded `usa-ca/CA-covid19cases_test.csv` and then we manipulated it to a smaller more digestable and parsable table which is also saved `usa-ca/CA-covid19cases_test-parsable.csv`
 
 ## Wrapper run.sh Script & places.sh
 

@@ -14,7 +14,8 @@ import datetime
 
 VersionFile = "../VERSION"  # Last Update YY.MM.DD
 ndays=7 # how many days is the moving average averaging
-output_html="county-output.html"
+output_html="county-output.html" # relative per population per 100K - THIS IS ORIGINAL PLOT
+output_html_1="county-output-raw.html" # just raw results (Added later so its output_html_1) - THIS IS NEW PLOT
 PER=100000 # we should per 100000 aka 100K
 PER_TEXT="100K"
 SHOW_TOP_NUMBER=12 # how many counties to have enabled when graph shows (others can be toggled on interactively)
@@ -187,10 +188,11 @@ def graph():
     global color_index
     print(f"* {county} pop={pop} - last recorded values below:")
     visible1 = "legendonly" if not county in visible_counties else None
-    x=c[c.county == county]["date"].values
+    x=c[c.county == county]["date"].values  # same x for relative and normal plot
     # print(f"DEBUG: {x=}")
     FRONTSPACE="    "
     color_text=""
+    # note where you see _1 thats for normal plot example: y is for relative original plot and y_1 is for new normal plot
 
     #####################################################
     # -- newcountconfirmed per 100K (moving average) -- #
@@ -200,11 +202,15 @@ def graph():
         color_index += 1
         color_text=f"\tcolor={color_index}"
     orgy=c[c.county == county]["newcountconfirmed"].values
-    y=orgy/pop*PER
-    avgx,avgy=avgN(ndays,x.tolist(),y.tolist())
-    print(f"{FRONTSPACE}newcountconfirmed   \t x = {avgx[-1]} \t org_y = {orgy[-1]:0.0f} \t {ndays}day_avg_y_per{PER_TEXT} = {avgy[-1]:0.2f}{color_text}")
+    y=orgy/pop*PER  # relative plot
+    y_1=orgy        # normal plot
+    avgx,avgy=avgN(ndays,x.tolist(),y.tolist())          # relative plot average
+    avgx_1,avgy_1=avgN(ndays,x.tolist(),y_1.tolist())    # normal plot average
+    print(f"{FRONTSPACE}newcountconfirmed   \t x = {avgx[-1]} \t org_y = {orgy[-1]:0.0f} \t {ndays}day_avg_y_per{PER_TEXT} = {avgy[-1]:0.2f}{color_text}") # print statement luckily shows both relative + normal
     legendtext=f"<b>{county}</b> pop={pop:,} NewC<sub>final</sub>=<b>{avgy[-1]:0.2f}</b>"
+    legendtext_1=f"<b>{county}</b> pop={pop:,} NewC<sub>final</sub>=<b>{avgy_1[-1]:0.2f}</b>"
     fig.add_trace(go.Scatter(x=avgx, y=avgy, name=legendtext, showlegend=True,legendgroup=county,visible=visible1),row=1,col=1)
+    fig_1.add_trace(go.Scatter(x=avgx_1, y=avgy_1, name=legendtext_1, showlegend=True,legendgroup=county,visible=visible1),row=1,col=1)
     used_colors_index = color_index # saving current color used (it follows thru the index of the colorway)
 
     #########################
@@ -214,6 +220,8 @@ def graph():
         # go to next color index (if we use it save it and use modulus of length)
         color_index += 1
         color_text=f"\tcolor={color_index}"
+
+    # for relative plot
     (success,xfinal,yfinal,r_sq,m,b0) = lastXdayslinearpredict(avgx,avgy,predictdays)
     # print(f"DEBUG: {success=},{xfinal=},{yfinal=},{r_sq=},{m=},{b0=}")
     # if success:
@@ -222,22 +230,49 @@ def graph():
         entered_prediction_if_loop = True
         # y = mx + b ---> (y-b)/m = 0
         y_to_cross = 0
-        x_cross1 = (y_to_cross - float(b0)) / float(m) 
+        x_cross1 = (y_to_cross - float(b0)) / float(m)
         x_cross1_int=int(x_cross1)
         day0=xfinal[0]
         day0dt = datetime.datetime.strptime(day0, "%Y-%m-%d")
         daycrossdt=day0dt+datetime.timedelta(days=int(x_cross1_int))
         daycross = daycrossdt.strftime("%Y-%m-%d")
-        print(f"{FRONTSPACE}- predicted cross   \t y = {m:0.4f}x+{b0:0.2f} \t r^2={r_sq:0.4f} \t {daycross=}{color_text}")
+        print(f"{FRONTSPACE}- predicted cross (relative)   \t y = {m:0.4f}x+{b0:0.2f} \t r^2={r_sq:0.4f} \t {daycross=}{color_text}")
         # plot
         legendtext=f"<b>{county}</b> - predict 0 daily cases @ <b>{daycross}</b> by {predictdays}-day linear fit"
         if color_index == None:
             # if color_index is -1 we didn't set it and we will use the default color methods (next color in colorway)
-            fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=legendtext+f"", showlegend=False,legendgroup=county,visible=visible1,line=dict(dash='dash')),row=1,col=1)
+            fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=legendtext, showlegend=False,legendgroup=county,visible=visible1,line=dict(dash='dash')),row=1,col=1)
         else:
             color_index_to_use = used_colors_index % COLOR_LIST_LEN # we circulate thru the color_way so we use modulus
             color_to_use = COLOR_LIST[color_index_to_use] # call that color via index from colorway list
-            fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=legendtext+f"", showlegend=False,legendgroup=county,visible=visible1,line=dict(color=color_to_use,dash='dash')),row=1,col=1)
+            fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=legendtext, showlegend=False,legendgroup=county,visible=visible1,line=dict(color=color_to_use,dash='dash')),row=1,col=1)
+
+    # for normal plot
+    (success_1,xfinal_1,yfinal_1,r_sq_1,m_1,b0_1) = lastXdayslinearpredict(avgx_1,avgy_1,predictdays)
+    # print(f"DEBUG: {success_1=},{xfinal_1=},{yfinal_1=},{r_sq_1=},{m_1=},{b0_1=}")
+    # if success:
+    entered_prediction_if_loop_1 = False # was used when dates were backwards and m was 0 so we didnt get prediction lines but got the other lines, however, i realized that even after we sorted the dates and it all worked out... what if we get a flat slope m=0 then issue could still happen, so i put this boolean in just in case
+    if success_1 and m_1 != 0:
+        entered_prediction_if_loop_1 = True
+        # y = mx + b ---> (y-b)/m = 0
+        y_to_cross_1 = 0
+        x_cross1_1 = (y_to_cross_1 - float(b0_1)) / float(m_1)
+        x_cross1_int_1=int(x_cross1_1)
+        day0_1=xfinal_1[0]
+        day0dt_1 = datetime.datetime.strptime(day0_1, "%Y-%m-%d")
+        daycrossdt_1=day0dt_1+datetime.timedelta(days=int(x_cross1_int_1))
+        daycross_1 = daycrossdt_1.strftime("%Y-%m-%d")
+        print(f"{FRONTSPACE}- predicted cross (normal)   \t y = {m_1:0.4f}x+{b0_1:0.2f} \t r^2={r_sq_1:0.4f} \t {daycross_1=}{color_text}")
+        # plot
+        legendtext_1=f"<b>{county}</b> - predict 0 daily cases @ <b>{daycross_1}</b> by {predictdays}-day linear fit"
+        if color_index == None:
+            # if color_index is -1 we didn't set it and we will use the default color methods (next color in colorway)
+            fig_1.add_trace(go.Scatter(x=xfinal_1, y=yfinal_1, name=legendtext_1, showlegend=False,legendgroup=county,visible=visible1,line=dict(dash='dash')),row=1,col=1)
+        else:
+            color_index_to_use_1 = used_colors_index % COLOR_LIST_LEN # we circulate thru the color_way so we use modulus
+            color_to_use_1 = COLOR_LIST[color_index_to_use_1] # call that color via index from colorway list
+            fig_1.add_trace(go.Scatter(x=xfinal_1, y=yfinal_1, name=legendtext_1, showlegend=False,legendgroup=county,visible=visible1,line=dict(color=color_to_use_1,dash='dash')),row=1,col=1)
+
 
     ##################################################
     # -- newcountdeaths per 100K (moving average) -- #
@@ -248,14 +283,19 @@ def graph():
         color_text=f"\tcolor={color_index}"
     orgy=c[c.county == county]["newcountdeaths"].values
     y=orgy/pop*PER
+    y_1=orgy
     avgx,avgy=avgN(ndays,x.tolist(),y.tolist())
-    print(f"{FRONTSPACE}newcountdeaths      \t x = {avgx[-1]} \t org_y = {orgy[-1]:0.0f} \t {ndays}day_avg_y_per{PER_TEXT} = {avgy[-1]:0.2f}{color_text}")
+    avgx_1,avgy_1=avgN(ndays,x.tolist(),y_1.tolist())
+    print(f"{FRONTSPACE}newcountdeaths      \t x = {avgx[-1]} \t org_y = {orgy[-1]:0.0f} \t {ndays}day_avg_y_per{PER_TEXT} = {avgy[-1]:0.2f}{color_text}") # print statement luckily shows both relative + normal
     legendtext=f"<b>{county}</b> pop={pop:,} NewD<sub>final</sub>=<b>{avgy[-1]:0.2f}</b>"
+    legendtext_1=f"<b>{county}</b> pop={pop:,} NewD<sub>final</sub>=<b>{avgy_1[-1]:0.2f}</b>"
     if color_index == None:
         fig.add_trace(go.Scatter(x=avgx, y=avgy, name=legendtext, showlegend=False,legendgroup=county,visible=visible1),row=2,col=1)
+        fig_1.add_trace(go.Scatter(x=avgx_1, y=avgy_1, name=legendtext_1, showlegend=False,legendgroup=county,visible=visible1),row=2,col=1)
     else:
         if entered_prediction_if_loop:
             fig.add_trace(go.Scatter(x=avgx, y=avgy, name=legendtext, showlegend=False,legendgroup=county,visible=visible1,line=dict(color=color_to_use)),row=2,col=1)
+            fig_1.add_trace(go.Scatter(x=avgx_1, y=avgy_1, name=legendtext_1, showlegend=False,legendgroup=county,visible=visible1,line=dict(color=color_to_use)),row=2,col=1)
 
     ##############################
     # -- total cases per 100K -- #
@@ -266,13 +306,17 @@ def graph():
         color_text=f"\tcolor={color_index}"
     orgy=c[c.county == county]["totalcountconfirmed"].values
     y=orgy/pop*PER
-    print(f"{FRONTSPACE}totalcountconfirmed \t x = {x[-1]} \t org_y = {orgy[-1]:0.0f} \t y_per{PER_TEXT} = {y[-1]:0.2f}{color_text}")
+    y_1=orgy
+    print(f"{FRONTSPACE}totalcountconfirmed \t x = {x[-1]} \t org_y = {orgy[-1]:0.0f} \t y_per{PER_TEXT} = {y[-1]:0.2f}{color_text}") # print statement luckily shows both relative + normal
     legendtext=f"<b>{county}</b> pop={pop:,} TotC<sub>final</sub>=<b>{y[-1]:0.2f}</b>"
+    legendtext_1=f"<b>{county}</b> pop={pop:,} TotC<sub>final</sub>=<b>{y_1[-1]:0.2f}</b>"
     if color_index == None:
         fig.add_trace(go.Scatter(x=x, y=y, name=legendtext, showlegend=False,legendgroup=county,visible=visible1),row=1,col=2)
+        fig_1.add_trace(go.Scatter(x=x, y=y_1, name=legendtext_1, showlegend=False,legendgroup=county,visible=visible1),row=1,col=2)
     else:
         if entered_prediction_if_loop:
             fig.add_trace(go.Scatter(x=x, y=y, name=legendtext, showlegend=False,legendgroup=county,visible=visible1,line=dict(color=color_to_use)),row=1,col=2)
+            fig_1.add_trace(go.Scatter(x=x, y=y_1, name=legendtext_1, showlegend=False,legendgroup=county,visible=visible1,line=dict(color=color_to_use)),row=1,col=2)
 
 
     ###############################
@@ -282,15 +326,19 @@ def graph():
         # go to next color index (if we use it save it and use modulus of length)
         color_index += 1
         color_text=f"\tcolor={color_index}"
-    orgy=c[c.county == county]["totalcountdeaths"].values 
+    orgy=c[c.county == county]["totalcountdeaths"].values
     y=orgy/pop*PER
-    print(f"{FRONTSPACE}totalcountdeaths    \t x = {x[-1]} \t org_y = {orgy[-1]:0.0f} \t y_per{PER_TEXT} = {y[-1]:0.2f}{color_text}")
+    y_1=orgy
+    print(f"{FRONTSPACE}totalcountdeaths    \t x = {x[-1]} \t org_y = {orgy[-1]:0.0f} \t y_per{PER_TEXT} = {y[-1]:0.2f}{color_text}") # print statement luckily shows both relative + normal
     legendtext=f"<b>{county}</b> pop={pop:,} TotD<sub>final</sub>=<b>{y[-1]:0.2f}</b>"
+    legendtext_1=f"<b>{county}</b> pop={pop:,} TotD<sub>final</sub>=<b>{y_1[-1]:0.2f}</b>"
     if color_index == None:
         fig.add_trace(go.Scatter(x=x, y=y, name=legendtext, showlegend=False,legendgroup=county,visible=visible1),row=2,col=2)
+        fig_1.add_trace(go.Scatter(x=x, y=y_1, name=legendtext_1, showlegend=False,legendgroup=county,visible=visible1),row=2,col=2)
     else:
         if entered_prediction_if_loop:
             fig.add_trace(go.Scatter(x=x, y=y, name=legendtext, showlegend=False,legendgroup=county,visible=visible1,line=dict(color=color_to_use)),row=2,col=2)
+            fig_1.add_trace(go.Scatter(x=x, y=y_1, name=legendtext_1, showlegend=False,legendgroup=county,visible=visible1,line=dict(color=color_to_use)),row=2,col=2)
 
 ### MAIN ###
 
@@ -302,12 +350,17 @@ subplot_titles = (f"Daily New Cases per {PER_TEXT} {ndays}-day Moving Average",
                   f"Total Cases per {PER_TEXT}",
                   f"Daily New Deaths per {PER_TEXT} {ndays}-day Moving Average",
                   f"Total Deaths per {PER_TEXT}")
+subplot_titles_1 = (f"Daily New Cases {ndays}-day Moving Average",
+                  f"Total Cases",
+                  f"Daily New Deaths {ndays}-day Moving Average",
+                  f"Total Deaths")
 # spacings for subplots
 bigportion = 0.618 # ratio of screen space for left plots
 smallportion = 1-bigportion
 spacing=0.05
 # subplots
 fig = make_subplots(rows=2, cols=2, shared_xaxes=True, subplot_titles=subplot_titles, column_widths=[bigportion, smallportion],horizontal_spacing=spacing,vertical_spacing=spacing) # shared_xaxes to maintain zoom on all
+fig_1 = make_subplots(rows=2, cols=2, shared_xaxes=True, subplot_titles=subplot_titles_1, column_widths=[bigportion, smallportion],horizontal_spacing=spacing,vertical_spacing=spacing) # shared_xaxes to maintain zoom on all
 random_county = cpops_county_list[0] # we picked top one which is LA (most populous at the top)
 last_x = c[c.county == random_county]["date"].values.tolist()[-1]
 # supported fonts: https://plotly.com/python/reference/layout/
@@ -326,7 +379,8 @@ plot_options={
     "colorway": COLOR_LIST
 }
 
-fig.update_layout(title=f"<b>California Counties Covid19 Stats</b> (v{Version})<br><b>Last Data Point:</b> {last_x} , <b>Updated On:</b> {updatedate_str}",**plot_options) # main title & theme & hover options & font options unpacked
+fig.update_layout(title=f"<b>California Counties Covid19 Stats (Relative to Population Values)</b> (v{Version})<br><b>Last Data Point:</b> {last_x} , <b>Updated On:</b> {updatedate_str}",**plot_options) # main title & theme & hover options & font options unpacked
+fig_1.update_layout(title=f"<b>California Counties Covid19 Stats (Normal / Raw Values)</b> (v{Version})<br><b>Last Data Point:</b> {last_x} , <b>Updated On:</b> {updatedate_str}",**plot_options) # main title & theme & hover options & font options unpacked
 # fig = go.Figure() # then graph like this: fig.add_trace(go.Scatter(x=avgx, y=avgy, name=legendtext, showlegend=True,visible=visible1))
 
 # * consider each county and trace it on plotly
@@ -337,11 +391,16 @@ for county,pop in cpop_list:
 
 # * plotly generate html output generation
 fig.write_html(output_html,auto_open=False)
+fig_1.write_html(output_html_1,auto_open=False)
 
 # * html div generation (not used)
 div = plotly.offline.offline.plot(fig, show_link=False, include_plotlyjs=False, output_type='div')
-print(f"size of type & div type(div)={type(div)} len(div)={len(div)}") # div not used
+div_1 = plotly.offline.offline.plot(fig_1, show_link=False, include_plotlyjs=False, output_type='div')
+print(f"size of type & div of relative plot - type(div)={type(div)} len(div)={len(div)}") # div not used
+print(f"size of type & div of normal plot - type(div_1)={type(div_1)} len(div)={len(div_1)}") # div not used
 print()
+
+# the end
 print("- plotting end")
 # print("DEBUG: colorway=",plot_options["colorway"])
 
