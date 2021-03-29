@@ -208,11 +208,13 @@ def graph():
     y_1=orgy        # normal plot
     avgx,avgy=avgN(ndays,x.tolist(),y.tolist())          # relative plot average
     avgx_1,avgy_1=avgN(ndays,x.tolist(),y_1.tolist())    # normal plot average
+    LastNewC = avgy[-1]
+    LastNewC_1 = avgy_1[-1]
     print(f"{FRONTSPACE}newcountconfirmed   \t x = {avgx[-1]} \t org_y = {orgy[-1]:0.0f} \t {ndays}day_avg_y_per{PER_TEXT} = {avgy[-1]:0.2f}{color_text}") # print statement luckily shows both relative + normal
     legendtext=f"<b>{county}</b> pop={pop:,} NewC<sub>final</sub>=<b>{avgy[-1]:0.2f}</b>"
     legendtext_1=f"<b>{county}</b> pop={pop:,} NewC<sub>final</sub>=<b>{avgy_1[-1]:0.2f}</b>"
-    fig.add_trace(go.Scatter(x=avgx, y=avgy, name=legendtext, showlegend=True,legendgroup=county,visible=visible1),row=1,col=1)
-    fig_1.add_trace(go.Scatter(x=avgx_1, y=avgy_1, name=legendtext_1, showlegend=True,legendgroup=county,visible=visible1),row=1,col=1)
+    fig.add_trace(go.Scatter(x=avgx, y=avgy, name=legendtext, showlegend=False,legendgroup=county,visible=visible1),row=1,col=1)
+    fig_1.add_trace(go.Scatter(x=avgx_1, y=avgy_1, name=legendtext_1, showlegend=False,legendgroup=county,visible=visible1),row=1,col=1)
     used_colors_index = color_index # saving current color used (it follows thru the index of the colorway)
 
     #########################
@@ -273,9 +275,11 @@ def graph():
     y_1=orgy
     avgx,avgy=avgN(ndays,x.tolist(),y.tolist())
     avgx_1,avgy_1=avgN(ndays,x.tolist(),y_1.tolist())
+    LastNewD = avgy[-1]
+    LastNewD_1 = avgy_1[-1]
     print(f"{FRONTSPACE}newcountdeaths      \t x = {avgx[-1]} \t org_y = {orgy[-1]:0.0f} \t {ndays}day_avg_y_per{PER_TEXT} = {avgy[-1]:0.2f}{color_text}") # print statement luckily shows both relative + normal
-    legendtext=f"<b>{county}</b> pop={pop:,} NewD<sub>final</sub>=<b>{avgy[-1]:0.2f}</b>"
-    legendtext_1=f"<b>{county}</b> pop={pop:,} NewD<sub>final</sub>=<b>{avgy_1[-1]:0.2f}</b>"
+    legendtext=f"<b>{county}</b> pop={pop:,} NewD<sub>final</sub>=<b>{avgy[-1]:0.2f}</b>"        # this is not shown - but have it just in case
+    legendtext_1=f"<b>{county}</b> pop={pop:,} NewD<sub>final</sub>=<b>{avgy_1[-1]:0.2f}</b>"    # this is not shown - but have it just in case
     if color_index == None:
         fig.add_trace(go.Scatter(x=avgx, y=avgy, name=legendtext, showlegend=False,legendgroup=county,visible=visible1),row=2,col=1)
         fig_1.add_trace(go.Scatter(x=avgx_1, y=avgy_1, name=legendtext_1, showlegend=False,legendgroup=county,visible=visible1),row=2,col=1)
@@ -296,9 +300,11 @@ def graph():
     orgy=c[c.county == county]["totalcountconfirmed"].values
     y=orgy/pop*PER
     y_1=orgy
+    LastC = y[-1]
+    LastC_1 = y_1[-1]
     print(f"{FRONTSPACE}totalcountconfirmed \t x = {x[-1]} \t org_y = {orgy[-1]:0.0f} \t y_per{PER_TEXT} = {y[-1]:0.2f}{color_text}") # print statement luckily shows both relative + normal
-    legendtext=f"<b>{county}</b> pop={pop:,} TotC<sub>final</sub>=<b>{y[-1]:0.2f}</b>"
-    legendtext_1=f"<b>{county}</b> pop={pop:,} TotC<sub>final</sub>=<b>{y_1[-1]:0.2f}</b>"
+    legendtext=f"<b>{county}</b> pop={pop:,} TotC<sub>final</sub>=<b>{y[-1]:0.2f}</b>"        # this is not shown - but have it just in case
+    legendtext_1=f"<b>{county}</b> pop={pop:,} TotC<sub>final</sub>=<b>{y_1[-1]:0.2f}</b>"    # this is not shown - but have it just in case
     if color_index == None:
         fig.add_trace(go.Scatter(x=x, y=y, name=legendtext, showlegend=False,legendgroup=county,visible=visible1),row=1,col=2)
         fig_1.add_trace(go.Scatter(x=x, y=y_1, name=legendtext_1, showlegend=False,legendgroup=county,visible=visible1),row=1,col=2)
@@ -319,17 +325,22 @@ def graph():
     orgy=c[c.county == county]["totalcountdeaths"].values
     y=orgy/pop*PER
     y_1=orgy
+    LastD = y[-1]
+    LastD_1 = y_1[-1]
     print(f"{FRONTSPACE}totalcountdeaths    \t x = {x[-1]} \t org_y = {orgy[-1]:0.0f} \t y_per{PER_TEXT} = {y[-1]:0.2f}{color_text}") # print statement luckily shows both relative + normal
-    legendtext=f"<b>{county}</b> pop={pop:,} TotD<sub>final</sub>=<b>{y[-1]:0.2f}</b>"
-    legendtext_1=f"<b>{county}</b> pop={pop:,} TotD<sub>final</sub>=<b>{y_1[-1]:0.2f}</b>"
+    # legendtext=f"<b>{county}</b> pop={pop:,} TotD<sub>final</sub>=<b>{y[-1]:0.2f}</b>"        # this is not shown - but have it just in case
+    # legendtext_1=f"<b>{county}</b> pop={pop:,} TotD<sub>final</sub>=<b>{y_1[-1]:0.2f}</b>"    # this is not shown - but have it just in case
+    # showing legend at the end as we have all of the Last data
+    legendtext = f"<b>{county}</b> ({int(pop/1000):,}K) <b>{LastNewC:0.2f}</b>|{LastC:0.0f}|<b>{LastNewD:0.2f}</b>|{LastD:0.0f}"                 # trying to show every last value
+    legendtext_1 = f"<b>{county}</b> ({int(pop/1000):,}K) <b>{LastNewC_1:0.2f}</b>|{int(LastC_1/1000):,}K|<b>{LastNewD_1:0.2f}</b>|{int(LastD_1):,}"       # trying to show every last value
     if color_index == None:
-        fig.add_trace(go.Scatter(x=x, y=y, name=legendtext, showlegend=False,legendgroup=county,visible=visible1),row=2,col=2)
-        fig_1.add_trace(go.Scatter(x=x, y=y_1, name=legendtext_1, showlegend=False,legendgroup=county,visible=visible1),row=2,col=2)
+        fig.add_trace(go.Scatter(x=x, y=y, name=legendtext, showlegend=True,legendgroup=county,visible=visible1),row=2,col=2)
+        fig_1.add_trace(go.Scatter(x=x, y=y_1, name=legendtext_1, showlegend=True,legendgroup=county,visible=visible1),row=2,col=2)
     else:
         if entered_prediction_if_loop:
-            fig.add_trace(go.Scatter(x=x, y=y, name=legendtext, showlegend=False,legendgroup=county,visible=visible1,line=dict(color=color_to_use)),row=2,col=2)
+            fig.add_trace(go.Scatter(x=x, y=y, name=legendtext, showlegend=True,legendgroup=county,visible=visible1,line=dict(color=color_to_use)),row=2,col=2)
         if entered_prediction_if_loop_1:
-            fig_1.add_trace(go.Scatter(x=x, y=y_1, name=legendtext_1, showlegend=False,legendgroup=county,visible=visible1,line=dict(color=color_to_use_1)),row=2,col=2)
+            fig_1.add_trace(go.Scatter(x=x, y=y_1, name=legendtext_1, showlegend=True,legendgroup=county,visible=visible1,line=dict(color=color_to_use_1)),row=2,col=2)
 
 ### MAIN ###
 
@@ -359,6 +370,7 @@ plot_options={
     "hoverlabel_font_size": Theme_FontSize,
     "title_font_size": Theme_FontSize+2,
     "legend_font_size": Theme_FontSize-1,
+    "legend_title_font_size": Theme_FontSize+1,
     "font_size": Theme_FontSize,
     "hoverlabel_font_family": Theme_Font,
     "title_font_family": Theme_Font,
@@ -367,7 +379,8 @@ plot_options={
     "hoverlabel_namelength": -1,  # the full line instead of the default 15
     "hovermode": 'x',
     "template": Theme_Template,
-    "colorway": COLOR_LIST
+    "colorway": COLOR_LIST,
+    "legend_title_text": "<b>Area</b> (Pop) <b>NewC</b>|TotalC|<b>NewD</b>|TotalD"
 }
 
 fig.update_layout(title=f"<b>California Counties Covid19 Stats (Relative to Population Values)</b> (v{Version})<br><b>Last Data Point:</b> {last_x} , <b>Updated On:</b> {updatedate_str}",**plot_options) # main title & theme & hover options & font options unpacked
