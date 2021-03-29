@@ -262,7 +262,8 @@ def graph():
             daycross = daycrossdt.strftime("%Y-%m-%d")
             print(f"{FRONTSPACE}- predicted cross ({extralabel})   \t y = {m:0.4f}x+{b0:0.2f} \t r^2={r_sq:0.4f} \t {daycross=}{color_text}")
             # plot
-            legendtext=f"<b>{county}</b> - predict 0 daily cases @ <b>{daycross}</b> by {predictdays}-day linear fit"
+            # legendtext=f"<b>{county}</b> - predict 0 daily cases @ <b>{daycross}</b> by {predictdays}-day linear fit"
+            legendtext=f"> PREDICT no new cases in <b>{county}</b> on <b>{daycross}</b>"
             if color_index == None:
                 # if color_index is -1 we didn't set it and we will use the default color methods (next color in colorway)
                 figure.add_trace(go.Scatter(x=xfinal, y=yfinal, name=legendtext, showlegend=False,legendgroup=county,visible=visible1,line=dict(dash='dash')),row=1,col=1)
@@ -365,14 +366,14 @@ def graph():
 print()
 print(f"- plotting start (theme,font,size: {Theme_Template},{Theme_Font},{Theme_FontSize})")
 print()
-subplot_titles = (f"Daily New Cases per {PER_TEXT} {ndays}-day Moving Average",
-                  f"Total Cases per {PER_TEXT}",
-                  f"Daily New Deaths per {PER_TEXT} {ndays}-day Moving Average",
-                  f"Total Deaths per {PER_TEXT}")
-subplot_titles_1 = (f"Daily New Cases {ndays}-day Moving Average",
-                  f"Total Cases",
-                  f"Daily New Deaths {ndays}-day Moving Average",
-                  f"Total Deaths")
+subplot_titles = (f"<b>Daily New Cases per {PER_TEXT} {ndays}-day Moving Average</b>",
+                  f"<b>Total Cases per {PER_TEXT}</b>",
+                  f"<b>Daily New Deaths per {PER_TEXT} {ndays}-day Moving Average</b>",
+                  f"<b>Total Deaths per {PER_TEXT}</b>")
+subplot_titles_1 = (f"<b>Daily New Cases {ndays}-day Moving Average</b>",
+                  f"<b>Total Cases</b>",
+                  f"<b>Daily New Deaths {ndays}-day Moving Average</b>",
+                  f"<b>Total Deaths</b>")
 # spacings for subplots
 bigportion = 0.618 # ratio of screen space for left plots
 smallportion = 1-bigportion
@@ -397,11 +398,12 @@ plot_options={
     "hovermode": 'x',
     "template": Theme_Template,
     "colorway": COLOR_LIST,
-    "legend_title_text": "<b>Area</b> (Pop) <b>NewC</b>|TotalC|<b>NewD</b>|TotalD"
+    "legend_title_text": "<b>* Legend Format:</b><br><b>Area</b> (Pop) <b>NewC</b>|TotalC|<b>NewD</b>|TotalD<br><b>* Note1:</b> Latest values are presented<br><b>* Note2:</b> K=1,000 and M=1,000,000<br>----------------------------------------------"
 }
 
-fig.update_layout(title=f"<b>California Counties Covid19 Stats (Relative to Population Values)</b> (v{Version})<br><b>Last Data Point:</b> {last_x} , <b>Updated On:</b> {updatedate_str}",**plot_options) # main title & theme & hover options & font options unpacked
-fig_1.update_layout(title=f"<b>California Counties Covid19 Stats (Normal / Raw Values)</b> (v{Version})<br><b>Last Data Point:</b> {last_x} , <b>Updated On:</b> {updatedate_str}",**plot_options) # main title & theme & hover options & font options unpacked
+predictnote =  f", <b>Note:</b> Prediction uses {predictdays} day linear fit"
+fig.update_layout(title=f"<b>California Counties Covid19 Stats (Relative to Population Values)</b> (v{Version})<br><b>Last Data Point:</b> {last_x} , <b>Updated On:</b> {updatedate_str} {predictnote}",**plot_options) # main title & theme & hover options & font options unpacked
+fig_1.update_layout(title=f"<b>California Counties Covid19 Stats (Normal / Raw Values)</b> (v{Version})<br><b>Last Data Point:</b> {last_x} , <b>Updated On:</b> {updatedate_str}  {predictnote}",**plot_options) # main title & theme & hover options & font options unpacked
 # fig = go.Figure() # then graph like this: fig.add_trace(go.Scatter(x=avgx, y=avgy, name=legendtext, showlegend=True,visible=visible1))
 
 # * consider each county and trace it on plotly

@@ -17,7 +17,7 @@ html-plots/US-plot-NORMAL.html
 html-plots/US-plot-LOG.html
 ```
 
-**usa-ca/county-plot.py produces the following graphs:**
+**usa-ca/county-plot.py produces the following graphs and outputs:**
 
 - Daily New Cases in all California countys plotted to `usa-ca/county-output.html` and `usa-ca/county-output-raw.html`
 - Relative per Population Plot: http://www.infotinks.com/covid19/usa-ca/county-output.html
