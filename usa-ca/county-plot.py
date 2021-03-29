@@ -183,6 +183,23 @@ def lastXdayslinearpredict(x_dates, y_values, days=10):
         b0=None
     return (success,xfinal,yfinal,r_sq,m,b0)
 
+# * show human number : example 3 becomes 3, 10123 become 10.1K, 10022020 becomes 10M
+def human_number(number):
+    if number < 1_000: # 0 - 999
+        return f"{number}"
+    if number < 10_000: # 1,000 - 9,999
+        return f"{number/1_000:0.2f}K"
+    if number < 100_000: # 10,000 -  99,999
+        return f"{number/1_000:0.1f}K"
+    if number < 1_000_000: # 100,000 - 999,999
+        return f"{int(number/1_000):,}K"
+    if number < 10_000_000: # 1,000,000 - 9,999,999
+        return f"{number/1_000_000:0.2f}M"
+    if number < 100_000_000: # 10,000,000 - 99,999,999
+        return f"{number/1_000_000:0.1f}M"
+    else: # 100,000,000 and above
+        return f"{int(number/1_000_000):,}M"
+
 # * graph
 def graph():
 
@@ -331,8 +348,8 @@ def graph():
     # legendtext=f"<b>{county}</b> pop={pop:,} TotD<sub>final</sub>=<b>{y[-1]:0.2f}</b>"        # this is not shown - but have it just in case
     # legendtext_1=f"<b>{county}</b> pop={pop:,} TotD<sub>final</sub>=<b>{y_1[-1]:0.2f}</b>"    # this is not shown - but have it just in case
     # showing legend at the end as we have all of the Last data
-    legendtext = f"<b>{county}</b> ({int(pop/1000):,}K) <b>{LastNewC:0.2f}</b>|{LastC:0.0f}|<b>{LastNewD:0.2f}</b>|{LastD:0.0f}"                 # trying to show every last value
-    legendtext_1 = f"<b>{county}</b> ({int(pop/1000):,}K) <b>{LastNewC_1:0.2f}</b>|{int(LastC_1/1000):,}K|<b>{LastNewD_1:0.2f}</b>|{int(LastD_1):,}"       # trying to show every last value
+    legendtext = f"<b>{county}</b> ({human_number(pop)}) <b>{LastNewC:0.2f}</b>|{human_number(LastC)}|<b>{LastNewD:0.2f}</b>|{LastD:0.0f}"                 # trying to show every last value
+    legendtext_1 = f"<b>{county}</b> ({human_number(pop)}) <b>{LastNewC_1:0.2f}</b>|{human_number(LastC_1)}|<b>{LastNewD_1:0.2f}</b>|{int(LastD_1):,}"       # trying to show every last value
     if color_index == None:
         fig.add_trace(go.Scatter(x=x, y=y, name=legendtext, showlegend=True,legendgroup=county,visible=visible1),row=2,col=2)
         fig_1.add_trace(go.Scatter(x=x, y=y_1, name=legendtext_1, showlegend=True,legendgroup=county,visible=visible1),row=2,col=2)
