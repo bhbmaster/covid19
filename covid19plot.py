@@ -330,11 +330,11 @@ def graph2div(country_class,graph_type):
     country_name=i.country
     full_path_html=f"html-plots/{i.countryposix}-plot-{the_type_string}.html"
 
-    # subplot_titles = (f"Cases, Deaths, Recovered, Active",f"Death & Recovery %",
-    # f"Ratio Diff of Cases, Deaths, Active",f"Ratio Diff of Active",
-    # f"Daily Cases",f"Daily Deaths")
-    subplot_titles = (f"Cases, Deaths, Recovered, Active",f"Death & Recovery %",
-    f"Daily Cases",f"Daily Deaths")
+    # subplot_titles = (f"<b>Cases, Deaths, Recovered, Active</b>",f"<b>Death & Recovery %</b>",
+    # f"<b>Ratio Diff of Cases, Deaths, Active</b>",f"<b>Ratio Diff of Active</b>",
+    # f"<b>Daily Cases</b>",f"<b>Daily Deaths</b>")
+    subplot_titles = (f"<b>Cases, Deaths, Recovered, Active</b>",f"<b>Death & Recovery %</b>",
+    f"<b>Daily Cases & {days_predict_new_cases}-day Linear Prediction</b>",f"<b>Daily Deaths</b>")
     spacing = 0.035
 
     fig = make_subplots(rows=2, cols=2, horizontal_spacing=spacing, vertical_spacing=spacing, subplot_titles=subplot_titles,shared_xaxes=True) # used to be make_subplots(rows=2, cols=2), then made it (3,2) ,then  middle row back to (2,2)
@@ -730,7 +730,7 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
         html += "        " + div+"\n"
 
         # redundant (already in notes # html += '<p>* <b>Note:</b> Data Source: <a href="https://pomber.github.io/covid19/">Pomber</a>, which generates daily json from <a href="https://github.com/CSSEGISandData/COVID-19">CSSEGISandData</a> data.</p>\n'
- 
+
     html += f"""<!-- hitwebcounter Code START -->
     <a href="https://www.hitwebcounter.com" target="_blank">
     <img src="{countersite}" title="Views:" Alt="hitwebcounter" border="0" >
@@ -792,7 +792,7 @@ def main():
     print(f"Covid19plot.py - v{Version}")
     print("------------------------------")
     print(f"- Plot theme,font,size: {Theme_Template},{Theme_Font},{Theme_FontSize}")
-	
+
     #### - GET DATA - METHOD 1 - START - ####
     # download json data (comment out this or load json; only have one)
     print(f"- Downloading json from {SITE} (please wait)")
@@ -942,7 +942,7 @@ def main():
     print("Creating 'covid19-log.html', please wait.")
     divs2html(div_list_log,"Log",start_time_string,"covid19-log.html",bootstrapped)
 
-    # save 
+    # save
     # save_pickle(list_of_countries,"country-class-list",start_time_posix)
 
     # complete message
