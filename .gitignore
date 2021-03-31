@@ -22,3 +22,5 @@ remote-pull-run.sh
 remote-pull.sh
 usa-ca/CA-covid19cases_test-parsable.csv
 usa-ca/CA-covid19cases_test.csv
+usa-states/us-states.csv
+usa-states/us-states-parsable.csv
