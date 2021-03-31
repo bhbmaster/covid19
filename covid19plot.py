@@ -330,8 +330,10 @@ def graph2div(country_class,graph_type):
     country_name=i.country
     full_path_html=f"html-plots/{i.countryposix}-plot-{the_type_string}.html"
 
+    # subplot_titles = (f"Cases, Deaths, Recovered, Active",f"Death & Recovery %",
+    # f"Ratio Diff of Cases, Deaths, Active",f"Ratio Diff of Active",
+    # f"Daily Cases",f"Daily Deaths")
     subplot_titles = (f"Cases, Deaths, Recovered, Active",f"Death & Recovery %",
-    f"Ratio Diff of Cases, Deaths, Active",f"Ratio Diff of Active",
     f"Daily Cases",f"Daily Deaths")
     spacing = 0.035
 
@@ -348,7 +350,7 @@ def graph2div(country_class,graph_type):
         "legend_font_family": Theme_Font,
         "font_family": Theme_Font,
         "hoverlabel_namelength": -1,  # the full line instead of the default 15
-        "hovermode": 'x unified',
+        "hovermode": "x", # old method was but hard to keep track of them 'x unified',
         "template": Theme_Template
     }
 
