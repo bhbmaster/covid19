@@ -7,6 +7,9 @@ import plotly.express as px # for themes/templates
 import numpy as np
 from sklearn.linear_model import LinearRegression
 import datetime
+import sys
+sys.path.append("..")    # so we can import common from previous directory
+from common import avgN  # local module but up one directory hence the sys path append ..
 
 # POSSIBLE-TODO: consider removing county-pop.csv depedence as that is downloaded from new covid cases csv. its optional as population doesn't change much and it still works
 
@@ -110,25 +113,8 @@ c.to_csv(csv_file_parsable)
 
 ### FUNCTIONS ###
 
-# * moving average
-def avgN(N,x,y):
-    # example:
-    # y = [1, 2, 3, 7, 9]  # numbers
-    # N = 3                # window_size
-    # output is [2.0, 4.0, 6.333333333333333]
-    # *** get y values - moving average algo
-    mov_y = []
-    # print("DEBUG:",y)
-    for i in range(len(y) - N + 1):
-        wind = y[i : i + N]
-        wind_avg = sum(wind) / N
-        mov_y.append(wind_avg)
-    # *** get x values - truncates N-1 number from begin
-    mov_x = x[N-1:]
-    # *** return tuple
-    return (mov_x,mov_y)
-
 # input x dates and y values lists, output x (date list) and y (values) and r^2 and m and b0. uses last X days to predict
+# note already have a form of it in common module but we recreated it so it works for anything here (POSSIBLE-TODO: might be good idea to get into common)
 def lastXdayslinearpredict(x_dates, y_values, days=10):
     success=True
     try:

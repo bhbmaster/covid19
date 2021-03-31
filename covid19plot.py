@@ -3,18 +3,13 @@ import urllib.request
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import plotly.offline.offline
-# import plotly.plotly as py
-import string
 import os
 import datetime
 import bs4
 import htmlmin
-import numpy as np
-from sklearn.linear_model import LinearRegression
-# from sklearn.preprocessing import PolynomialFeatures
 import pickle
-from scipy.optimize import curve_fit
 from os import path
+from common import avgN, Entry, Country
 
 # By: Kostia Khlebopros
 # Site: http://www.infotinks.com/coronavirus-dashboard-covid19-py/
@@ -33,7 +28,6 @@ sigdigit=5
 sigdigit_small=2
 predict_days_min=5
 predict_days_max=15
-valid_chars = "-_.%s%s" % (string.ascii_letters, string.digits)
 TESTDATA = "code/CountryTestData.json"
 moving_average_samples = 7 # 7 day moving average for daily new cases and daily deaths
 days_predict_new_cases = 30
@@ -44,243 +38,6 @@ ThemeFileContents = open(ThemeFile,"r").readline().rstrip().lstrip().split(",")
 Theme_Template = ThemeFileContents[0] if path.exists(ThemeFile) else "none"
 Theme_Font = ThemeFileContents[1] if path.exists(ThemeFile) else "Arial"
 Theme_FontSize = int(ThemeFileContents[2]) if path.exists(ThemeFile) else 12
-
-### classes ###
-
-# a single entry class
-class Entry:
-    def __init__(self,date,cases,deaths,recovered,prevEntry=None):
-        self.date=date
-        if cases == None:
-            cases=0
-        if deaths == None:
-            deaths=0
-        if recovered == None:
-            recovered=0
-        if cases < 0:
-            cases = 0
-        if deaths < 0:
-            deaths = 0
-        if recovered < 0:
-            recovered = 0
-        self.cases=cases
-        self.deaths=deaths
-        self.recovered=recovered
-        # print(f"{date}, {cases}, {deaths}, {recovered}.")
-        self.active=cases-deaths-recovered
-        # death & recovery %
-        if cases == 0:
-            self.death_percent=None
-            self.recovery_percent=None
-        else:
-            self.death_percent=(self.deaths/self.cases)*100.0
-            self.recovery_percent=(self.recovered/self.cases)*100.0
-        if prevEntry:
-            self.delta_cases=cases-prevEntry.cases
-            self.delta_active=self.active-prevEntry.active
-            self.delta_recovered=self.recovered-prevEntry.recovered
-            self.delta_deaths=self.deaths-prevEntry.deaths
-            # ratio cases
-            try:
-                self.delta_ratio_cases=cases/prevEntry.cases
-            except:
-                self.delta_ratio_cases=None
-            # ratio active cases
-            try:
-                self.delta_ratio_active=self.active/prevEntry.active
-            except:
-                self.delta_ratio_active=None
-            # ratio recovered
-            try:
-                self.delta_ratio_recovered=self.recovered/prevEntry.recovered
-            except:
-                self.delta_ratio_recovered=None
-            # ratio deaths
-            try:
-                self.delta_ratio_deaths=self.deaths/prevEntry.deaths
-            except:
-                self.delta_ratio_deaths=None
-        else:
-            self.delta_cases=0 # hack more info below
-            self.delta_active=None
-            self.delta_recovered=None
-            self.delta_deaths=0 # hack more info below
-            self.delta_ratio_cases=None
-            self.delta_ratio_active=None
-            self.delta_ratio_recovered=None
-            self.delta_ratio_deaths=None
-            # hack: used to be None but that fails average calc in moving average (as you can't sum None+ints like None+3+2). Perhaps its better to delete the entry (so the date|x and value|y are just gone. The plots should still work with those missing points).
-
-# a country class, full of entries
-class Country:
-    def __init__(self,country,entrylist):
-        self.country=country
-        self.countryposix=''.join(c for c in self.country if c in valid_chars)
-        self.entrylist=entrylist
-        self.date_list=[]
-        self.cases_list=[]
-        self.deaths_list=[]
-        self.recovered_list=[]
-        self.active_list=[]
-        # cases
-        self.delta_cases_list=[]
-        self.delta_ratio_cases_list=[]
-        # active
-        self.delta_active_list=[]
-        self.delta_ratio_active_list=[]
-        # recovered
-        self.delta_recovered_list=[]
-        self.delta_ratio_recovered_list=[]
-        # deaths
-        self.delta_deaths_list=[]
-        self.delta_ratio_deaths_list=[]
-        # death + recovery %
-        self.death_percent_list=[]
-        self.recovery_percent_list=[]
-        for i in entrylist:
-            self.date_list.append(i.date)
-            self.cases_list.append(i.cases)
-            self.deaths_list.append(i.deaths)
-            self.recovered_list.append(i.recovered)
-            self.active_list.append(i.active)
-            self.delta_cases_list.append(i.delta_cases)
-            self.delta_ratio_cases_list.append(i.delta_ratio_cases)
-            self.delta_active_list.append(i.delta_active)
-            self.delta_ratio_active_list.append(i.delta_ratio_active)
-            self.delta_recovered_list.append(i.delta_recovered)
-            self.delta_ratio_recovered_list.append(i.delta_ratio_recovered)
-            self.delta_deaths_list.append(i.delta_deaths)
-            self.delta_ratio_deaths_list.append(i.delta_ratio_deaths)
-            # death + recovery %
-            self.death_percent_list.append(i.death_percent)
-            self.recovery_percent_list.append(i.recovery_percent)
-        self.length=len(entrylist)
-        lasti=self.length-1
-        self.last_date=entrylist[lasti].date
-        self.last_cases=entrylist[lasti].cases
-        self.last_deaths=entrylist[lasti].deaths
-        self.last_recovered=entrylist[lasti].recovered
-        self.last_active=entrylist[lasti].active
-        self.last_delta_cases = entrylist[lasti].delta_cases
-        self.last_delta_active = entrylist[lasti].delta_active
-        self.last_delta_recovered = entrylist[lasti].delta_recovered
-        self.last_delta_deaths = entrylist[lasti].delta_deaths
-        self.last_delta_ratio_cases = entrylist[lasti].delta_ratio_cases
-        self.last_delta_ratio_active = entrylist[lasti].delta_ratio_active
-        self.last_delta_ratio_recovered = entrylist[lasti].delta_ratio_recovered
-        self.last_delta_ratio_deaths = entrylist[lasti].delta_ratio_deaths
-        # death + recovery %
-        self.last_death_percent = entrylist[lasti].death_percent
-        self.last_recovery_percent = entrylist[lasti].recovery_percent
-        # prediction of when we get 0 daily new cases (this is calculated later; but i guess if we refactor can bring it into this class)
-        self.predict_date_zero = None # calculated and set in graph2div, called from there and div2html
-
-    # input list type, output x (date list) and y (values) and r^2 and m and b0. uses last X days to predict
-    def lastXdayslinearpredict(self, list, days=10):
-        success=True
-        try:
-            # grab last 10 days or whatever
-            days=int(days)
-            x0=self.date_list[-(days+1):-1]
-            y0=list[-(days+1):-1]
-            # get first day
-            day0=x0[0]
-            # new days 0 thru 10
-            x00=[]
-            for i in range(len(x0)):
-                x00.append(i)
-            # now should have
-            # x00=0,1,2,3,4,5,6,7,8,9
-            # y0=with ten values
-            # linear fit
-            x = np.array(x00).reshape((-1, 1))
-            y = np.array(y0)
-            model = LinearRegression()
-            model.fit(x, y)
-            r_sq = model.score(x, y)
-            b0=model.intercept_
-            m=float(model.coef_)
-            # print('* day 0:', day0)
-            # print('* coefficient of determination:', r_sq)
-            # print('* intercept:', b0)
-            # print('* slope:', m)
-            xpred0=[]
-            for i in range(len(x0)*2):
-                xpred0.append(i)
-            xpred=np.array(xpred0).reshape((-1,1))
-            y_pred = model.predict(xpred)
-            # print('predicted response:', y_pred, sep='\n')
-            # convert day 0,1,2,3,4 to day0+day
-            day0dt=datetime.datetime.strptime(day0, "%Y-%m-%d")
-            xdays=[]
-            for i in xpred0:
-                newdt=day0dt+datetime.timedelta(days=int(i))  # add x number of days
-                newday=newdt.strftime("%Y-%m-%d")
-                xdays.append(newday)
-            # final answer
-            xfinal=xdays   # need to convert these to dates of same format yyyy-mm-dd
-            yfinal=y_pred.tolist()
-        except:
-            success=False
-            xfinal=None
-            yfinal=None
-            r_sq=None
-            m=None
-            b0=None
-        return (success,xfinal,yfinal,r_sq,m,b0)
-
-    # input list type. uses last X days to predict - fit to a/(x+c) + b
-    def lastXdayscurvefit(self, list, days=10):
-        success=True
-        try:
-            # grab last 10 days or whatever
-            days=int(days)
-            x0=self.date_list[-(days+1):-1]
-            y0=list[-(days+1):-1]
-            # get first day
-            day0=x0[0]
-            # new days 0 thru 10
-            x00=[]
-            for i in range(len(x0)):
-                x00.append(i)
-            # now should have
-            # x00=0,1,2,3,4,5,6,7,8,9
-            # y0=with ten values
-            # linear fit
-            x = np.array(x00).reshape((-1, 1))
-            y = np.array(y0)
-            # print("DEBUG:",x,y)
-            fit_func = lambda x,a,b,c: a*x**2 + b*x +c # polynomial
-            # fit_func = lambda x,a,b,c: a/(x+c)+b # the curve function
-            model = curve_fit(fit_func,np.array(x00),np.array(y0))
-            # get parms from the fit
-            [ a, b, c ] = model[0]
-            # print(f"DEBUGED: a={a} b={b} c={c}")
-            xpred0=[]
-            for i in range(len(x0)*2): # how far out we predict (as many days forward as we looked back)
-                xpred0.append(i)
-            xpred = np.array(xpred0).reshape((-1,1))  # verticle xs
-            y_pred = np.array(fit_func(xpred,a,b,c))
-            # print('predicted response:', y_pred, sep='\n')
-            # convert day 0,1,2,3,4 to day0+day
-            day0dt=datetime.datetime.strptime(day0, "%Y-%m-%d")
-            xdays=[]
-            for i in xpred0:
-                newdt=day0dt+datetime.timedelta(days=int(i))  # add x number of days
-                newday=newdt.strftime("%Y-%m-%d")
-                xdays.append(newday)
-            # final answer
-            xfinal=xdays   # need to convert these to dates of same format yyyy-mm-dd
-            yfinal=[ float(i[0]) for i in y_pred.tolist() ]
-        except Exception as e:
-            # print("CURVE FIT ERROR:",e)
-            success=False
-            xfinal=None
-            yfinal=None
-            a=None
-            b=None
-            c=None
-        return (success,xfinal,yfinal,a,b,c)
 
 ### functions ###
 
@@ -293,24 +50,6 @@ def round_or_none(n,places,sep=True):
             return f"{n:0.{places}f}"
     except:
         return None
-
-# N day moving average (ex: 7 day average). averages the y values over window size N, our array shrinks by N-1 due to this. therefore, we also truncate the x array values by N-1 from the left side (older dates are on the left side)
-def avgN(N,x,y):
-    # example:
-    # y = [1, 2, 3, 7, 9]  # numbers
-    # N = 3                # window_size
-    # output is [2.0, 4.0, 6.333333333333333]
-    # *** get y values - moving average algo
-    mov_y = []
-    # print("DEBUG:",y)
-    for i in range(len(y) - N + 1):
-        wind = y[i : i + N]
-        wind_avg = sum(wind) / N
-        mov_y.append(wind_avg)
-    # *** get x values - truncates N-1 number from begin
-    mov_x = x[N-1:]
-    # *** return tuple
-    return (mov_x,mov_y)
 
 # create divs of graph of a certain type from country class item
 
@@ -330,14 +69,11 @@ def graph2div(country_class,graph_type):
     country_name=i.country
     full_path_html=f"html-plots/{i.countryposix}-plot-{the_type_string}.html"
 
-    # subplot_titles = (f"<b>Cases, Deaths, Recovered, Active</b>",f"<b>Death & Recovery %</b>",
-    # f"<b>Ratio Diff of Cases, Deaths, Active</b>",f"<b>Ratio Diff of Active</b>",
-    # f"<b>Daily Cases</b>",f"<b>Daily Deaths</b>")
     subplot_titles = (f"<b>Cases, Deaths, Recovered, Active</b>",f"<b>Death & Recovery %</b>",
     f"<b>Daily Cases & {days_predict_new_cases}-day Linear Prediction</b>",f"<b>Daily Deaths</b>")
     spacing = 0.035
 
-    fig = make_subplots(rows=2, cols=2, horizontal_spacing=spacing, vertical_spacing=spacing, subplot_titles=subplot_titles,shared_xaxes=True) # used to be make_subplots(rows=2, cols=2), then made it (3,2) ,then  middle row back to (2,2)
+    fig = make_subplots(rows=2, cols=2, horizontal_spacing=spacing, vertical_spacing=spacing, subplot_titles=subplot_titles,shared_xaxes=True)
 
     # supported fonts: https://plotly.com/python/reference/layout/
     plot_options={
@@ -366,45 +102,14 @@ def graph2div(country_class,graph_type):
 
     fig.add_trace(go.Scatter(x=i.date_list, y=i.active_list, name=f"<b>Active Cases</b> : y<sub>fin</sub>={round_or_none(i.active_list[-1],0)}", line=dict(color='purple', width=2),showlegend=True),row=1,col=1)
 
-    ## OLD-MIDDLE-ROW ## fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_cases_list, name=f"<b>Ratio Diff Cases</b> : y<sub>fin</sub>={round_or_none(i.delta_ratio_cases_list[1],5)}", showlegend=True),row=2,col=1)
-
-    # fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_active_list, name="<b>Ratio Diff Active Cases</b>", showlegend=True),row=2,col=1)
-
-    # fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_recovered_list, name="Ratio Diff Recovered", showlegend=True),row=2,col=1)
-
-    ## OLD-MIDDLE-ROW ## fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_deaths_list, name=f"<b>Ratio Diff Deaths</b> : y<sub>fin</sub>={round_or_none(i.delta_ratio_deaths_list[-1],5)}", showlegend=True),row=2,col=1)
-
-    ## OLD-MIDDLE-ROW ## fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_ratio_active_list, name=f"<b>Ratio Diff Active Cases</b> : y<sub>fin</sub>={round_or_none(i.delta_ratio_active_list[-1],5)}", showlegend=True),row=2,col=2)
-
-    ## OLD-MIDDLE-ROW ## ### # ~~~ ratio prediction - start ~~~ #
-    ### for ds in range(predict_days_min,predict_days_max+1):
-    ###     success, xfinal, yfinal, r_sq, m, b0 = i.lastXdayslinearpredict(i.delta_ratio_active_list, ds)
-    ###     if success:
-    ###         # fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=f"Past {ds} day Linear Regression Fit (r^2={r_sq})", line=dict(color='gray', width=1), showlegend=True), row=2,col=2)
-    ###         fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=f"Past {ds} day Linear Regression Fit (r^2={round(r_sq,sigdigit)})", line=dict(width=1), showlegend=True), row=2,col=2)
-    ### # ~~~ ratio prediction - end ~~~ #
-
-    # ~~~ start new plot ~~~ #
-
     fig.add_trace(go.Scatter(x=i.date_list, y=i.death_percent_list, name=f"<b>Death %</b> : y<sub>fin</sub>={round_or_none(i.death_percent_list[-1],2)}%", showlegend=True),row=1,col=2)
 
     fig.add_trace(go.Scatter(x=i.date_list, y=i.recovery_percent_list, name=f"<b>Recovery %</b> : y<sub>fin</sub>={round_or_none(i.recovery_percent_list[-1],2)}%", showlegend=True),row=1,col=2)
 
-    # fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_active_list, name="Delta Active Cases", showlegend=True),row=1,col=2) # doesn't show negative so not including
-
-    # ~~~ end new plot ~~~ #
-
-    # ~~~ start new plot ~~~ #
-
-    # ... daily new cases ... #
-
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_cases_list, name=f"<b>New Cases</b> : y<sub>fin</sub>={round_or_none(i.delta_cases_list[-1],0)}", showlegend=True),row=2,col=1) # when had OLD-MIDDLE-ROW this was row=3,col=1
-
+    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_cases_list, name=f"<b>New Cases</b> : y<sub>fin</sub>={round_or_none(i.delta_cases_list[-1],0)}", showlegend=True),row=2,col=1) 
     xavg,yavg = avgN(moving_average_samples,i.date_list,i.delta_cases_list)
 
     fig.add_trace(go.Scatter(x=xavg, y=yavg, name=f"<b>New Cases {moving_average_samples}day Moving Avg</b> : y<sub>fin</sub>={round_or_none(yavg[-1],0)}", showlegend=True),row=2,col=1) # when had OLD-MIDDLE-ROW this was row=3,col=1
-
-    ## success,xfinal,yfinal,fita,fitb,fitc = i.lastXdayscurvefit(yavg,days_predict_new_cases)
 
     success, xfinal, yfinal, r_sq, m, b0 = i.lastXdayslinearpredict(yavg, days_predict_new_cases)
 
@@ -431,25 +136,7 @@ def graph2div(country_class,graph_type):
 
         i.predict_date_zero = daycross  # this variable doesn't exist in Country class, but in python you can create it regardless (we call it later when creating the HTML)
 
-        ## fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=f"Daily New Cases Prediction Curve Fit (y={fita:.3f}x^2+{fitb:.3f}x+{fitc:.0f})", line=dict(color='gray', width=2), showlegend=True), row=3,col=1)
-
         fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=f"<b>Daily New Cases {days_predict_new_cases} Days Prediction</b><br>r<sup>2</sup>={r_sq:0.5f}<br>y={m:0.3f}x+{b0:0.1f} where x<sub>0</sub>={xfinal[0]}<br>y=0 / no new cases predicted @ {daycross}", line=dict(color='black', width=1, dash='dash'), showlegend=True), row=2,col=1) # when had OLD-MIDDLE-ROW this was row=3,col=1
-
-        # half_index = int(len(xfinal)/2)
-        # # text for the fit
-        # text_string=f"y={m:0.2f}x+{b0:0.0f} (r^2={r_sq:0.5f})"
-        # color_text="purple"
-        # fig.add_annotation(x=xfinal[half_index], y=yfinal[half_index],
-        #     text=text_string,
-        #     showarrow=True,
-        #     font=dict(
-        #         family="courier",
-        #         size=12,
-        #         color=color_text
-        #     ),
-        #     arrowhead=1, arrowsize=2, arrowcolor=color_text, arrowwidth=1, row=3,col=1)
-
-    # ...  daily deaths ... #
 
     fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_deaths_list, name=f"<b>New Deaths</b> : y<sub>fin</sub>={round_or_none(i.delta_deaths_list[-1],0)}", showlegend=True),row=2,col=2) # when had OLD-MIDDLE-ROW this was row=3,col=1
 
@@ -457,15 +144,11 @@ def graph2div(country_class,graph_type):
 
     fig.add_trace(go.Scatter(x=xavg, y=yavg, name=f"<b>New Deaths {moving_average_samples}day Moving Avg</b> : y<sub>fin</sub>={round_or_none(yavg[-1],0)}", showlegend=True),row=2,col=2) # when had OLD-MIDDLE-ROW this was row=3,col=1
 
-    # ~~~ end new plot ~~~ #
-
     fig.update_yaxes(type=the_type_fig,row=1,col=1)
 
     fig.update_yaxes(type=None,rangemode="tozero",row=2,col=1)
 
     fig.update_yaxes(type=None,row=1,col=2) # new plot
-
-    # fig.update_yaxes(type="log",row=1,col=2) # new plot
 
     fig.update_yaxes(type=None,rangemode="tozero",row=2,col=2) # new plot
 
@@ -679,6 +362,9 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
 
             success, xfinal, yfinal, r_sq, m, b0 = country.lastXdayslinearpredict(country.delta_ratio_active_list, pdays)
 
+            daycross=None
+            r_sq=None
+
             if success:
 
                 try:
@@ -691,8 +377,6 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
                     # html += f"<p>* Using past {pdays} days for prediction, Active Cases might peak on {daycross}. The r^2 for this fit is {round(r_sq,sigdigit)}</p>\n"
                 except:
                     success=False
-                    daycross=None
-                    r_sq=None
 
             predict_item=[pdays,success,daycross,None if r_sq == None else round(r_sq,sigdigit)]
 
@@ -813,13 +497,6 @@ def main():
     # print(f"- Loading Complete.")
     #### - GET DATA - METHOD 2 - END ####
 
-    # last_date=data["China"][len(data["China"])-1]["date"]  # returns 2020-3-14
-
-    # last_confirmed=0
-    # last_deaths=0
-    # last_recovered=0
-    # last_active = 0
-
     list_of_countries=[]
     for x in data:
         str_country=x
@@ -833,16 +510,6 @@ def main():
             entry=Entry(str_date,int_confirmed,int_deaths,int_recovered,prevEntry=oldEntry)
             oldEntry=entry
             list_of_entries.append(entry)
-            # if i["date"] == last_date:
-            #     today=i
-            #     confirmed=i["confirmed"]
-            #     deaths=i["deaths"]
-            #     recovered=i["recovered"]
-            #     active=confirmed-deaths-recovered
-            #     last_confirmed+=confirmed
-            #     last_deaths+=deaths
-            #     last_recovered+=recovered
-            #     last_active+=active
         country=Country(str_country,list_of_entries)
         list_of_countries.append(country)
         # print(f"- {x} on {last_date} has {confirmed} confirmed {deaths} deaths {recovered} recovered {active} active")
@@ -861,7 +528,7 @@ def main():
             all_dates=i.date_list # at this point all_dates is all of our dates
             break
 
-    #### - DEBUG TEST DATA - START ####
+    # ### - DEBUG TEST DATA - START ####
     # # For quicker runs - for tests: only work with China, US and Canada by creating new list only w/ those countries
     # TestCountries = [ "China", "US", "Canada" ]
     # test_list_of_countries = []
@@ -870,7 +537,7 @@ def main():
     #     if i.country in TestCountries:
     #         test_list_of_countries.append(i)
     # list_of_countries = test_list_of_countries
-    #### - DEBUG TEST DATA - END ####
+    # ### - DEBUG TEST DATA - END ####
 
     # now iterate thru all of the dates summing each country at the date
     i=0
@@ -895,18 +562,6 @@ def main():
 
     # sort list of countries by total cases (TOTAL will be at top)
     list_of_countries.sort(key=lambda x: x.last_cases, reverse=True)
-
-    # # test linear
-    # print("======")
-    # test_country=list_of_countries[1]
-    # print(f"- country = {test_country.country}")
-    # xfinal,yfinal,r_sq,m,b0 = test_country.lastXdayslinearpredict(test_country.delta_ratio_active_list,10)
-    # print(f"- xfinal = {xfinal}")
-    # print(f"- yfinal = {yfinal}")
-    # print(f"- r^2 = {r_sq} || y={m}x+{b0}")
-    # x_cross1=(1.0-b0)/m
-    # print(f"- predict cross 1 @ {x_cross1}")
-    # print("======")
 
     # plot all
 
