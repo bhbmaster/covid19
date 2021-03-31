@@ -9,7 +9,7 @@ from sklearn.linear_model import LinearRegression
 import datetime
 import sys
 sys.path.append("..")    # so we can import common from previous directory
-from common import avgN  # local module but up one directory hence the sys path append ..
+from common import avgN, human_number, lastXdayslinearpredict  # local module but up one directory hence the sys path append ..
 
 # POSSIBLE-TODO: consider removing county-pop.csv depedence as that is downloaded from new covid cases csv. its optional as population doesn't change much and it still works
 
@@ -112,79 +112,6 @@ c.to_csv(csv_file_parsable)
 # raise Exception("Script stopping now until TODO implemented") # easy way to stop code while editing/fixing
 
 ### FUNCTIONS ###
-
-# input x dates and y values lists, output x (date list) and y (values) and r^2 and m and b0. uses last X days to predict
-# note already have a form of it in common module but we recreated it so it works for anything here (POSSIBLE-TODO: might be good idea to get into common)
-def lastXdayslinearpredict(x_dates, y_values, days=10):
-    success=True
-    try:
-        # grab last 10 days or whatever
-        days=int(days)
-        x0=x_dates[-(days+1):-1]
-        y0=y_values[-(days+1):-1]
-        # get first day
-        day0=x0[0]
-        # new days 0 thru 10
-        x00=[]
-        for i in range(len(x0)):
-            x00.append(i)
-        # now should have
-        # x00=0,1,2,3,4,5,6,7,8,9
-        # y0=with ten values
-        # linear fit
-        x = np.array(x00).reshape((-1, 1))
-        y = np.array(y0)
-        model = LinearRegression()
-        model.fit(x, y)
-        r_sq = model.score(x, y)
-        b0=model.intercept_
-        m=float(model.coef_)
-        # print('* day 0:', day0)
-        # print('* coefficient of determination:', r_sq)
-        # print('* intercept:', b0)
-        # print('* slope:', m)
-        xpred0=[]
-        for i in range(len(x0)*2):
-            xpred0.append(i)
-        xpred=np.array(xpred0).reshape((-1,1))
-        y_pred = model.predict(xpred)
-        # print('predicted response:', y_pred, sep='\n')
-        # convert day 0,1,2,3,4 to day0+day
-        day0dt=datetime.datetime.strptime(day0, "%Y-%m-%d")
-        xdays=[]
-        for i in xpred0:
-            newdt=day0dt+datetime.timedelta(days=int(i))  # add x number of days
-            newday=newdt.strftime("%Y-%m-%d")
-            xdays.append(newday)
-        # final answer
-        xfinal=xdays   # need to convert these to dates of same format yyyy-mm-dd
-        yfinal=y_pred.tolist()
-    except Exception as e:
-        print("LINEAR FIT ERROR:",e)
-        success=False
-        xfinal=None
-        yfinal=None
-        r_sq=None
-        m=None
-        b0=None
-    return (success,xfinal,yfinal,r_sq,m,b0)
-
-# * show human number : example 3 becomes 3, 10123 become 10.1K, 10022020 becomes 10M
-def human_number(number):
-    if number < 1_000: # 0 - 999
-        return f"{number}"
-    if number < 10_000: # 1,000 - 9,999
-        return f"{number/1_000:0.2f}K"
-    if number < 100_000: # 10,000 -  99,999
-        return f"{number/1_000:0.1f}K"
-    if number < 1_000_000: # 100,000 - 999,999
-        return f"{int(number/1_000):,}K"
-    if number < 10_000_000: # 1,000,000 - 9,999,999
-        return f"{number/1_000_000:0.2f}M"
-    if number < 100_000_000: # 10,000,000 - 99,999,999
-        return f"{number/1_000_000:0.1f}M"
-    else: # 100,000,000 and above
-        return f"{int(number/1_000_000):,}M"
 
 # * graph
 def graph():
