@@ -9,31 +9,19 @@ from sklearn.linear_model import LinearRegression
 import datetime
 import sys
 sys.path.append("..")    # so we can import common from previous directory
-from common import avgN, human_number, lastXdayslinearpredict  # local module but up one directory hence the sys path append ..
-
-# POSSIBLE-TODO: consider removing county-pop.csv depedence as that is downloaded from new covid cases csv. its optional as population doesn't change much and it still works
+from common import avgN, human_number, lastXdayslinearpredict, graph, PER, PER_TEXT, ndays, predictdays, COLOR_LIST  # local module but up one directory hence the sys path append ..
 
 ### INIT ###
 
 VersionFile = "../VERSION"  # Last Update YY.MM.DD
-ndays=7 # how many days is the moving average averaging
 output_html="county-output.html" # relative per population per 100K - THIS IS ORIGINAL PLOT
 output_html_1="county-output-raw.html" # just raw results (Added later so its output_html_1) - THIS IS NEW PLOT
-PER=100000 # we should per 100000 aka 100K
-PER_TEXT="100K"
 SHOW_TOP_NUMBER=12 # how many counties to have enabled when graph shows (others can be toggled on interactively)
 ThemeFile = "../PLOTLY_THEME" # contents are comma sep: theme,font family,font size
-predictdays=30
-COLOR_LIST = px.colors.qualitative.Vivid # this sets the colorway option in layout
-COLOR_LIST_LEN = len(COLOR_LIST) # we will use the mod of this later
 updatedate_dt = datetime.datetime.now()
 updatedate_str = updatedate_dt.strftime("%Y-%m-%d %H:%M:%S")
 csv_file = "CA-covid19cases_test.csv"
 csv_file_parsable = "CA-covid19cases_test-parsable.csv"
-
-# colorway options:
-# >>> dir(px.colors.qualitative)
-# ['Alphabet', 'Alphabet_r', 'Antique', 'Antique_r', 'Bold', 'Bold_r', 'D3', 'D3_r', 'Dark2', 'Dark24', 'Dark24_r', 'Dark2_r', 'G10', 'G10_r', 'Light24', 'Light24_r', 'Pastel', 'Pastel1', 'Pastel1_r', 'Pastel2', 'Pastel2_r', 'Pastel_r', 'Plotly', 'Plotly_r', 'Prism', 'Prism_r', 'Safe', 'Safe_r', 'Set1', 'Set1_r', 'Set2', 'Set2_r', 'Set3', 'Set3_r', 'T10', 'T10_r', 'Vivid', 'Vivid_r', '__all__', '__builtins__', '__cached__', '__doc__', '__file__', '__loader__', '__name__', '__package__', '__spec__', '_cols', '_contents', '_k', '_swatches', 'swatches']
 
 # Get Version
 Version = open(VersionFile,"r").readline().rstrip().lstrip() if path.exists(VersionFile) else "NA"
@@ -79,9 +67,6 @@ cpop_zip=zip(cpops_county_list,cpops_pop_list)
 cpop_list=list(cpop_zip)
 cpop_list.sort(key=lambda x:x[0]) # sort by first field county so alphabet
 
-# print(c.head())
-# print(cpops.head())
-
 # START - convert new format to old format - START
 # code converting new style csv to old style, so functions understand it
 cols_to_select=["date","area","cases","cumulative_cases","deaths","cumulative_deaths"]
@@ -115,168 +100,6 @@ c.to_csv(csv_file_parsable)
 # END - convert new format to old format - END
 
 # raise Exception("Script stopping now until TODO implemented") # easy way to stop code while editing/fixing
-
-### FUNCTIONS ###
-
-# * graph
-def graph():
-
-    global color_index
-    print(f"* {county} pop={pop} - last recorded values below:")
-    visible1 = "legendonly" if not county in visible_counties else None
-    x=c[c.county == county]["date"].values  # same x for relative and normal plot
-    # print(f"DEBUG: {x=}")
-    FRONTSPACE="    "
-    color_text=""
-    # note where you see _1 thats for normal plot example: y is for relative original plot and y_1 is for new normal plot
-
-    #####################################################
-    # -- newcountconfirmed per 100K (moving average) -- #
-    #####################################################
-
-    if color_index != None:
-        # go to next color index (if we use it save it and use modulus of length)
-        color_index += 1
-        color_text=f"\tcolor={color_index}"
-    orgy=c[c.county == county]["newcountconfirmed"].values
-    y=orgy/pop*PER  # relative plot
-    y_1=orgy        # normal plot
-    avgx,avgy=avgN(ndays,x.tolist(),y.tolist())          # relative plot average
-    avgx_1,avgy_1=avgN(ndays,x.tolist(),y_1.tolist())    # normal plot average
-    LastNewC = avgy[-1]
-    LastNewC_1 = avgy_1[-1]
-    print(f"{FRONTSPACE}newcountconfirmed   \t x = {avgx[-1]} \t org_y = {orgy[-1]:0.0f} \t {ndays}day_avg_y_per{PER_TEXT} = {avgy[-1]:0.2f}{color_text}") # print statement luckily shows both relative + normal
-    legendtext=f"<b>{county}</b> pop={pop:,} NewC<sub>final</sub>=<b>{avgy[-1]:0.2f}</b>"
-    legendtext_1=f"<b>{county}</b> pop={pop:,} NewC<sub>final</sub>=<b>{avgy_1[-1]:0.2f}</b>"
-    fig.add_trace(go.Scatter(x=avgx, y=avgy, name=legendtext, showlegend=False,legendgroup=county,visible=visible1),row=1,col=1)
-    fig_1.add_trace(go.Scatter(x=avgx_1, y=avgy_1, name=legendtext_1, showlegend=False,legendgroup=county,visible=visible1),row=1,col=1)
-    used_colors_index = color_index # saving current color used (it follows thru the index of the colorway)
-
-    #########################
-    # linear regresion line #
-    #########################
-
-    if color_index != None:
-        # go to next color index (if we use it save it and use modulus of length)
-        color_index += 1
-        color_text=f"\tcolor={color_index}"
-
-    # we use this code bit twice, so might as well make inner function and it only makes sense in graphing so yup here it will lie as an inner function
-    def plot_regression(figure,X,Y,extralabel=""):
-        # for any plot
-        (success,xfinal,yfinal,r_sq,m,b0) = lastXdayslinearpredict(X,Y,predictdays) # predict days is from global
-        # print(f"DEBUG PR ({extralabel}): {success=},{xfinal=},{yfinal=},{r_sq=},{m=},{b0=}")
-        # if success:
-        entered_prediction_if_loop = False # was used when dates were backwards and m was 0 so we didnt get prediction lines but got the other lines, however, i realized that even after we sorted the dates and it all worked out... what if we get a flat slope m=0 then issue could still happen, so i put this boolean in just in case
-        if success and m != 0:
-            entered_prediction_if_loop = True
-            # y = mx + b ---> (y-b)/m = 0
-            y_to_cross = 0
-            x_cross1 = (y_to_cross - float(b0)) / float(m)
-            x_cross1_int=int(x_cross1)
-            day0=xfinal[0]
-            day0dt = datetime.datetime.strptime(day0, "%Y-%m-%d")
-            daycrossdt=day0dt+datetime.timedelta(days=int(x_cross1_int))
-            daycross = daycrossdt.strftime("%Y-%m-%d")
-            print(f"{FRONTSPACE}- predicted cross ({extralabel})   \t y = {m:0.4f}x+{b0:0.2f} \t r^2={r_sq:0.4f} \t {daycross=}{color_text}")
-            # plot
-            # legendtext=f"<b>{county}</b> - predict 0 daily cases @ <b>{daycross}</b> by {predictdays}-day linear fit"
-            legendtext=f"> PREDICT no new cases in <b>{county}</b> on <b>{daycross}</b>"
-            if color_index == None:
-                # if color_index is -1 we didn't set it and we will use the default color methods (next color in colorway)
-                figure.add_trace(go.Scatter(x=xfinal, y=yfinal, name=legendtext, showlegend=False,legendgroup=county,visible=visible1,line=dict(dash='dash')),row=1,col=1)
-            else:
-                color_index_to_use = used_colors_index % COLOR_LIST_LEN # we circulate thru the color_way so we use modulus
-                color_to_use = COLOR_LIST[color_index_to_use] # call that color via index from colorway list
-                figure.add_trace(go.Scatter(x=xfinal, y=yfinal, name=legendtext, showlegend=False,legendgroup=county,visible=visible1,line=dict(color=color_to_use,dash='dash')),row=1,col=1)
-        return entered_prediction_if_loop, color_to_use  # return if we successfully predicted (meaning slope isnt 0 and the prediction function returned some good stuff)
-
-    # for relative plot
-    entered_prediction_if_loop, color_to_use = plot_regression(fig,avgx,avgy,"relative")
-    # for normal plot
-    entered_prediction_if_loop_1, color_to_use_1 = plot_regression(fig_1,avgx_1,avgy_1,"normal")
-    # - sidenote the result of the relative output should equal same for normal
-    # entered_prediction_if_loop, color_to_use should equal entered_prediction_if_loop_1, color_to_use_1
-
-    ##################################################
-    # -- newcountdeaths per 100K (moving average) -- #
-    ##################################################
-
-    if color_index != None:
-        # go to next color index (if we use it save it and use modulus of length)
-        color_index += 1
-        color_text=f"\tcolor={color_index}"
-    orgy=c[c.county == county]["newcountdeaths"].values
-    y=orgy/pop*PER
-    y_1=orgy
-    avgx,avgy=avgN(ndays,x.tolist(),y.tolist())
-    avgx_1,avgy_1=avgN(ndays,x.tolist(),y_1.tolist())
-    LastNewD = avgy[-1]
-    LastNewD_1 = avgy_1[-1]
-    print(f"{FRONTSPACE}newcountdeaths      \t x = {avgx[-1]} \t org_y = {orgy[-1]:0.0f} \t {ndays}day_avg_y_per{PER_TEXT} = {avgy[-1]:0.2f}{color_text}") # print statement luckily shows both relative + normal
-    legendtext=f"<b>{county}</b> pop={pop:,} NewD<sub>final</sub>=<b>{avgy[-1]:0.2f}</b>"        # this is not shown - but have it just in case
-    legendtext_1=f"<b>{county}</b> pop={pop:,} NewD<sub>final</sub>=<b>{avgy_1[-1]:0.2f}</b>"    # this is not shown - but have it just in case
-    if color_index == None:
-        fig.add_trace(go.Scatter(x=avgx, y=avgy, name=legendtext, showlegend=False,legendgroup=county,visible=visible1),row=2,col=1)
-        fig_1.add_trace(go.Scatter(x=avgx_1, y=avgy_1, name=legendtext_1, showlegend=False,legendgroup=county,visible=visible1),row=2,col=1)
-    else:
-        if entered_prediction_if_loop:
-            fig.add_trace(go.Scatter(x=avgx, y=avgy, name=legendtext, showlegend=False,legendgroup=county,visible=visible1,line=dict(color=color_to_use)),row=2,col=1)
-        if entered_prediction_if_loop_1:
-            fig_1.add_trace(go.Scatter(x=avgx_1, y=avgy_1, name=legendtext_1, showlegend=False,legendgroup=county,visible=visible1,line=dict(color=color_to_use_1)),row=2,col=1)
-
-    ##############################
-    # -- total cases per 100K -- #
-    ##############################
-
-    if color_index != None:
-        # go to next color index (if we use it save it and use modulus of length)
-        color_index += 1
-        color_text=f"\tcolor={color_index}"
-    orgy=c[c.county == county]["totalcountconfirmed"].values
-    y=orgy/pop*PER
-    y_1=orgy
-    LastC = y[-1]
-    LastC_1 = y_1[-1]
-    print(f"{FRONTSPACE}totalcountconfirmed \t x = {x[-1]} \t org_y = {orgy[-1]:0.0f} \t y_per{PER_TEXT} = {y[-1]:0.2f}{color_text}") # print statement luckily shows both relative + normal
-    legendtext=f"<b>{county}</b> pop={pop:,} TotC<sub>final</sub>=<b>{y[-1]:0.2f}</b>"        # this is not shown - but have it just in case
-    legendtext_1=f"<b>{county}</b> pop={pop:,} TotC<sub>final</sub>=<b>{y_1[-1]:0.2f}</b>"    # this is not shown - but have it just in case
-    if color_index == None:
-        fig.add_trace(go.Scatter(x=x, y=y, name=legendtext, showlegend=False,legendgroup=county,visible=visible1),row=1,col=2)
-        fig_1.add_trace(go.Scatter(x=x, y=y_1, name=legendtext_1, showlegend=False,legendgroup=county,visible=visible1),row=1,col=2)
-    else:
-        if entered_prediction_if_loop:
-            fig.add_trace(go.Scatter(x=x, y=y, name=legendtext, showlegend=False,legendgroup=county,visible=visible1,line=dict(color=color_to_use)),row=1,col=2)
-        if entered_prediction_if_loop_1:
-            fig_1.add_trace(go.Scatter(x=x, y=y_1, name=legendtext_1, showlegend=False,legendgroup=county,visible=visible1,line=dict(color=color_to_use_1)),row=1,col=2)
-
-    ###############################
-    # -- total deaths per 100K -- #
-    ###############################
-
-    if color_index != None:
-        # go to next color index (if we use it save it and use modulus of length)
-        color_index += 1
-        color_text=f"\tcolor={color_index}"
-    orgy=c[c.county == county]["totalcountdeaths"].values
-    y=orgy/pop*PER
-    y_1=orgy
-    LastD = y[-1]
-    LastD_1 = y_1[-1]
-    print(f"{FRONTSPACE}totalcountdeaths    \t x = {x[-1]} \t org_y = {orgy[-1]:0.0f} \t y_per{PER_TEXT} = {y[-1]:0.2f}{color_text}") # print statement luckily shows both relative + normal
-    # legendtext=f"<b>{county}</b> pop={pop:,} TotD<sub>final</sub>=<b>{y[-1]:0.2f}</b>"        # this is not shown - but have it just in case
-    # legendtext_1=f"<b>{county}</b> pop={pop:,} TotD<sub>final</sub>=<b>{y_1[-1]:0.2f}</b>"    # this is not shown - but have it just in case
-    # showing legend at the end as we have all of the Last data
-    legendtext = f"<b>{county}</b> ({human_number(pop)}) <b>{LastNewC:0.2f}</b>|{human_number(LastC)}|<b>{LastNewD:0.2f}</b>|{LastD:0.0f}"                 # trying to show every last value
-    legendtext_1 = f"<b>{county}</b> ({human_number(pop)}) <b>{LastNewC_1:0.2f}</b>|{human_number(LastC_1)}|<b>{LastNewD_1:0.2f}</b>|{int(LastD_1):,}"       # trying to show every last value
-    if color_index == None:
-        fig.add_trace(go.Scatter(x=x, y=y, name=legendtext, showlegend=True,legendgroup=county,visible=visible1),row=2,col=2)
-        fig_1.add_trace(go.Scatter(x=x, y=y_1, name=legendtext_1, showlegend=True,legendgroup=county,visible=visible1),row=2,col=2)
-    else:
-        if entered_prediction_if_loop:
-            fig.add_trace(go.Scatter(x=x, y=y, name=legendtext, showlegend=True,legendgroup=county,visible=visible1,line=dict(color=color_to_use)),row=2,col=2)
-        if entered_prediction_if_loop_1:
-            fig_1.add_trace(go.Scatter(x=x, y=y_1, name=legendtext_1, showlegend=True,legendgroup=county,visible=visible1,line=dict(color=color_to_use_1)),row=2,col=2)
 
 ### MAIN ###
 
@@ -326,8 +149,22 @@ fig_1.update_layout(title=f"<b>California Counties Covid19 Stats (Normal / Raw V
 
 # * consider each county and trace it on plotly
 color_index = -1 # color index, if we set to None then we alternate colors for every trace. if we set to -1 here then we match color of prediction
+
 for county,pop in cpop_list:
-    graph()
+    graph_options = { "fig": fig,
+        "fig_1": fig_1,
+        "area": county,
+        "pop": pop,
+        "c": c,
+        "nX": "date",
+        "nA": "county",
+        "nC": "totalcountconfirmed",
+        "nD": "totalcountdeaths",
+        "nNC": "newcountconfirmed",
+        "nND": "newcountdeaths",
+        "visible_areas": visible_counties,
+        "color_index": color_index }
+    fig, fig_1, color_index = graph(**graph_options)
     print()
 
 # * plotly generate html output generation
@@ -343,6 +180,5 @@ print()
 
 # the end
 print("- plotting end")
-# print("DEBUG: colorway=",plot_options["colorway"])
 
 ### END

@@ -4,12 +4,20 @@ import numpy as np
 from sklearn.linear_model import LinearRegression
 # from sklearn.preprocessing import PolynomialFeatures
 from scipy.optimize import curve_fit
+import plotly.graph_objects as go
+import plotly.express as px # for themes/templates
 
 # used by covid19plot.py and usa-ca/country-plot.py
 
 ### globals ###
 
 valid_chars = "-_.%s%s" % (string.ascii_letters, string.digits)
+PER = 100000 # when we display relative data this is the per value so we do per 100,000 people aka 100K
+PER_TEXT = "100K" # text version, so we type less when we talk about it
+ndays = 7 # how many days is the moving average averaging
+predictdays = 30 # how many days to predict back and forward with linear regression fit
+COLOR_LIST = px.colors.qualitative.Vivid # this sets the colorway option in layout
+COLOR_LIST_LEN = len(COLOR_LIST) # we will use the mod of this later
 
 ### functions ###
 
@@ -103,6 +111,179 @@ def human_number(number):
         return f"{number/1_000_000:0.1f}M"
     else: # 100,000,000 and above
         return f"{int(number/1_000_000):,}M"
+
+# * graph - used in usa states & california plots
+# providing "fig" and "fig_1" to plot on. the dataframe to use as "c".
+# "area" is the name of the state/county or area, "pop" is the population in that area
+# the names of the columns:
+# nX = name of the date column (which is our X values)
+# nA = name of area column
+# nC = name of cases column
+# nD = name of deaths column
+# nNC = name of new cases column
+# nND = name of new deaths column
+# "visible_area" = list of areas to show
+# "color_index" = if originally set to None then we alternate colors for every trace. if originally we set to -1 here then we match color of prediction
+def graph(fig, fig_1, area, pop, c, nX, nA, nC, nD, nNC, nND, visible_areas, color_index):
+    # global color_index
+    print(f"- {area} pop={pop} - last recorded values below:")
+    visible1 = "legendonly" if not area in visible_areas else None
+    x=c[c[nA] == area]["date"].values  # same x for relative and normal plot
+    # print(f"DEBUG: {x=}")
+    FRONTSPACE="    "
+    color_text=""
+    # note where you see _1 thats for normal plot example: y is for relative original plot and y_1 is for new normal plot
+
+    #####################################################
+    # -- newcountconfirmed per 100K (moving average) -- #
+    #####################################################
+
+    if color_index != None:
+        # go to next color index (if we use it save it and use modulus of length)
+        color_index += 1
+        color_text=f"\tcolor={color_index}"
+    orgy=c[c[nA] == area][nNC].values
+    y=orgy/pop*PER  # relative plot
+    y_1=orgy        # normal plot
+    avgx,avgy=avgN(ndays,x.tolist(),y.tolist())          # relative plot average
+    avgx_1,avgy_1=avgN(ndays,x.tolist(),y_1.tolist())    # normal plot average
+    LastNewC = avgy[-1]
+    LastNewC_1 = avgy_1[-1]
+    print(f"{FRONTSPACE}NewCases   \t x = {avgx[-1]} \t org_y = {orgy[-1]:0.0f} \t {ndays}day_avg_y_per{PER_TEXT} = {avgy[-1]:0.2f}{color_text}") # print statement luckily shows both relative + normal
+    legendtext=f"<b>{area}</b> pop={pop:,} NewC<sub>final</sub>=<b>{avgy[-1]:0.2f}</b>"
+    legendtext_1=f"<b>{area}</b> pop={pop:,} NewC<sub>final</sub>=<b>{avgy_1[-1]:0.2f}</b>"
+    fig.add_trace(go.Scatter(x=avgx, y=avgy, name=legendtext, showlegend=False,legendgroup=area,visible=visible1),row=1,col=1)
+    fig_1.add_trace(go.Scatter(x=avgx_1, y=avgy_1, name=legendtext_1, showlegend=False,legendgroup=area,visible=visible1),row=1,col=1)
+    used_colors_index = color_index # saving current color used (it follows thru the index of the colorway)
+
+    #########################
+    # linear regresion line #
+    #########################
+
+    if color_index != None:
+        # go to next color index (if we use it save it and use modulus of length)
+        color_index += 1
+        color_text=f"\tcolor={color_index}"
+
+    # we use this code bit twice, so might as well make inner function and it only makes sense in graphing so yup here it will lie as an inner function
+    def plot_regression(figure,X,Y,extralabel=""):
+        # for any plot
+        (success,xfinal,yfinal,r_sq,m,b0) = lastXdayslinearpredict(X,Y,predictdays) # predict days is from global
+        # print(f"DEBUG PR ({extralabel}): {success=},{xfinal=},{yfinal=},{r_sq=},{m=},{b0=}")
+        # if success:
+        entered_prediction_if_loop = False # was used when dates were backwards and m was 0 so we didnt get prediction lines but got the other lines, however, i realized that even after we sorted the dates and it all worked out... what if we get a flat slope m=0 then issue could still happen, so i put this boolean in just in case
+        if success and m != 0:
+            entered_prediction_if_loop = True
+            # y = mx + b ---> (y-b)/m = 0
+            y_to_cross = 0
+            x_cross1 = (y_to_cross - float(b0)) / float(m)
+            x_cross1_int=int(x_cross1)
+            day0=xfinal[0]
+            day0dt = datetime.datetime.strptime(day0, "%Y-%m-%d")
+            daycrossdt=day0dt+datetime.timedelta(days=int(x_cross1_int))
+            daycross = daycrossdt.strftime("%Y-%m-%d")
+            print(f"{FRONTSPACE}- predicted cross ({extralabel})   \t y = {m:0.4f}x+{b0:0.2f} \t r^2={r_sq:0.4f} \t {daycross=}{color_text}")
+            # plot
+            # legendtext=f"<b>{area}</b> - predict 0 daily cases @ <b>{daycross}</b> by {predictdays}-day linear fit"
+            legendtext=f"> PREDICT no new cases in <b>{area}</b> on <b>{daycross}</b>"
+            if color_index == None:
+                # if color_index is -1 we didn't set it and we will use the default color methods (next color in colorway)
+                figure.add_trace(go.Scatter(x=xfinal, y=yfinal, name=legendtext, showlegend=False,legendgroup=area,visible=visible1,line=dict(dash='dash')),row=1,col=1)
+            else:
+                color_index_to_use = used_colors_index % COLOR_LIST_LEN # we circulate thru the color_way so we use modulus
+                color_to_use = COLOR_LIST[color_index_to_use] # call that color via index from colorway list
+                figure.add_trace(go.Scatter(x=xfinal, y=yfinal, name=legendtext, showlegend=False,legendgroup=area,visible=visible1,line=dict(color=color_to_use,dash='dash')),row=1,col=1)
+        return entered_prediction_if_loop, color_to_use  # return if we successfully predicted (meaning slope isnt 0 and the prediction function returned some good stuff)
+
+    # for relative plot
+    entered_prediction_if_loop, color_to_use = plot_regression(fig,avgx,avgy,"relative")
+    # for normal plot
+    entered_prediction_if_loop_1, color_to_use_1 = plot_regression(fig_1,avgx_1,avgy_1,"normal")
+    # - sidenote the result of the relative output should equal same for normal
+    # entered_prediction_if_loop, color_to_use should equal entered_prediction_if_loop_1, color_to_use_1
+
+    ##################################################
+    # -- newcountdeaths per 100K (moving average) -- #
+    ##################################################
+
+    if color_index != None:
+        # go to next color index (if we use it save it and use modulus of length)
+        color_index += 1
+        color_text=f"\tcolor={color_index}"
+    orgy=c[c[nA] == area][nND].values
+    y=orgy/pop*PER
+    y_1=orgy
+    avgx,avgy=avgN(ndays,x.tolist(),y.tolist())
+    avgx_1,avgy_1=avgN(ndays,x.tolist(),y_1.tolist())
+    LastNewD = avgy[-1]
+    LastNewD_1 = avgy_1[-1]
+    print(f"{FRONTSPACE}NewDeaths      \t x = {avgx[-1]} \t org_y = {orgy[-1]:0.0f} \t {ndays}day_avg_y_per{PER_TEXT} = {avgy[-1]:0.2f}{color_text}") # print statement luckily shows both relative + normal
+    legendtext=f"<b>{area}</b> pop={pop:,} NewD<sub>final</sub>=<b>{avgy[-1]:0.2f}</b>"        # this is not shown - but have it just in case
+    legendtext_1=f"<b>{area}</b> pop={pop:,} NewD<sub>final</sub>=<b>{avgy_1[-1]:0.2f}</b>"    # this is not shown - but have it just in case
+    if color_index == None:
+        fig.add_trace(go.Scatter(x=avgx, y=avgy, name=legendtext, showlegend=False,legendgroup=area,visible=visible1),row=2,col=1)
+        fig_1.add_trace(go.Scatter(x=avgx_1, y=avgy_1, name=legendtext_1, showlegend=False,legendgroup=area,visible=visible1),row=2,col=1)
+    else:
+        if entered_prediction_if_loop:
+            fig.add_trace(go.Scatter(x=avgx, y=avgy, name=legendtext, showlegend=False,legendgroup=area,visible=visible1,line=dict(color=color_to_use)),row=2,col=1)
+        if entered_prediction_if_loop_1:
+            fig_1.add_trace(go.Scatter(x=avgx_1, y=avgy_1, name=legendtext_1, showlegend=False,legendgroup=area,visible=visible1,line=dict(color=color_to_use_1)),row=2,col=1)
+
+    ##############################
+    # -- total cases per 100K -- #
+    ##############################
+
+    if color_index != None:
+        # go to next color index (if we use it save it and use modulus of length)
+        color_index += 1
+        color_text=f"\tcolor={color_index}"
+    orgy=c[c[nA] == area][nC].values
+    y=orgy/pop*PER
+    y_1=orgy
+    LastC = y[-1]
+    LastC_1 = y_1[-1]
+    print(f"{FRONTSPACE}TotalCases \t x = {x[-1]} \t org_y = {orgy[-1]:0.0f} \t y_per{PER_TEXT} = {y[-1]:0.2f}{color_text}") # print statement luckily shows both relative + normal
+    legendtext=f"<b>{area}</b> pop={pop:,} TotC<sub>final</sub>=<b>{y[-1]:0.2f}</b>"        # this is not shown - but have it just in case
+    legendtext_1=f"<b>{area}</b> pop={pop:,} TotC<sub>final</sub>=<b>{y_1[-1]:0.2f}</b>"    # this is not shown - but have it just in case
+    if color_index == None:
+        fig.add_trace(go.Scatter(x=x, y=y, name=legendtext, showlegend=False,legendgroup=area,visible=visible1),row=1,col=2)
+        fig_1.add_trace(go.Scatter(x=x, y=y_1, name=legendtext_1, showlegend=False,legendgroup=area,visible=visible1),row=1,col=2)
+    else:
+        if entered_prediction_if_loop:
+            fig.add_trace(go.Scatter(x=x, y=y, name=legendtext, showlegend=False,legendgroup=area,visible=visible1,line=dict(color=color_to_use)),row=1,col=2)
+        if entered_prediction_if_loop_1:
+            fig_1.add_trace(go.Scatter(x=x, y=y_1, name=legendtext_1, showlegend=False,legendgroup=area,visible=visible1,line=dict(color=color_to_use_1)),row=1,col=2)
+
+    ###############################
+    # -- total deaths per 100K -- #
+    ###############################
+
+    if color_index != None:
+        # go to next color index (if we use it save it and use modulus of length)
+        color_index += 1
+        color_text=f"\tcolor={color_index}"
+    orgy=c[c[nA] == area][nD].values
+    y=orgy/pop*PER
+    y_1=orgy
+    LastD = y[-1]
+    LastD_1 = y_1[-1]
+    print(f"{FRONTSPACE}TotalDeaths    \t x = {x[-1]} \t org_y = {orgy[-1]:0.0f} \t y_per{PER_TEXT} = {y[-1]:0.2f}{color_text}") # print statement luckily shows both relative + normal
+    # legendtext=f"<b>{area}</b> pop={pop:,} TotD<sub>final</sub>=<b>{y[-1]:0.2f}</b>"        # this is not shown - but have it just in case
+    # legendtext_1=f"<b>{area}</b> pop={pop:,} TotD<sub>final</sub>=<b>{y_1[-1]:0.2f}</b>"    # this is not shown - but have it just in case
+    # showing legend at the end as we have all of the Last data
+    legendtext = f"<b>{area}</b> ({human_number(pop)}) <b>{LastNewC:0.2f}</b>|{human_number(LastC)}|<b>{LastNewD:0.2f}</b>|{LastD:0.0f}"                 # trying to show every last value
+    legendtext_1 = f"<b>{area}</b> ({human_number(pop)}) <b>{LastNewC_1:0.2f}</b>|{human_number(LastC_1)}|<b>{LastNewD_1:0.2f}</b>|{int(LastD_1):,}"       # trying to show every last value
+    if color_index == None:
+        fig.add_trace(go.Scatter(x=x, y=y, name=legendtext, showlegend=True,legendgroup=area,visible=visible1),row=2,col=2)
+        fig_1.add_trace(go.Scatter(x=x, y=y_1, name=legendtext_1, showlegend=True,legendgroup=area,visible=visible1),row=2,col=2)
+    else:
+        if entered_prediction_if_loop:
+            fig.add_trace(go.Scatter(x=x, y=y, name=legendtext, showlegend=True,legendgroup=area,visible=visible1,line=dict(color=color_to_use)),row=2,col=2)
+        if entered_prediction_if_loop_1:
+            fig_1.add_trace(go.Scatter(x=x, y=y_1, name=legendtext_1, showlegend=True,legendgroup=area,visible=visible1,line=dict(color=color_to_use_1)),row=2,col=2)
+
+    # return the altered plotly figures which now have all of the plots & also we return the color_index as we keep track of it for next plot
+    return fig, fig_1, color_index
 
 ### classes ###
 
