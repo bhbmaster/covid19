@@ -1,0 +1,494 @@
+------------ initializing -----------
+
+PARSING population:
+* cpop_list=[('Alabama', 4903185), ('Alaska', 731545), ('Arizona', 7278717), ('Arkansas', 3017825), ('California', 39512223), ('Colorado', 5758736), ('Connecticut', 3565287), ('Delaware', 973764), ('District of Columbia', 705749), ('Florida', 21477737), ('Georgia', 10617423), ('Guam', 167294), ('Hawaii', 1415872), ('Idaho', 1787065), ('Illinois', 12671821), ('Indiana', 6732219), ('Iowa', 3155070), ('Kansas', 2913314), ('Kentucky', 4467673), ('Louisiana', 4648794), ('Maine', 1344212), ('Maryland', 6045680), ('Massachusetts', 6949503), ('Michigan', 9986857), ('Minnesota', 5639632), ('Mississippi', 2976149), ('Missouri', 6137428), ('Montana', 1068778), ('Nebraska', 1934408), ('Nevada', 3080156), ('New Hampshire', 1359711), ('New Jersey', 8882190), ('New Mexico', 2096829), ('New York', 19453561), ('North Carolina', 10488084), ('North Dakota', 762062), ('Northern Mariana Islands', 57216), ('Ohio', 11689100), ('Oklahoma', 3956971), ('Oregon', 4217737), ('Pennsylvania', 12801989), ('Puerto Rico', 3194000), ('Rhode Island', 1059361), ('South Carolina', 5148714), ('South Dakota', 884659), ('Tennessee', 6833174), ('Texas', 28995881), ('Utah', 3205958), ('Vermont', 623989), ('Virgin Islands', 106631), ('Virginia', 8535519), ('Washington', 7614893), ('West Virginia', 1792147), ('Wisconsin', 5822434), ('Wyoming', 578759)]
+* visible_states=['California', 'Texas', 'Florida', 'New York', 'Illinois', 'Pennsylvania']
+
+RECEIVED DATA (saved to us-states.csv):
+
+c.describe()=               fips         cases        deaths
+count  21684.000000  2.168400e+04  21684.000000
+mean      31.934099  1.912875e+05   4092.414591
+std       18.652492  3.724542e+05   7343.598455
+min        1.000000  1.000000e+00      0.000000
+25%       17.000000  7.479000e+03    155.000000
+50%       31.000000  5.524700e+04   1188.500000
+75%       46.000000  2.062575e+05   4712.500000
+max       78.000000  3.668897e+06  59233.000000
+
+c.tail()=             date          state  fips   cases  deaths
+21679  2021-03-31       Virginia    51  618976   10252
+21680  2021-03-31     Washington    53  366907    5309
+21681  2021-03-31  West Virginia    54  141738    2676
+21682  2021-03-31      Wisconsin    55  636250    7316
+21683  2021-03-31        Wyoming    56   56310     700
+unique_states=['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'District of Columbia', 'Florida', 'Georgia', 'Guam', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Northern Mariana Islands', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Puerto Rico', 'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virgin Islands', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming']
+
+FINAL PARSABLE DATA (saved to us-states-parsable.csv):
+c1=             date    state  cases  newcases deaths  newdeaths
+0      2020-03-13  Alabama      6       NaN      0        NaN
+1      2020-03-14  Alabama     12       6.0      0        0.0
+2      2020-03-15  Alabama     23      11.0      0        0.0
+3      2020-03-16  Alabama     29       6.0      0        0.0
+4      2020-03-17  Alabama     39      10.0      0        0.0
+...           ...      ...    ...       ...    ...        ...
+21679  2021-03-27  Wyoming  56046       0.0    695        0.0
+21680  2021-03-28  Wyoming  56046       0.0    695        0.0
+21681  2021-03-29  Wyoming  56190     144.0    695        0.0
+21682  2021-03-30  Wyoming  56236      46.0    695        0.0
+21683  2021-03-31  Wyoming  56310      74.0    700        5.0
+
+[21684 rows x 6 columns]
+
+------------ main work -----------
+
+- plotting start (theme,font,size: seaborn,Balto,14)
+
+* random_state='Texas'
+* last_x='2021-03-31' of random_state='Texas'
+
+- Alabama pop=4903185 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 408 	 7day_avg_y_per100K = 7.80	color=0
+    - predicted cross (relative)   	 y = -0.3323x+20.54 	 r^2=0.2524 	 daycross='2021-05-01'	color=1
+    - predicted cross (normal)   	 y = -16.2944x+1007.14 	 r^2=0.2524 	 daycross='2021-05-01'	color=1
+    NewDeaths      	 x = 2021-03-31 	 org_y = 27 	 7day_avg_y_per100K = 0.20	color=2
+    TotalCases 	 x = 2021-03-31 	 org_y = 515388 	 y_per100K = 10511.29	color=3
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 10554 	 y_per100K = 215.25	color=4
+
+- Alaska pop=731545 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 0 	 7day_avg_y_per100K = 19.22	color=5
+    - predicted cross (relative)   	 y = -0.0065x+18.86 	 r^2=0.0012 	 daycross='2029-02-28'	color=6
+    - predicted cross (normal)   	 y = -0.0472x+137.97 	 r^2=0.0012 	 daycross='2029-02-28'	color=6
+    NewDeaths      	 x = 2021-03-31 	 org_y = 0 	 7day_avg_y_per100K = 0.02	color=7
+    TotalCases 	 x = 2021-03-31 	 org_y = 62395 	 y_per100K = 8529.21	color=8
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 299 	 y_per100K = 40.87	color=9
+
+- Arizona pop=7278717 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 733 	 7day_avg_y_per100K = 7.78	color=10
+    - predicted cross (relative)   	 y = -0.4516x+18.21 	 r^2=0.7949 	 daycross='2021-04-10'	color=11
+    - predicted cross (normal)   	 y = -32.8688x+1325.52 	 r^2=0.7949 	 daycross='2021-04-10'	color=11
+    NewDeaths      	 x = 2021-03-31 	 org_y = 26 	 7day_avg_y_per100K = 0.25	color=12
+    TotalCases 	 x = 2021-03-31 	 org_y = 841811 	 y_per100K = 11565.38	color=13
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 16967 	 y_per100K = 233.10	color=14
+
+- Arkansas pop=3017825 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 212 	 7day_avg_y_per100K = 5.78	color=15
+    - predicted cross (relative)   	 y = -0.7745x+23.89 	 r^2=0.6934 	 daycross='2021-03-31'	color=16
+    - predicted cross (normal)   	 y = -23.3742x+721.06 	 r^2=0.6934 	 daycross='2021-03-31'	color=16
+    NewDeaths      	 x = 2021-03-31 	 org_y = 10 	 7day_avg_y_per100K = 0.31	color=17
+    TotalCases 	 x = 2021-03-31 	 org_y = 330398 	 y_per100K = 10948.22	color=18
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 5626 	 y_per100K = 186.43	color=19
+
+- California pop=39512223 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 2503 	 7day_avg_y_per100K = 6.53	color=20
+    - predicted cross (relative)   	 y = -0.2360x+12.22 	 r^2=0.9080 	 daycross='2021-04-21'	color=21
+    - predicted cross (normal)   	 y = -93.2338x+4829.46 	 r^2=0.9080 	 daycross='2021-04-21'	color=21
+    NewDeaths      	 x = 2021-03-31 	 org_y = 144 	 7day_avg_y_per100K = 0.39	color=22
+    TotalCases 	 x = 2021-03-31 	 org_y = 3668897 	 y_per100K = 9285.47	color=23
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 59233 	 y_per100K = 149.91	color=24
+
+- Colorado pop=5758736 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 1791 	 7day_avg_y_per100K = 21.61	color=25
+    - predicted cross (relative)   	 y = 0.0175x+18.31 	 r^2=0.0072 	 daycross='2018-04-20'	color=26
+    - predicted cross (normal)   	 y = 1.0073x+1054.35 	 r^2=0.0072 	 daycross='2018-04-20'	color=26
+    NewDeaths      	 x = 2021-03-31 	 org_y = 3 	 7day_avg_y_per100K = 0.04	color=27
+    TotalCases 	 x = 2021-03-31 	 org_y = 464782 	 y_per100K = 8070.90	color=28
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 6175 	 y_per100K = 107.23	color=29
+
+- Connecticut pop=3565287 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 832 	 7day_avg_y_per100K = 35.53	color=30
+    - predicted cross (relative)   	 y = 0.4586x+18.79 	 r^2=0.5525 	 daycross='2021-01-20'	color=31
+    - predicted cross (normal)   	 y = 16.3515x+669.81 	 r^2=0.5525 	 daycross='2021-01-20'	color=31
+    NewDeaths      	 x = 2021-03-31 	 org_y = 1 	 7day_avg_y_per100K = 0.14	color=32
+    TotalCases 	 x = 2021-03-31 	 org_y = 310888 	 y_per100K = 8719.86	color=33
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 7886 	 y_per100K = 221.19	color=34
+
+- Delaware pop=973764 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 229 	 7day_avg_y_per100K = 29.09	color=35
+    - predicted cross (relative)   	 y = 0.0129x+26.65 	 r^2=0.0015 	 daycross='2015-06-29'	color=36
+    - predicted cross (normal)   	 y = 0.1253x+259.52 	 r^2=0.0015 	 daycross='2015-06-29'	color=36
+    NewDeaths      	 x = 2021-03-31 	 org_y = 0 	 7day_avg_y_per100K = 0.35	color=37
+    TotalCases 	 x = 2021-03-31 	 org_y = 94802 	 y_per100K = 9735.62	color=38
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 1559 	 y_per100K = 160.10	color=39
+
+- District of Columbia pop=705749 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 100 	 7day_avg_y_per100K = 18.58	color=40
+    - predicted cross (relative)   	 y = -0.1067x+19.73 	 r^2=0.1038 	 daycross='2021-09-01'	color=41
+    - predicted cross (normal)   	 y = -0.7530x+139.26 	 r^2=0.1038 	 daycross='2021-09-01'	color=41
+    NewDeaths      	 x = 2021-03-31 	 org_y = 3 	 7day_avg_y_per100K = 0.22	color=42
+    TotalCases 	 x = 2021-03-31 	 org_y = 44513 	 y_per100K = 6307.20	color=43
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 1064 	 y_per100K = 150.76	color=44
+
+- Florida pop=21477737 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 5294 	 7day_avg_y_per100K = 24.00	color=45
+    - predicted cross (relative)   	 y = -0.0986x+24.15 	 r^2=0.2369 	 daycross='2021-10-31'	color=46
+    - predicted cross (normal)   	 y = -21.1727x+5186.09 	 r^2=0.2369 	 daycross='2021-10-31'	color=46
+    NewDeaths      	 x = 2021-03-31 	 org_y = 87 	 7day_avg_y_per100K = 0.38	color=47
+    TotalCases 	 x = 2021-03-31 	 org_y = 2057727 	 y_per100K = 9580.74	color=48
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 33424 	 y_per100K = 155.62	color=49
+
+- Georgia pop=10617423 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 1807 	 7day_avg_y_per100K = 14.34	color=50
+    - predicted cross (relative)   	 y = -0.4516x+24.36 	 r^2=0.6727 	 daycross='2021-04-23'	color=51
+    - predicted cross (normal)   	 y = -47.9479x+2586.05 	 r^2=0.6727 	 daycross='2021-04-23'	color=51
+    NewDeaths      	 x = 2021-03-31 	 org_y = 67 	 7day_avg_y_per100K = 0.51	color=52
+    TotalCases 	 x = 2021-03-31 	 org_y = 1035186 	 y_per100K = 9749.88	color=53
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 18473 	 y_per100K = 173.99	color=54
+
+- Guam pop=167294 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 2 	 7day_avg_y_per100K = 1.54	color=55
+    - predicted cross (relative)   	 y = 0.0104x+1.18 	 r^2=0.0784 	 daycross='2020-11-08'	color=56
+    - predicted cross (normal)   	 y = 0.0173x+1.97 	 r^2=0.0784 	 daycross='2020-11-08'	color=56
+    NewDeaths      	 x = 2021-03-31 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=57
+    TotalCases 	 x = 2021-03-31 	 org_y = 8776 	 y_per100K = 5245.85	color=58
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 135 	 y_per100K = 80.70	color=59
+
+- Hawaii pop=1415872 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 90 	 7day_avg_y_per100K = 7.81	color=60
+    - predicted cross (relative)   	 y = 0.1369x+2.98 	 r^2=0.9370 	 daycross='2021-02-08'	color=61
+    - predicted cross (normal)   	 y = 1.9384x+42.15 	 r^2=0.9370 	 daycross='2021-02-08'	color=61
+    NewDeaths      	 x = 2021-03-31 	 org_y = 1 	 7day_avg_y_per100K = 0.06	color=62
+    TotalCases 	 x = 2021-03-31 	 org_y = 29779 	 y_per100K = 2103.23	color=63
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 460 	 y_per100K = 32.49	color=64
+
+- Idaho pop=1787065 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 410 	 7day_avg_y_per100K = 15.83	color=65
+    - predicted cross (relative)   	 y = 0.0431x+15.85 	 r^2=0.1105 	 daycross='2020-02-28'	color=66
+    - predicted cross (normal)   	 y = 0.7699x+283.25 	 r^2=0.1105 	 daycross='2020-02-28'	color=66
+    NewDeaths      	 x = 2021-03-31 	 org_y = 5 	 7day_avg_y_per100K = 0.08	color=67
+    TotalCases 	 x = 2021-03-31 	 org_y = 180643 	 y_per100K = 10108.36	color=68
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 1965 	 y_per100K = 109.96	color=69
+
+- Illinois pop=12671821 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 2585 	 7day_avg_y_per100K = 19.14	color=70
+    - predicted cross (relative)   	 y = 0.1467x+12.09 	 r^2=0.4515 	 daycross='2020-12-09'	color=71
+    - predicted cross (normal)   	 y = 18.5954x+1532.61 	 r^2=0.4515 	 daycross='2020-12-09'	color=71
+    NewDeaths      	 x = 2021-03-31 	 org_y = 37 	 7day_avg_y_per100K = 0.19	color=72
+    TotalCases 	 x = 2021-03-31 	 org_y = 1248133 	 y_per100K = 9849.67	color=73
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 23579 	 y_per100K = 186.07	color=74
+
+- Indiana pop=6732219 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 1045 	 7day_avg_y_per100K = 13.70	color=75
+    - predicted cross (relative)   	 y = 0.0283x+11.46 	 r^2=0.1425 	 daycross='2020-01-21'	color=76
+    - predicted cross (normal)   	 y = 1.9033x+771.23 	 r^2=0.1425 	 daycross='2020-01-21'	color=76
+    NewDeaths      	 x = 2021-03-31 	 org_y = 1 	 7day_avg_y_per100K = 0.14	color=77
+    TotalCases 	 x = 2021-03-31 	 org_y = 689785 	 y_per100K = 10246.03	color=78
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 13039 	 y_per100K = 193.68	color=79
+
+- Iowa pop=3155070 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 646 	 7day_avg_y_per100K = 17.26	color=80
+    - predicted cross (relative)   	 y = 0.0386x+14.52 	 r^2=0.0526 	 daycross='2020-02-19'	color=81
+    - predicted cross (normal)   	 y = 1.2164x+457.98 	 r^2=0.0526 	 daycross='2020-02-19'	color=81
+    NewDeaths      	 x = 2021-03-31 	 org_y = 14 	 7day_avg_y_per100K = 0.24	color=82
+    TotalCases 	 x = 2021-03-31 	 org_y = 351402 	 y_per100K = 11137.69	color=83
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 5743 	 y_per100K = 182.02	color=84
+
+- Kansas pop=2913314 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 478 	 7day_avg_y_per100K = 7.09	color=85
+    - predicted cross (relative)   	 y = -0.1738x+11.30 	 r^2=0.8341 	 daycross='2021-05-05'	color=86
+    - predicted cross (normal)   	 y = -5.0631x+329.32 	 r^2=0.8341 	 daycross='2021-05-05'	color=86
+    NewDeaths      	 x = 2021-03-31 	 org_y = 11 	 7day_avg_y_per100K = 0.16	color=87
+    TotalCases 	 x = 2021-03-31 	 org_y = 304657 	 y_per100K = 10457.40	color=88
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 4913 	 y_per100K = 168.64	color=89
+
+- Kentucky pop=4467673 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 615 	 7day_avg_y_per100K = 12.49	color=90
+    - predicted cross (relative)   	 y = -0.3043x+21.30 	 r^2=0.9427 	 daycross='2021-05-09'	color=91
+    - predicted cross (normal)   	 y = -13.5967x+951.40 	 r^2=0.9427 	 daycross='2021-05-09'	color=91
+    NewDeaths      	 x = 2021-03-31 	 org_y = 25 	 7day_avg_y_per100K = 0.77	color=92
+    TotalCases 	 x = 2021-03-31 	 org_y = 430116 	 y_per100K = 9627.29	color=93
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 6151 	 y_per100K = 137.68	color=94
+
+- Louisiana pop=4648794 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 519 	 7day_avg_y_per100K = 8.33	color=95
+    - predicted cross (relative)   	 y = -0.2157x+14.37 	 r^2=0.6689 	 daycross='2021-05-06'	color=96
+    - predicted cross (normal)   	 y = -10.0274x+668.15 	 r^2=0.6689 	 daycross='2021-05-06'	color=96
+    NewDeaths      	 x = 2021-03-31 	 org_y = 9 	 7day_avg_y_per100K = 0.26	color=97
+    TotalCases 	 x = 2021-03-31 	 org_y = 444933 	 y_per100K = 9570.93	color=98
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 10141 	 y_per100K = 218.14	color=99
+
+- Maine pop=1344212 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 251 	 7day_avg_y_per100K = 16.28	color=100
+    - predicted cross (relative)   	 y = 0.1237x+11.89 	 r^2=0.7774 	 daycross='2020-11-25'	color=101
+    - predicted cross (normal)   	 y = 1.6630x+159.81 	 r^2=0.7774 	 daycross='2020-11-25'	color=101
+    NewDeaths      	 x = 2021-03-31 	 org_y = 5 	 7day_avg_y_per100K = 0.13	color=102
+    TotalCases 	 x = 2021-03-31 	 org_y = 50504 	 y_per100K = 3757.15	color=103
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 743 	 y_per100K = 55.27	color=104
+
+- Maryland pop=6045680 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 1366 	 7day_avg_y_per100K = 20.66	color=105
+    - predicted cross (relative)   	 y = 0.2352x+11.51 	 r^2=0.8545 	 daycross='2021-01-12'	color=106
+    - predicted cross (normal)   	 y = 14.2207x+695.68 	 r^2=0.8545 	 daycross='2021-01-12'	color=106
+    NewDeaths      	 x = 2021-03-31 	 org_y = 13 	 7day_avg_y_per100K = 0.17	color=107
+    TotalCases 	 x = 2021-03-31 	 org_y = 411529 	 y_per100K = 6806.99	color=108
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 8286 	 y_per100K = 137.06	color=109
+
+- Massachusetts pop=6949503 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 2499 	 7day_avg_y_per100K = 32.41	color=110
+    - predicted cross (relative)   	 y = 0.3372x+19.59 	 r^2=0.7342 	 daycross='2021-01-02'	color=111
+    - predicted cross (normal)   	 y = 23.4349x+1361.20 	 r^2=0.7342 	 daycross='2021-01-02'	color=111
+    NewDeaths      	 x = 2021-03-31 	 org_y = 37 	 7day_avg_y_per100K = 0.44	color=112
+    TotalCases 	 x = 2021-03-31 	 org_y = 635580 	 y_per100K = 9145.69	color=113
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 17185 	 y_per100K = 247.28	color=114
+
+- Michigan pop=9986857 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 7066 	 7day_avg_y_per100K = 56.70	color=115
+    - predicted cross (relative)   	 y = 1.3620x+6.87 	 r^2=0.9163 	 daycross='2021-02-24'	color=116
+    - predicted cross (normal)   	 y = 136.0210x+686.52 	 r^2=0.9163 	 daycross='2021-02-24'	color=116
+    NewDeaths      	 x = 2021-03-31 	 org_y = 12 	 7day_avg_y_per100K = 0.25	color=117
+    TotalCases 	 x = 2021-03-31 	 org_y = 745944 	 y_per100K = 7469.26	color=118
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 17112 	 y_per100K = 171.35	color=119
+
+- Minnesota pop=5639632 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 1648 	 7day_avg_y_per100K = 27.86	color=120
+    - predicted cross (relative)   	 y = 0.4354x+12.33 	 r^2=0.9218 	 daycross='2021-02-01'	color=121
+    - predicted cross (normal)   	 y = 24.5576x+695.13 	 r^2=0.9218 	 daycross='2021-02-01'	color=121
+    NewDeaths      	 x = 2021-03-31 	 org_y = 12 	 7day_avg_y_per100K = 0.15	color=122
+    TotalCases 	 x = 2021-03-31 	 org_y = 519607 	 y_per100K = 9213.49	color=123
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 6926 	 y_per100K = 122.81	color=124
+
+- Mississippi pop=2976149 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 288 	 7day_avg_y_per100K = 7.30	color=125
+    - predicted cross (relative)   	 y = -0.3492x+18.05 	 r^2=0.8028 	 daycross='2021-04-21'	color=126
+    - predicted cross (normal)   	 y = -10.3919x+537.06 	 r^2=0.8028 	 daycross='2021-04-21'	color=126
+    NewDeaths      	 x = 2021-03-31 	 org_y = 19 	 7day_avg_y_per100K = 0.24	color=127
+    TotalCases 	 x = 2021-03-31 	 org_y = 305146 	 y_per100K = 10253.05	color=128
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 7032 	 y_per100K = 236.28	color=129
+
+- Missouri pop=6137428 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 699 	 7day_avg_y_per100K = 11.19	color=130
+    - predicted cross (relative)   	 y = -1.5082x+58.36 	 r^2=0.0710 	 daycross='2021-04-08'	color=131
+    - predicted cross (normal)   	 y = -92.5621x+3582.07 	 r^2=0.0710 	 daycross='2021-04-08'	color=131
+    NewDeaths      	 x = 2021-03-31 	 org_y = 6 	 7day_avg_y_per100K = 0.20	color=132
+    TotalCases 	 x = 2021-03-31 	 org_y = 585211 	 y_per100K = 9535.12	color=133
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 8977 	 y_per100K = 146.27	color=134
+
+- Montana pop=1068778 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 221 	 7day_avg_y_per100K = 11.78	color=135
+    - predicted cross (relative)   	 y = 0.0531x+13.61 	 r^2=0.0721 	 daycross='2020-06-18'	color=136
+    - predicted cross (normal)   	 y = 0.5679x+145.51 	 r^2=0.0721 	 daycross='2020-06-18'	color=136
+    NewDeaths      	 x = 2021-03-31 	 org_y = 0 	 7day_avg_y_per100K = 0.08	color=137
+    TotalCases 	 x = 2021-03-31 	 org_y = 104677 	 y_per100K = 9794.08	color=138
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 1437 	 y_per100K = 134.45	color=139
+
+- Nebraska pop=1934408 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 438 	 7day_avg_y_per100K = 16.82	color=140
+    - predicted cross (relative)   	 y = -0.0232x+14.21 	 r^2=0.0516 	 daycross='2022-11-04'	color=141
+    - predicted cross (normal)   	 y = -0.4479x+274.83 	 r^2=0.0516 	 daycross='2022-11-04'	color=141
+    NewDeaths      	 x = 2021-03-31 	 org_y = 1 	 7day_avg_y_per100K = 0.08	color=142
+    TotalCases 	 x = 2021-03-31 	 org_y = 209912 	 y_per100K = 10851.49	color=143
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 2284 	 y_per100K = 118.07	color=144
+
+- Nevada pop=3080156 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 278 	 7day_avg_y_per100K = 9.50	color=145
+    - predicted cross (relative)   	 y = -0.1625x+13.37 	 r^2=0.4036 	 daycross='2021-05-22'	color=146
+    - predicted cross (normal)   	 y = -5.0058x+411.92 	 r^2=0.4036 	 daycross='2021-05-22'	color=146
+    NewDeaths      	 x = 2021-03-31 	 org_y = 10 	 7day_avg_y_per100K = 0.21	color=147
+    TotalCases 	 x = 2021-03-31 	 org_y = 303811 	 y_per100K = 9863.49	color=148
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 5249 	 y_per100K = 170.41	color=149
+
+- New Hampshire pop=1359711 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 462 	 7day_avg_y_per100K = 27.89	color=150
+    - predicted cross (relative)   	 y = 0.3486x+14.86 	 r^2=0.6985 	 daycross='2021-01-18'	color=151
+    - predicted cross (normal)   	 y = 4.7405x+202.04 	 r^2=0.6985 	 daycross='2021-01-18'	color=151
+    NewDeaths      	 x = 2021-03-31 	 org_y = 1 	 7day_avg_y_per100K = 0.11	color=152
+    TotalCases 	 x = 2021-03-31 	 org_y = 84176 	 y_per100K = 6190.73	color=153
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 1238 	 y_per100K = 91.05	color=154
+
+- New Jersey pop=8882190 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 3668 	 7day_avg_y_per100K = 49.66	color=155
+    - predicted cross (relative)   	 y = 0.4834x+35.16 	 r^2=0.9107 	 daycross='2020-12-19'	color=156
+    - predicted cross (normal)   	 y = 42.9336x+3123.35 	 r^2=0.9107 	 daycross='2020-12-19'	color=156
+    NewDeaths      	 x = 2021-03-31 	 org_y = 42 	 7day_avg_y_per100K = 0.38	color=157
+    TotalCases 	 x = 2021-03-31 	 org_y = 908812 	 y_per100K = 10231.85	color=158
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 24528 	 y_per100K = 276.15	color=159
+
+- New Mexico pop=2096829 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 275 	 7day_avg_y_per100K = 9.38	color=160
+    - predicted cross (relative)   	 y = -0.1922x+13.47 	 r^2=0.7704 	 daycross='2021-05-10'	color=161
+    - predicted cross (normal)   	 y = -4.0302x+282.48 	 r^2=0.7704 	 daycross='2021-05-10'	color=161
+    NewDeaths      	 x = 2021-03-31 	 org_y = 5 	 7day_avg_y_per100K = 0.19	color=162
+    TotalCases 	 x = 2021-03-31 	 org_y = 191652 	 y_per100K = 9140.09	color=163
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 3939 	 y_per100K = 187.86	color=164
+
+- New York pop=19453561 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 7683 	 7day_avg_y_per100K = 41.62	color=165
+    - predicted cross (relative)   	 y = 0.2279x+34.35 	 r^2=0.1302 	 daycross='2020-10-02'	color=166
+    - predicted cross (normal)   	 y = 44.3369x+6681.91 	 r^2=0.1302 	 daycross='2020-10-02'	color=166
+    NewDeaths      	 x = 2021-03-31 	 org_y = 94 	 7day_avg_y_per100K = 0.41	color=167
+    TotalCases 	 x = 2021-03-31 	 org_y = 1871595 	 y_per100K = 9620.83	color=168
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 49790 	 y_per100K = 255.94	color=169
+
+- North Carolina pop=10488084 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 2040 	 7day_avg_y_per100K = 17.79	color=170
+    - predicted cross (relative)   	 y = -0.1638x+19.87 	 r^2=0.4346 	 daycross='2021-06-30'	color=171
+    - predicted cross (normal)   	 y = -17.1771x+2083.69 	 r^2=0.4346 	 daycross='2021-06-30'	color=171
+    NewDeaths      	 x = 2021-03-31 	 org_y = 21 	 7day_avg_y_per100K = 0.22	color=172
+    TotalCases 	 x = 2021-03-31 	 org_y = 919817 	 y_per100K = 8770.11	color=173
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 12137 	 y_per100K = 115.72	color=174
+
+- North Dakota pop=762062 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 211 	 7day_avg_y_per100K = 20.45	color=175
+    - predicted cross (relative)   	 y = 0.2661x+8.67 	 r^2=0.7953 	 daycross='2021-01-28'	color=176
+    - predicted cross (normal)   	 y = 2.0276x+66.09 	 r^2=0.7953 	 daycross='2021-01-28'	color=176
+    NewDeaths      	 x = 2021-03-31 	 org_y = 0 	 7day_avg_y_per100K = 0.06	color=177
+    TotalCases 	 x = 2021-03-31 	 org_y = 103123 	 y_per100K = 13532.10	color=178
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 1498 	 y_per100K = 196.57	color=179
+
+- Northern Mariana Islands pop=57216 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 0 	 7day_avg_y_per100K = 0.25	color=180
+    - predicted cross (relative)   	 y = 0.0208x+0.62 	 r^2=0.0411 	 daycross='2021-01-31'	color=181
+    - predicted cross (normal)   	 y = 0.0119x+0.36 	 r^2=0.0411 	 daycross='2021-01-31'	color=181
+    NewDeaths      	 x = 2021-03-31 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=182
+    TotalCases 	 x = 2021-03-31 	 org_y = 159 	 y_per100K = 277.89	color=183
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 2 	 y_per100K = 3.50	color=184
+
+- Ohio pop=11689100 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 1989 	 7day_avg_y_per100K = 15.76	color=185
+    - predicted cross (relative)   	 y = -0.0268x+14.11 	 r^2=0.0535 	 daycross='2022-08-09'	color=186
+    - predicted cross (normal)   	 y = -3.1297x+1649.14 	 r^2=0.0535 	 daycross='2022-08-09'	color=186
+    NewDeaths      	 x = 2021-03-31 	 org_y = 0 	 7day_avg_y_per100K = 0.28	color=187
+    TotalCases 	 x = 2021-03-31 	 org_y = 1017566 	 y_per100K = 8705.26	color=188
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 18609 	 y_per100K = 159.20	color=189
+
+- Oklahoma pop=3956971 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 390 	 7day_avg_y_per100K = 8.05	color=190
+    - predicted cross (relative)   	 y = -0.3716x+18.00 	 r^2=0.9163 	 daycross='2021-04-18'	color=191
+    - predicted cross (normal)   	 y = -14.7028x+712.31 	 r^2=0.9163 	 daycross='2021-04-18'	color=191
+    NewDeaths      	 x = 2021-03-31 	 org_y = 103 	 7day_avg_y_per100K = 0.37	color=192
+    TotalCases 	 x = 2021-03-31 	 org_y = 438364 	 y_per100K = 11078.27	color=193
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 4953 	 y_per100K = 125.17	color=194
+
+- Oregon pop=4217737 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 431 	 7day_avg_y_per100K = 8.64	color=195
+    - predicted cross (relative)   	 y = 0.0143x+7.02 	 r^2=0.0239 	 daycross='2019-10-28'	color=196
+    - predicted cross (normal)   	 y = 0.6035x+295.94 	 r^2=0.0239 	 daycross='2019-10-28'	color=196
+    NewDeaths      	 x = 2021-03-31 	 org_y = 1 	 7day_avg_y_per100K = 0.05	color=197
+    TotalCases 	 x = 2021-03-31 	 org_y = 165013 	 y_per100K = 3912.36	color=198
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 2396 	 y_per100K = 56.81	color=199
+
+- Pennsylvania pop=12801989 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 4457 	 7day_avg_y_per100K = 31.81	color=200
+    - predicted cross (relative)   	 y = 0.3511x+17.14 	 r^2=0.6929 	 daycross='2021-01-12'	color=201
+    - predicted cross (normal)   	 y = 44.9498x+2194.15 	 r^2=0.6929 	 daycross='2021-01-12'	color=201
+    NewDeaths      	 x = 2021-03-31 	 org_y = 44 	 7day_avg_y_per100K = 0.24	color=202
+    TotalCases 	 x = 2021-03-31 	 org_y = 1030415 	 y_per100K = 8048.87	color=203
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 25150 	 y_per100K = 196.45	color=204
+
+- Puerto Rico pop=3194000 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 365 	 7day_avg_y_per100K = 11.20	color=205
+    - predicted cross (relative)   	 y = 0.1039x+5.08 	 r^2=0.5715 	 daycross='2021-01-12'	color=206
+    - predicted cross (normal)   	 y = 3.3193x+162.18 	 r^2=0.5715 	 daycross='2021-01-12'	color=206
+    NewDeaths      	 x = 2021-03-31 	 org_y = 5 	 7day_avg_y_per100K = 0.07	color=207
+    TotalCases 	 x = 2021-03-31 	 org_y = 141085 	 y_per100K = 4417.19	color=208
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 2118 	 y_per100K = 66.31	color=209
+
+- Rhode Island pop=1059361 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 564 	 7day_avg_y_per100K = 34.01	color=210
+    - predicted cross (relative)   	 y = 0.0566x+33.16 	 r^2=0.1056 	 daycross='2019-07-25'	color=211
+    - predicted cross (normal)   	 y = 0.5999x+351.28 	 r^2=0.1056 	 daycross='2019-07-25'	color=211
+    NewDeaths      	 x = 2021-03-31 	 org_y = 1 	 7day_avg_y_per100K = 0.18	color=212
+    TotalCases 	 x = 2021-03-31 	 org_y = 137329 	 y_per100K = 12963.38	color=213
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 2619 	 y_per100K = 247.22	color=214
+
+- South Carolina pop=5148714 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 961 	 7day_avg_y_per100K = 21.38	color=215
+    - predicted cross (relative)   	 y = -0.3045x+28.06 	 r^2=0.5568 	 daycross='2021-06-01'	color=216
+    - predicted cross (normal)   	 y = -15.6767x+1444.54 	 r^2=0.5568 	 daycross='2021-06-01'	color=216
+    NewDeaths      	 x = 2021-03-31 	 org_y = 20 	 7day_avg_y_per100K = 0.25	color=217
+    TotalCases 	 x = 2021-03-31 	 org_y = 551630 	 y_per100K = 10713.94	color=218
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 9146 	 y_per100K = 177.64	color=219
+
+- South Dakota pop=884659 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 264 	 7day_avg_y_per100K = 22.43	color=220
+    - predicted cross (relative)   	 y = 0.1858x+16.42 	 r^2=0.5884 	 daycross='2020-12-03'	color=221
+    - predicted cross (normal)   	 y = 1.6435x+145.24 	 r^2=0.5884 	 daycross='2020-12-03'	color=221
+    NewDeaths      	 x = 2021-03-31 	 org_y = 0 	 7day_avg_y_per100K = 0.18	color=222
+    TotalCases 	 x = 2021-03-31 	 org_y = 117759 	 y_per100K = 13311.23	color=223
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 1935 	 y_per100K = 218.73	color=224
+
+- Tennessee pop=6833174 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 1160 	 7day_avg_y_per100K = 15.79	color=225
+    - predicted cross (relative)   	 y = 0.0030x+17.41 	 r^2=0.0007 	 daycross='2005-03-18'	color=226
+    - predicted cross (normal)   	 y = 0.2041x+1189.45 	 r^2=0.0007 	 daycross='2005-03-18'	color=226
+    NewDeaths      	 x = 2021-03-31 	 org_y = 9 	 7day_avg_y_per100K = 0.23	color=227
+    TotalCases 	 x = 2021-03-31 	 org_y = 797531 	 y_per100K = 11671.46	color=228
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 11798 	 y_per100K = 172.66	color=229
+
+- Texas pop=28995881 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 4166 	 7day_avg_y_per100K = 13.56	color=230
+    - predicted cross (relative)   	 y = -0.4505x+23.29 	 r^2=0.8223 	 daycross='2021-04-21'	color=231
+    - predicted cross (normal)   	 y = -130.6180x+6752.92 	 r^2=0.8223 	 daycross='2021-04-21'	color=231
+    NewDeaths      	 x = 2021-03-31 	 org_y = 119 	 7day_avg_y_per100K = 0.33	color=232
+    TotalCases 	 x = 2021-03-31 	 org_y = 2794095 	 y_per100K = 9636.18	color=233
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 48537 	 y_per100K = 167.39	color=234
+
+- Utah pop=3205958 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 514 	 7day_avg_y_per100K = 12.96	color=235
+    - predicted cross (relative)   	 y = -0.1944x+18.16 	 r^2=0.9169 	 daycross='2021-06-02'	color=236
+    - predicted cross (normal)   	 y = -6.2321x+582.24 	 r^2=0.9169 	 daycross='2021-06-02'	color=236
+    NewDeaths      	 x = 2021-03-31 	 org_y = 4 	 7day_avg_y_per100K = 0.18	color=237
+    TotalCases 	 x = 2021-03-31 	 org_y = 385700 	 y_per100K = 12030.73	color=238
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 2122 	 y_per100K = 66.19	color=239
+
+- Vermont pop=623989 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 166 	 7day_avg_y_per100K = 28.55	color=240
+    - predicted cross (relative)   	 y = 0.2431x+16.42 	 r^2=0.4835 	 daycross='2020-12-24'	color=241
+    - predicted cross (normal)   	 y = 1.5168x+102.43 	 r^2=0.4835 	 daycross='2020-12-24'	color=241
+    NewDeaths      	 x = 2021-03-31 	 org_y = 2 	 7day_avg_y_per100K = 0.11	color=242
+    TotalCases 	 x = 2021-03-31 	 org_y = 19275 	 y_per100K = 3089.00	color=243
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 227 	 y_per100K = 36.38	color=244
+
+- Virgin Islands pop=106631 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 0 	 7day_avg_y_per100K = 4.15	color=245
+    - predicted cross (relative)   	 y = 0.1588x+6.22 	 r^2=0.0504 	 daycross='2021-01-21'	color=246
+    - predicted cross (normal)   	 y = 0.1693x+6.63 	 r^2=0.0504 	 daycross='2021-01-21'	color=246
+    NewDeaths      	 x = 2021-03-31 	 org_y = 0 	 7day_avg_y_per100K = 0.13	color=247
+    TotalCases 	 x = 2021-03-31 	 org_y = 2907 	 y_per100K = 2726.22	color=248
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 26 	 y_per100K = 24.38	color=249
+
+- Virginia pop=8535519 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 1035 	 7day_avg_y_per100K = 17.19	color=250
+    - predicted cross (relative)   	 y = -0.0181x+16.98 	 r^2=0.0167 	 daycross='2023-09-25'	color=251
+    - predicted cross (normal)   	 y = -1.5445x+1448.96 	 r^2=0.0167 	 daycross='2023-09-25'	color=251
+    NewDeaths      	 x = 2021-03-31 	 org_y = 10 	 7day_avg_y_per100K = 0.18	color=252
+    TotalCases 	 x = 2021-03-31 	 org_y = 618976 	 y_per100K = 7251.77	color=253
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 10252 	 y_per100K = 120.11	color=254
+
+- Washington pop=7614893 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 1091 	 7day_avg_y_per100K = 12.58	color=255
+    - predicted cross (relative)   	 y = 0.0777x+8.66 	 r^2=0.4654 	 daycross='2020-11-10'	color=256
+    - predicted cross (normal)   	 y = 5.9168x+659.77 	 r^2=0.4654 	 daycross='2020-11-10'	color=256
+    NewDeaths      	 x = 2021-03-31 	 org_y = 7 	 7day_avg_y_per100K = 0.11	color=257
+    TotalCases 	 x = 2021-03-31 	 org_y = 366907 	 y_per100K = 4818.28	color=258
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 5309 	 y_per100K = 69.72	color=259
+
+- West Virginia pop=1792147 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 416 	 7day_avg_y_per100K = 23.28	color=260
+    - predicted cross (relative)   	 y = 0.3072x+12.87 	 r^2=0.7386 	 daycross='2021-01-19'	color=261
+    - predicted cross (normal)   	 y = 5.5056x+230.66 	 r^2=0.7386 	 daycross='2021-01-19'	color=261
+    NewDeaths      	 x = 2021-03-31 	 org_y = 36 	 7day_avg_y_per100K = 0.45	color=262
+    TotalCases 	 x = 2021-03-31 	 org_y = 141738 	 y_per100K = 7908.84	color=263
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 2676 	 y_per100K = 149.32	color=264
+
+- Wisconsin pop=5822434 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 727 	 7day_avg_y_per100K = 11.63	color=265
+    - predicted cross (relative)   	 y = -0.0004x+10.59 	 r^2=0.0000 	 daycross='2087-12-20'	color=266
+    - predicted cross (normal)   	 y = -0.0253x+616.50 	 r^2=0.0000 	 daycross='2087-12-20'	color=266
+    NewDeaths      	 x = 2021-03-31 	 org_y = 23 	 7day_avg_y_per100K = 0.13	color=267
+    TotalCases 	 x = 2021-03-31 	 org_y = 636250 	 y_per100K = 10927.56	color=268
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 7316 	 y_per100K = 125.65	color=269
+
+- Wyoming pop=578759 - last recorded values below:
+    NewCases   	 x = 2021-03-31 	 org_y = 74 	 7day_avg_y_per100K = 10.44	color=270
+    - predicted cross (relative)   	 y = -0.0500x+11.62 	 r^2=0.0900 	 daycross='2021-10-19'	color=271
+    - predicted cross (normal)   	 y = -0.2892x+67.26 	 r^2=0.0900 	 daycross='2021-10-19'	color=271
+    NewDeaths      	 x = 2021-03-31 	 org_y = 5 	 7day_avg_y_per100K = 0.12	color=272
+    TotalCases 	 x = 2021-03-31 	 org_y = 56310 	 y_per100K = 9729.44	color=273
+    TotalDeaths    	 x = 2021-03-31 	 org_y = 700 	 y_per100K = 120.95	color=274
+
+* size of type & div of relative plot - type(div)=<class 'str'> len(div)=3048495
+* size of type & div of normal plot - type(div_1)=<class 'str'> len(div)=2399963
+
+- plotting end
+[Finished in 6.1s]
