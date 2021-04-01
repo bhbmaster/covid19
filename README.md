@@ -24,7 +24,18 @@ html-plots/US-plot-LOG.html
 - Normal Plot: http://www.infotinks.com/covid19/usa-ca/county-output-raw.html
 - `usa-ca/county-output.html` shows the values of the counties and California state relative to the population per 100K and with 7 day moving average
 - `usa-ca/county-output-raw.html` shows the raw values of the counties and California state with 7 day moving average
+- The moving average only applies to Daily New Cases & Daily New Deaths plots. The Total Cases & Total Deaths plot do not have the moving average function applied to them
 - Also it generates the raw csv data that was downloaded `usa-ca/CA-covid19cases_test.csv` and then we manipulated it to a smaller more digestable and parsable table which is also saved `usa-ca/CA-covid19cases_test-parsable.csv`
+
+**usa-states/county-plot.py produces the similar graphs and outputs:**
+
+- Daily New Cases in all California countys plotted to `usa-states/states-output.html` and `usa-states/states-output-raw.html`
+- Relative per Population Plot: http://www.infotinks.com/covid19/usa-states/states-output.html
+- Normal Plot: http://www.infotinks.com/covid19/usa-states/states-output-raw.html
+- `usa-states/states-output.html` shows the values of the States of the USA relative to the population per 100K and with 7 day moving average
+- `usa-states/states-output-raw.html` shows the raw values of the States of the USA with 7 day moving average
+- The moving average only applies to Daily New Cases & Daily New Deaths plots. The Total Cases & Total Deaths plot do not have the moving average function applied to them
+- Also it generates the raw csv data that was downloaded `usa-states/us-states.csv` and then we manipulated so its a parsable table which is also saved `usa-states/us-states-parsable.csv`
 
 ## Wrapper run.sh Script & places.sh
 

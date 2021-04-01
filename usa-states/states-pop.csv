@@ -1,5 +1,5 @@
 Rank,State,Population,Part
-0,USA,321418820,0
+0,USA,321418820,NA
 1,California,39512223,11.91%
 2,Texas,28995881,8.74%
 3,Florida,21477737,6.47%
@@ -48,6 +48,10 @@ Rank,State,Population,Part
 46,South Dakota,884659,0.27%
 47,North Dakota,762062,0.23%
 48,Alaska,731545,0.22%
-49,DC,705749,0.21%
+49,District of Columbia,705749,0.21%
 50,Vermont,623989,0.19%
 51,Wyoming,578759,0.17%
+52,Guam,167294,NA
+53,Northern Mariana Islands,57216,NA
+54,Puerto Rico,3194000,NA
+55,Virgin Islands,106631,NA

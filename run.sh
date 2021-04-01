@@ -6,7 +6,8 @@
 # This script calls the covid19plot.py to generate the 2 plot html files
 # it logs its text output to run-DATE.out files
 # Then places.sh is called which uses run*out output to generate the places.html
-# This also runs county-plot.py and logs its output to usa-ca this generates `usa-ca/county-output.html`
+# This also runs county-plot.py and logs its output to usa-ca this generates `usa-ca/county-output.html` and `usa-ca/county-output-raw.html`
+# This also runs states-plot.py and logs its output to states-ca this generates `usa-states/states-output.html` and `usa-states/states-output-raw.html`
 
 # * HOW TO RUN:
 # Adjust the cd parameter to root location of project + and use python 3.7 (or newer) to call the script
@@ -36,5 +37,13 @@ $PYTHON county-plot.py >> run-$DATE.out 2>&1
 # notify main log we are done
 cd "$DIR"
 echo "`date` - finished california counties plot - completely done" >> run-$DATE.out
+# notify main log above to do US States
+echo "`date` - starting usa states plot" >> run-$DATE.out
+# run california plots
+cd "$DIR"/usa-states
+$PYTHON states-plot.py >> run-$DATE.out 2>&1
+# notify main log we are done
+cd "$DIR"
+echo "`date` - finished usa states plot - completely done" >> run-$DATE.out
 # exit
 exit 0

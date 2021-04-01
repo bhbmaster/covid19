@@ -56,6 +56,8 @@ c=pd.read_csv(url_data)
 print(f"RECEIVED DATA (saved to {csv_file}):")
 print()
 print(c.describe())
+print()
+print(c.head())
 c.to_csv(csv_file)
 
 cpops = pd.read_csv(file_pop,index_col="Rank")
@@ -66,6 +68,7 @@ top10 = cpops.head(SHOW_TOP_NUMBER)["County"]
 visible_counties = top10.values.tolist() # essentially its ['Los Angeles', 'San Diego', 'Orange', 'Riverside', 'San Bernardino', 'Santa Clara', 'Alameda', 'Sacramento', 'Contra Costa', 'Fresno', 'Kern', 'San Francisco']
 visible_counties = ['Los Angeles', 'Santa Clara', 'San Mateo', 'San Francisco', '0-California-State']
 print()
+print(f"top counties={top10.values.tolist()}")
 print(f"visible_counties={visible_counties}")
 print()
 
@@ -106,6 +109,8 @@ c = final_c_and_cali.sort_values(by=['date']) # sort by date
 print(f"CONVERTED TO PARSABLE DATA (saved to {csv_file_parsable}):")
 print()
 print(c.describe())
+print()
+print(c.tail())
 c.to_csv(csv_file_parsable)
 # END - convert new format to old format - END
 
