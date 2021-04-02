@@ -2,19 +2,17 @@ import pandas as pd
 import plotly.graph_objects as go
 import plotly.offline.offline
 from plotly.subplots import make_subplots
-from os import path
 import numpy as np
-from sklearn.linear_model import LinearRegression
 import datetime
 import sys
 sys.path.append("..")    # so we can import common from previous directory
-from common import avgN, human_number, lastXdayslinearpredict, graph, PER, PER_TEXT, ndays, predictdays, COLOR_LIST  # local module but up one directory hence the sys path append ..
+from common import avgN, human_number, lastXdayslinearpredict, graph, PER, PER_TEXT, ndays, predictdays, COLOR_LIST, GetVersion, GetTheme  # local module but up one directory hence the sys path append ..
 
 # prework
 print("------------ initializing -----------")
 print()
 
-# constants
+### constants ###
 
 VersionFile = "../VERSION"  # Last Update YY.MM.DD
 output_html = "states-output.html" # relative per population per 100K - THIS IS ORIGINAL PLOT
@@ -27,13 +25,10 @@ csv_file = "us-states.csv"
 csv_file_parsable = "us-states-parsable.csv"
 
 # Get Version
-Version = open(VersionFile,"r").readline().rstrip().lstrip() if path.exists(VersionFile) else "NA"
+Version = GetVersion(VersionFile)
 
 # Get Theme
-ThemeFileContents = open(ThemeFile,"r").readline().rstrip().lstrip().split(",")
-Theme_Template = ThemeFileContents[0] if path.exists(ThemeFile) else "none"
-Theme_Font = ThemeFileContents[1] if path.exists(ThemeFile) else "Arial"
-Theme_FontSize = int(ThemeFileContents[2]) if path.exists(ThemeFile) else 12
+Theme_Template, Theme_Font, Theme_FontSize = GetTheme(ThemeFile)
 
 # states population file values from 2019 good enough
 file_pop = "states-pop.csv"

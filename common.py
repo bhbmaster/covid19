@@ -6,6 +6,7 @@ from sklearn.linear_model import LinearRegression
 from scipy.optimize import curve_fit
 import plotly.graph_objects as go
 import plotly.express as px # for themes/templates
+from os import path
 
 # used by covid19plot.py and usa-ca/country-plot.py
 
@@ -20,6 +21,18 @@ COLOR_LIST = px.colors.qualitative.Vivid # this sets the colorway option in layo
 COLOR_LIST_LEN = len(COLOR_LIST) # we will use the mod of this later
 
 ### functions ###
+
+# get version from Version file
+def GetVersion(VersionFile):
+    return open(VersionFile,"r").readline().rstrip().lstrip() if path.exists(VersionFile) else "NA"
+
+def GetTheme(ThemeFile):
+    ThemeFileContents = open(ThemeFile,"r").readline().rstrip().lstrip().split(",")
+    Theme_Template = ThemeFileContents[0] if path.exists(ThemeFile) else "none"
+    Theme_Font = ThemeFileContents[1] if path.exists(ThemeFile) else "Arial"
+    Theme_FontSize = int(ThemeFileContents[2]) if path.exists(ThemeFile) else 12
+    return Theme_Template, Theme_Font, Theme_FontSize
+
 
 # N day moving average (ex: 7 day average). averages the y values over window size N, our array shrinks by N-1 due to this. therefore, we also truncate the x array values by N-1 from the left side (older dates are on the left side)
 def avgN(N,x,y):

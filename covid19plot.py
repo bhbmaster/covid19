@@ -8,8 +8,7 @@ import datetime
 import bs4
 import htmlmin
 import pickle
-from os import path
-from common import avgN, Entry, Country
+from common import avgN, Entry, Country, GetVersion, GetTheme
 
 # By: Kostia Khlebopros
 # Site: http://www.infotinks.com/coronavirus-dashboard-covid19-py/
@@ -18,7 +17,6 @@ from common import avgN, Entry, Country
 ### constants ###
 
 VersionFile = "VERSION"  # Last Update YY.MM.DD
-Version = open(VersionFile,"r").readline().rstrip().lstrip() if path.exists(VersionFile) else "NA"
 SITE="https://pomber.github.io/covid19/timeseries.json"
 start_time = datetime.datetime.now()
 start_time_string = start_time.strftime("%Y-%m-%d %H:%M:%S")
@@ -33,11 +31,11 @@ moving_average_samples = 7 # 7 day moving average for daily new cases and daily 
 days_predict_new_cases = 30
 ThemeFile = "PLOTLY_THEME" # contents are comma sep: theme,font family,font size
 
-# get theme stuff from file
-ThemeFileContents = open(ThemeFile,"r").readline().rstrip().lstrip().split(",")
-Theme_Template = ThemeFileContents[0] if path.exists(ThemeFile) else "none"
-Theme_Font = ThemeFileContents[1] if path.exists(ThemeFile) else "Arial"
-Theme_FontSize = int(ThemeFileContents[2]) if path.exists(ThemeFile) else 12
+# Get Version:
+Version = GetVersion(VersionFile)
+
+# Get Theme
+Theme_Template, Theme_Font, Theme_FontSize = GetTheme(ThemeFile)
 
 ### functions ###
 
