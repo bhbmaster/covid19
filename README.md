@@ -9,9 +9,9 @@ There are 3 python scripts that generate different outputs. The main one, `covid
 
 **covid19plot.py produces the following graphs:**
 
-- Normal Axes plots of every country to `covid19-normal.html` - output: http://www.infotinks.com/covid19/covid19-normal.html
+- Normal Axes plots of every country to `covid19-normal.html` - output: **http://www.infotinks.com/covid19/covid19-normal.html**
 
-- Log Axes plots of every country in to `covid19-log.html` - output: http://www.infotinks.com/covid19/covid19-log.html
+- Log Axes plots of every country in to `covid19-log.html` - output: **http://www.infotinks.com/covid19/covid19-log.html**
 
 - Each country generates its own seperate normal and log plot into the `html-plots/` directory. As these are smaller the browser has an easier time allowing interaction with these plots
 
