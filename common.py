@@ -26,12 +26,32 @@ COLOR_LIST_LEN = len(COLOR_LIST) # we will use the mod of this later
 def GetVersion(VersionFile):
     return open(VersionFile,"r").readline().rstrip().lstrip() if path.exists(VersionFile) else "NA"
 
+# get theme information from Theme file (theme file PLOTLY_THEME has instructions on how to fill it out & copy of it is below just in case)
 def GetTheme(ThemeFile):
+    # HOW TO FILL OUT THEME FILE:
+    """
+    seaborn,Balto,14
+
+    # Only first line is parsed. The rest is ignored and therefore are an explanation
+
+    # Format:
+    # theme,font family,font size
+
+    # Supported themes / templates:
+    # ["plotly", "plotly_white", "plotly_dark", "ggplot2", "seaborn", "simple_white", "none"]
+    # more info: https://plotly.com/python/templates/
+
+    # Supported fonts:
+    # "Arial", "Balto", "Courier New", "Droid Sans", "Droid Serif", "Droid Sans Mono", "Gravitas One", "Old Standard TT", "Open Sans", "Overpass", "PT Sans Narrow", "Raleway", "Times New Roman"
+    # more info: https://plotly.com/python/figure-labels/
+    # more info - in depth: https://plotly.com/python/reference/layout/
+    """
     ThemeFileContents = open(ThemeFile,"r").readline().rstrip().lstrip().split(",")
     Theme_Template = ThemeFileContents[0] if path.exists(ThemeFile) else "none"
     Theme_Font = ThemeFileContents[1] if path.exists(ThemeFile) else "Arial"
     Theme_FontSize = int(ThemeFileContents[2]) if path.exists(ThemeFile) else 12
     return Theme_Template, Theme_Font, Theme_FontSize
+
 
 
 # N day moving average (ex: 7 day average). averages the y values over window size N, our array shrinks by N-1 due to this. therefore, we also truncate the x array values by N-1 from the left side (older dates are on the left side)
