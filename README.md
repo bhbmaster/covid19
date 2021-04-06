@@ -105,7 +105,6 @@ tail -F <log file>
 ## How To Prepare VirtualEnv Environment
 
 First create a python3 virtual environment and install the modules like so:
-
 ```bash
 cd <into root directory where covid19plot.py is>
 python3 -v venv env
@@ -114,6 +113,31 @@ pip install -r requirements.txt
 ```
 
 Then run the script using the above execute instructions.
+To run `covid19ploy.py` and `usa-ca/county-plot.py` and `usa-states/us-states.csv` please kick off any of the following
+
+```
+python3 covid19ploy.py
+python3 usa-ca/county-plot.py
+python3 usa-states/us-states.csv
+```
+
+or:
+
+```
+./run.sh                      # runs all 3 and logs to run*out file in scripts directory - this is what I call in crontab
+```
+
+or:
+
+```
+./run-wrapper.sh              # this runs run.sh but shows its PID and follows the log for you
+```
+
+or to update to latest version (git pull) and then run:
+
+```
+./run-and-pull-wrapper.sh     # this runs git pull to get latest version and shows its PID and follows the log for you
+```
 
 ## File Structure
 
@@ -123,9 +147,8 @@ Here are the dirs and files
 covid19plot# ls --hide "run*" --hide "*html" -R -l
 
 ~~~.:~~~
-
--rwxr-xr-x 1 root root 42888 Mar  2 18:55 covid19plot.py        # main code - plots countrys and creates html output
-
+-rwxr-xr-x 1 root root 42888 Mar  2 18:55 covid19plot.py          # main code - plots countrys and creates html output
+-rw-r--r-- 1 root root 26049 Apr  1 18:20 common.py               # common code between `usa-ca/county-plot.py` & `usa-states/us-states.csv` 
 -rw-r--r-- 1 root root 27340556 Mar  2 18:07 covid19-log.html     # log plots of country covid stats
 -rw-r--r-- 1 root root 27338240 Mar  2 18:07 covid19-normal.html  # normal plots of country covid stats
 -rw-r--r-- 1 root root  7189726 Mar  2 18:07 places.html          # ranking countries from highest to lowest cases each day
@@ -136,10 +159,10 @@ covid19plot# ls --hide "run*" --hide "*html" -R -l
 -rwxr-xr-x 1 root root  1364 Feb 25 16:30 places.sh             # parses output files generated from run.sh & generates places.html 
 -rw-r--r-- 1 root root    44 Feb 24 16:47 requirements.txt      # python requirements
 
--rwxr-xr-x 1 root root     1709 Mar  1 22:10 run.sh          # for infotinks server -  covid19plot.py and county-plot.py, creates run-$DATE-out log files, and runs place.sh (crontab calls this)
+-rwxr-xr-x 1 root root     1709 Mar  1 22:10 run.sh             # for infotinks server - covid19plot.py and county-plot.py, creates run-$DATE-out log files, and runs place.sh (crontab calls this)
 -rwxr-xr-x 1 root root      814 Mar  1 22:14 run-and-pull-wrapper.sh     # for infotinks server - sync code from git and kick off run.sh into background and follow log
 -rwxr-xr-x 1 root root      688 Mar  1 22:14 run-wrapper.sh              # for infotinks server - kick off run.sh into background and follow log
--rw-r--r-- 1 root root    22166 Mar  2 10:28 run-$DATE.out  # several of these exist, output from run.sh parsed by places.sh
+-rw-r--r-- 1 root root    22166 Mar  2 10:28 run-$DATE.out               # several of these exist, output from run.sh parsed by places.sh
 
 
 -rwxr-xr-x 1 root root      326 Mar  1 22:10 run-simple-mac.sh           # run code on mac 
@@ -161,9 +184,20 @@ drwxr-xr-x 2 root root  4096 Apr 14  2020 img-plots             # old dir, not u
 ~~~./usa-ca:~~~
 -rw-r--r-- 1 root root 12833 Mar  2 17:41 county-plot.py         # main code - plots california counties and creates html output
 -rw-r--r-- 1 root root  1069 Feb 24 16:18 county-pop.csv         # csv showing each counties population (called by county-plot.py)
+-rw-r--r-- 1 root root 1237742 Apr  2 06:07 CA-covid19cases_test-parsable.csv  # the adjusted dataframe is saved as csv. the df is read by graph()
+-rw-r--r-- 1 root root 3192794 Apr  2 06:07 CA-covid19cases_test.csv           # output csv file as downloaded from source
+-rw-r--r-- 1 root root 6169982 Mar  2 18:07 county-output.html           # html output of county-plot.py
+-rw-r--r-- 1 root root 6169982 Mar  2 18:07 county-output-raw.html       # html output of county-plot.py
+-rw-r--r-- 1 root root  649588 Feb 24 16:51 run-$DATE.out                # saved log output of county-plot.py created by ../run.sh
 
--rw-r--r-- 1 root root 6169982 Mar  2 18:07 county-output.html   # html output of county-plot.pt
--rw-r--r-- 1 root root  649588 Feb 24 16:51 run-$DATE.out  # saved log output of county-plot.py created by ../run.sh
+~~~./usa-states:~~~
+-rw-r--r-- 1 root root    9544 Apr  1 18:20 states-plot.py           # main code - plots usa-states counties and creates html output
+-rw-r--r-- 1 root root    1508 Mar 31 23:31 states-pop.csv           # population csv of every state and territory
+-rw-r--r-- 1 root root 1034072 Apr  5 12:07 us-states-parsable.csv   # the adjusted dataframe is saved as csv. the df is read by graph()
+-rw-r--r-- 1 root root  868077 Apr  5 12:07 us-states.csv            # output csv file as downloaded by source
+-rw-r--r-- 1 root root 6169982 Apr  2 18:07 county-output.html       # html output of county-plot.py
+-rw-r--r-- 1 root root 6169982 Apr  2 18:07 county-output-raw.html   # html output of county-plot.py
+-rw-r--r-- 1 root root  649588 Feb 24 16:51 run-$DATE.out            # saved log output of county-plot.py created by ../run.sh
 ```
 
 ## Errors
