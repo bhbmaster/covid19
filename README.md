@@ -1,17 +1,17 @@
 # covid19plot.py
 
-The public facing version of this site sits on my personal blog at **infotinks.com**: http://www.infotinks.com/coronavirus-dashboard-covid19-py/
+The public facing version of this site sits on my personal blog at **infotinks.com**: **http://www.infotinks.com/coronavirus-dashboard-covid19-py/**.
 From there you can access all of the output files that are mentioned below.
 
 ## Outputs
 
-There are 3 python scripts that generate different outputs. The main one, `covid19plot.py`, generates plots for every country. Then one, `county-plot.py`, generates plots for every county in California and another, `states-plot.py`, generates the plots for every state & territory in the USA.
+There are 3 python scripts that generate different outputs. The main one, `(1) covid19plot.py`, generates plots for every country. Then one, `(2) county-plot.py`, generates plots for every county in California and another, `(3) states-plot.py`, generates the plots for every state & territory in the USA. The scripts run daily on my infotinks server and the generated plots are linked in each section.
 
-**covid19plot.py produces the following graphs:**
+**(1) covid19plot.py produces the following graphs:**
 
-- Normal Axes plots of every country to `covid19-normal.html` - output: **http://www.infotinks.com/covid19/covid19-normal.html**
+- Normal Axes plots of every country to `covid19-normal.html`: **http://www.infotinks.com/covid19/covid19-normal.html**
 
-- Log Axes plots of every country in to `covid19-log.html` - output: **http://www.infotinks.com/covid19/covid19-log.html**
+- Log Axes plots of every country in to `covid19-log.html`: **http://www.infotinks.com/covid19/covid19-log.html**
 
 - Each country generates its own seperate normal and log plot into the `html-plots/` directory. As these are smaller the browser has an easier time allowing interaction with these plots
 
@@ -22,21 +22,21 @@ html-plots/US-plot-NORMAL.html
 html-plots/US-plot-LOG.html
 ```
 
-**usa-ca/county-plot.py produces the following graphs and outputs:**
+**(2) usa-ca/county-plot.py produces the following graphs and outputs:**
 
 - Daily New Cases in all California countys plotted to `usa-ca/county-output.html` and `usa-ca/county-output-raw.html`
-- Relative per Population Plot: http://www.infotinks.com/covid19/usa-ca/county-output.html
-- Normal Plot: http://www.infotinks.com/covid19/usa-ca/county-output-raw.html
+- Relative per Population Plot: **http://www.infotinks.com/covid19/usa-ca/county-output.html**
+- Normal Plot: **http://www.infotinks.com/covid19/usa-ca/county-output-raw.html**
 - `usa-ca/county-output.html` shows the values of the counties and California state relative to the population per 100K and with 7 day moving average
 - `usa-ca/county-output-raw.html` shows the raw values of the counties and California state with 7 day moving average
 - The moving average only applies to Daily New Cases & Daily New Deaths plots. The Total Cases & Total Deaths plot do not have the moving average function applied to them
 - Also this script saves the raw csv data that was downloaded `usa-ca/CA-covid19cases_test.csv` and then saves the manipulated dataframe(csv) that is parsed by the graph() function to `usa-ca/CA-covid19cases_test-parsable.csv`
 
-**usa-states/states-plot.py produces the similar graphs and outputs:**
+**(3) usa-states/states-plot.py produces the similar graphs and outputs:**
 
 - Daily New Cases in every US state is plotted to `usa-states/states-output.html` and `usa-states/states-output-raw.html`
-- Relative per Population Plot: http://www.infotinks.com/covid19/usa-states/states-output.html
-- Normal Plot: http://www.infotinks.com/covid19/usa-states/states-output-raw.html
+- Relative per Population Plot: **http://www.infotinks.com/covid19/usa-states/states-output.html**
+- Normal Plot: **http://www.infotinks.com/covid19/usa-states/states-output-raw.html**
 - `usa-states/states-output.html` shows the values of the States of the USA relative to the population per 100K and with 7 day moving average
 - `usa-states/states-output-raw.html` shows the raw values of the States of the USA with 7 day moving average
 - The moving average only applies to Daily New Cases & Daily New Deaths plots. The Total Cases & Total Deaths plot do not have the moving average function applied to them
@@ -48,7 +48,7 @@ The wrapper script `run.sh` execute `covid19plot.py` which generates both of the
 
 Then my `places.sh` uses those log files to get ordered list of most cases for each day. For any given date, one can see which country ranks amongst highest cases. The output is saved in this html file:
 
-- Places output: http://www.infotinks.com/covid19/places.html
+- Places output: **http://www.infotinks.com/covid19/places.html**
 
 *Sidenote:* The version of python is specified with the `PYTHON` variable at the beginning of the run.sh script. This is important for my linux server because the `python` program points to `python2.7` by default, so I must specify python 3 by using the `python3.x` program call (such as `python3.9`)
 
