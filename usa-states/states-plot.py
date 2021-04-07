@@ -6,7 +6,7 @@ import numpy as np
 import datetime
 import sys
 sys.path.append("..")    # so we can import common from previous directory
-from common import avgN, human_number, lastXdayslinearpredict, graph, PER, PER_TEXT, ndays, predictdays, COLOR_LIST, GetVersion, GetTheme  # local module but up one directory hence the sys path append ..
+from common import avgN, human_number, lastXdayslinearpredict, graph4area, PER, PER_TEXT, ndays, predictdays, COLOR_LIST, GetVersion, GetTheme  # local module but up one directory hence the sys path append ..
 
 # prework
 print("------------ initializing -----------")
@@ -193,10 +193,10 @@ for state,pop in cpop_list:
 		"nND": "newdeaths",
 		"visible_areas": visible_states,
 		"color_index": color_index }
-	fig, fig_1, color_index = graph(**graph_options)
+	fig, fig_1, color_index = graph4area(**graph_options)
 	print()
 
-# fig, fig_1, color_index = graph(*graph_options)
+# fig, fig_1, color_index = graph4area(*graph_options)
 
 # * plotly generate html output generation
 fig.write_html(output_html,auto_open=False)

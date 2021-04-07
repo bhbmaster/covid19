@@ -7,7 +7,7 @@ import numpy as np
 import datetime
 import sys
 sys.path.append("..")    # so we can import common from previous directory
-from common import avgN, human_number, lastXdayslinearpredict, graph, PER, PER_TEXT, ndays, predictdays, COLOR_LIST, GetVersion, GetTheme  # local module but up one directory hence the sys path append ..
+from common import avgN, human_number, lastXdayslinearpredict, graph4area, PER, PER_TEXT, ndays, predictdays, COLOR_LIST, GetVersion, GetTheme  # local module but up one directory hence the sys path append ..
 
 ### constants ###
 
@@ -35,16 +35,20 @@ file_pop="county-pop.csv" # values from around 2020 good enough
 # old data site https://data.ca.gov/dataset/covid-19-cases points to new site https://data.chhs.ca.gov/dataset/covid-19-time-series-metrics-by-county-and-state
 url_data="https://data.chhs.ca.gov/dataset/f333528b-4d38-4814-bebb-12db1f10f535/resource/046cdd2b-31e5-4d34-9ed3-b48cdbc4be7a/download/covid19cases_test.csv" # NEW
 
+# read in covid data for california counties
 c=pd.read_csv(url_data)
 print(f"RECEIVED DATA (saved to {csv_file}):")
 print()
-print(c.describe())
+print(f"{c.describe()=}")
 print()
-print(c.head())
+print(f"{c.head()=}")
+print()
+print(f"{c.columns=}")
 c.to_csv(csv_file)
+c = c.sort_values("DATE",ascending=True)
 
+# population file
 cpops = pd.read_csv(file_pop,index_col="Rank")
-# cpops = cpops.head(15)
 
 # get top 10 (or SHOW_TOP_NUMBER) of counties based on population + select which ones to show enabled on legend
 top10 = cpops.head(SHOW_TOP_NUMBER)["County"]
@@ -62,41 +66,77 @@ cpop_zip=zip(cpops_county_list,cpops_pop_list)
 cpop_list=list(cpop_zip)
 cpop_list.sort(key=lambda x:x[0]) # sort by first field county so alphabet
 
-# START - convert new format to old format - START
-# code converting new style csv to old style, so functions understand it
-cols_to_select=["date","area","cases","cumulative_cases","deaths","cumulative_deaths"]
-clean_c = c[c["date"]!="NaN"][c["area_type"]=="County"].dropna(subset=cols_to_select) # remove cols we care about that have NaN (its mostly happens in dates) & we only need Counties not State (although maybe in future can have all of california?)
-prefinal_c = clean_c[cols_to_select] # now make data frame that only has cols we need
-rename_dict={
-    "date": "date",
-    "area": "county",
-    "cases": "newcountconfirmed",
-    "cumulative_cases":"totalcountconfirmed",
-    "deaths":"newcountdeaths",
-    "cumulative_deaths":"totalcountdeaths"
-}
-final_c = prefinal_c.rename(columns=rename_dict) # now rename the cols to what we had in previous deprecated format
-# adding california in - start
+# Covid Data Manipulation to how we need the data
+
+cols_to_select=["DATE","AREA","AREA_TYPE","CASES","DEATHS"]
+
+cleandates_c = c[c["DATE"]!="NaN"]
+
+adjusted_cleaned_c = cleandates_c[cols_to_select]
+print()
+print(f"{adjusted_cleaned_c=}")
+print()
+
+unique_areas = list(set(cleandates_c["AREA"].values.tolist()))
+print()
+print(f"{unique_areas=}")
+print()
+
+cnew = pd.DataFrame(columns = ["DATE","AREA","AREA_TYPE","CASES","DEATHS","TOTALCASES","TOTALDEATHS"])
+
+for i,v in enumerate(unique_areas):
+    print("** DEBUG: mini dataframe to create cumulative - ", i, v)
+    cpart = adjusted_cleaned_c[adjusted_cleaned_c["AREA"]==v]
+    cpart = cpart.set_index("DATE")
+    cpart["TOTALCASES"] = cpart["CASES"].cumsum()
+    cpart["TOTALDEATHS"] = cpart["DEATHS"].cumsum()
+    cpart = cpart.reset_index()
+    print(cpart.tail())
+    print()
+    cnew = cnew.append(cpart, ignore_index = True)
+
+print("* DEBUG: put together a dataframe with cumulative columns")
+print(f"{cnew=}")
+
+# cols to select has been adjusted now
+cols_to_select=["DATE","AREA","AREA_TYPE","CASES","DEATHS","TOTALCASES","TOTALDEATHS"]
+
+# Clean up - get counties only
+clean_county_c = cnew[cnew["AREA_TYPE"]=="County"].dropna(subset=cols_to_select)
+print("* DEBUG: final clean counties")
+print(f"{clean_county_c=}")
+
+
 # GET CALIFORNIA STATE
-cali0 = c[c["date"]!="NaN"][c["area_type"]=="State"].dropna(subset=cols_to_select)
-cali1 = cali0[cols_to_select]
-cali2 = cali1.rename(columns=rename_dict)
-cali3 = cali2.replace("California","0-California-State")
-final_c_and_cali = final_c.append(cali3,ignore_index=True) # since indexes never got messed with this in these processes we can just remove ignore_index and keep its default as False but it doesn't hurt to keep
+
+cali0 = cnew[cnew["AREA_TYPE"]=="State"].dropna(subset=cols_to_select)
+
+clean_cali_c = cali0.replace("California","0-California-State")
+print("* DEBUG: final clean california")
+print(f"{clean_cali_c=}")
+
+# THE FINAL COMBINED DATA:
+final_c_and_cali = clean_county_c.append(clean_cali_c,ignore_index=True) # since indexes never got messed with this in these processes we can just remove ignore_index and keep its default as False but it doesn't hurt to keep
 # sidenote manually added in this line to county-pop.csv - whatever its not the prettiest i don't care: # 59,0-California-State,40129160
 # adding california in - finish
-c = final_c_and_cali.sort_values(by=['date']) # sort by date
+
+# OKAY LETS SORT IT AND NOW ITS FINAL
+c = final_c_and_cali.sort_values(by=['DATE']) # sort by date
+
+print()
 print(f"CONVERTED TO PARSABLE DATA (saved to {csv_file_parsable}):")
 print()
-print(c.describe())
+print(f"{c.describe()=}")
 print()
-print(c.tail())
+print(f"{c.tail()=}")
+print()
+print(f"{c.columns}")
 c.to_csv(csv_file_parsable)
-# END - convert new format to old format - END
 
-# raise Exception("Script stopping now until TODO implemented") # easy way to stop code while editing/fixing
 
-### MAIN ###
+###################################################
+#              PLOTTING                           #
+###################################################
 
 # * plotly init
 print()
@@ -118,7 +158,7 @@ spacing=0.05
 fig = make_subplots(rows=2, cols=2, shared_xaxes=True, subplot_titles=subplot_titles, column_widths=[bigportion, smallportion],horizontal_spacing=spacing,vertical_spacing=spacing) # shared_xaxes to maintain zoom on all
 fig_1 = make_subplots(rows=2, cols=2, shared_xaxes=True, subplot_titles=subplot_titles_1, column_widths=[bigportion, smallportion],horizontal_spacing=spacing,vertical_spacing=spacing) # shared_xaxes to maintain zoom on all
 random_county = cpops_county_list[0] # we picked top one which is LA (most populous at the top)
-last_x = c[c.county == random_county]["date"].values.tolist()[-1]
+last_x = c[c.AREA == random_county]["DATE"].values.tolist()[-1]
 # supported fonts: https://plotly.com/python/reference/layout/
 plot_options={
     "hoverlabel_font_size": Theme_FontSize,
@@ -140,7 +180,6 @@ plot_options={
 predictnote =  f", <b>Note:</b> Prediction uses {predictdays} day linear fit, appears as black-dashed line."
 fig.update_layout(title=f"<b>California Counties Covid19 Stats (Relative to Population Values)</b> (v{Version})<br><b>Last Data Point:</b> {last_x} , <b>Updated On:</b> {updatedate_str} {predictnote}",**plot_options) # main title & theme & hover options & font options unpacked
 fig_1.update_layout(title=f"<b>California Counties Covid19 Stats (Normal / Raw Values)</b> (v{Version})<br><b>Last Data Point:</b> {last_x} , <b>Updated On:</b> {updatedate_str}  {predictnote}",**plot_options) # main title & theme & hover options & font options unpacked
-# fig = go.Figure() # then graph like this: fig.add_trace(go.Scatter(x=avgx, y=avgy, name=legendtext, showlegend=True,visible=visible1))
 
 # * consider each county and trace it on plotly
 color_index = -1 # color index, if we set to None then we alternate colors for every trace. if we set to -1 here then we match color of prediction
@@ -151,15 +190,15 @@ for county,pop in cpop_list:
         "area": county,
         "pop": pop,
         "c": c,
-        "nX": "date",
-        "nA": "county",
-        "nC": "totalcountconfirmed",
-        "nD": "totalcountdeaths",
-        "nNC": "newcountconfirmed",
-        "nND": "newcountdeaths",
+        "nX": "DATE",
+        "nA": "AREA",
+        "nC": "TOTALCASES",
+        "nD": "TOTALDEATHS",
+        "nNC": "CASES",
+        "nND": "DEATHS",
         "visible_areas": visible_counties,
         "color_index": color_index }
-    fig, fig_1, color_index = graph(**graph_options)
+    fig, fig_1, color_index = graph4area(**graph_options)
     print()
 
 # * plotly generate html output generation

@@ -40,7 +40,7 @@ html-plots/US-plot-LOG.html
 - `usa-states/states-output.html` shows the values of the States of the USA relative to the population per 100K and with 7 day moving average
 - `usa-states/states-output-raw.html` shows the raw values of the States of the USA with 7 day moving average
 - The moving average only applies to Daily New Cases & Daily New Deaths plots. The Total Cases & Total Deaths plot do not have the moving average function applied to them
-- Also this script saves the raw csv data that was downloaded `usa-states/us-states.csv` and then saves the manipulated dataframe(csv) that is parsed by the graph() function to `usa-states/us-states-parsable.csv`
+- Also this script saves the raw csv data that was downloaded `usa-states/us-states.csv` and then saves the manipulated dataframe(csv) that is parsed by the graph4area() function to `usa-states/us-states-parsable.csv`
 
 ## Wrapper run.sh Script & places.sh
 
@@ -189,7 +189,7 @@ drwxr-xr-x 2 root root  4096 Apr 14  2020 img-plots             # old dir, not u
 ~~~./usa-ca:~~~
 -rw-r--r-- 1 root root 12833 Mar  2 17:41 county-plot.py         # main code - plots california counties and creates html output
 -rw-r--r-- 1 root root  1069 Feb 24 16:18 county-pop.csv         # csv showing each counties population (called by county-plot.py)
--rw-r--r-- 1 root root 1237742 Apr  2 06:07 CA-covid19cases_test-parsable.csv  # the adjusted dataframe is saved as csv. the df is read by graph()
+-rw-r--r-- 1 root root 1237742 Apr  2 06:07 CA-covid19cases_test-parsable.csv  # the adjusted dataframe is saved as csv. the df is read by graph4area()
 -rw-r--r-- 1 root root 3192794 Apr  2 06:07 CA-covid19cases_test.csv           # output csv file as downloaded from source
 -rw-r--r-- 1 root root 6169982 Mar  2 18:07 county-output.html           # html output of county-plot.py
 -rw-r--r-- 1 root root 6169982 Mar  2 18:07 county-output-raw.html       # html output of county-plot.py
@@ -198,7 +198,7 @@ drwxr-xr-x 2 root root  4096 Apr 14  2020 img-plots             # old dir, not u
 ~~~./usa-states:~~~
 -rw-r--r-- 1 root root    9544 Apr  1 18:20 states-plot.py           # main code - plots usa-states counties and creates html output
 -rw-r--r-- 1 root root    1508 Mar 31 23:31 states-pop.csv           # population csv of every state and territory
--rw-r--r-- 1 root root 1034072 Apr  5 12:07 us-states-parsable.csv   # the adjusted dataframe is saved as csv. the df is read by graph()
+-rw-r--r-- 1 root root 1034072 Apr  5 12:07 us-states-parsable.csv   # the adjusted dataframe is saved as csv. the df is read by graph4area()
 -rw-r--r-- 1 root root  868077 Apr  5 12:07 us-states.csv            # output csv file as downloaded by source
 -rw-r--r-- 1 root root 6169982 Apr  2 18:07 county-output.html       # html output of county-plot.py
 -rw-r--r-- 1 root root 6169982 Apr  2 18:07 county-output-raw.html   # html output of county-plot.py
@@ -209,9 +209,9 @@ drwxr-xr-x 2 root root  4096 Apr 14  2020 img-plots             # old dir, not u
 
 Possible errors that might be seen:
 
-### Missing _bz2 On Linux
+### Missing *_bz2* On Linux
 
-If you get an error during running `usa-ca/county-plot.py` which talks about missing _bz2 module. Then you will need install a linux package and compile python again & you will need to reinstall the python modules with pip.
+If you get an error during running `usa-ca/county-plot.py` which talks about missing *_bz2* module. Then you will need install a linux package and compile python again & you will need to reinstall the python modules with pip.
 
 * Error notes: https://stackoverflow.com/questions/12806122/missing-python-bz2-module
 * Compiling new python: https://linuxize.com/post/how-to-install-python-3-9-on-debian-10/

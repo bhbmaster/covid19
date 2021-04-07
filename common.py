@@ -145,23 +145,23 @@ def human_number(number):
     else: # 100,000,000 and above
         return f"{int(number/1_000_000):,}M"
 
-# * graph - used in usa states & california plots
+# * graph4area - used in usa states & california plots - graphs 4 plots
 # providing "fig" and "fig_1" to plot on. the dataframe to use as "c".
 # "area" is the name of the state/county or area, "pop" is the population in that area
 # the names of the columns:
 # nX = name of the date column (which is our X values)
-# nA = name of area column
-# nC = name of cases column
-# nD = name of deaths column
-# nNC = name of new cases column
-# nND = name of new deaths column
+# nA = name of area column <- the different counties/states/etc
+# nC = name of cases column <- top right plot (2nd plot)
+# nD = name of deaths column <- bottom right plot (4th)
+# nNC = name of new cases column <- this becomes top left (1st plot) & it gets linear fit
+# nND = name of new deaths column <- bottom left graph (3rd)
 # "visible_area" = list of areas to show
 # "color_index" = if originally set to None then we alternate colors for every trace. if originally we set to -1 here then we match color of prediction
-def graph(fig, fig_1, area, pop, c, nX, nA, nC, nD, nNC, nND, visible_areas, color_index):
+def graph4area(fig, fig_1, area, pop, c, nX, nA, nC, nD, nNC, nND, visible_areas, color_index):
     # global color_index
     print(f"- {area} pop={pop} - last recorded values below:")
     visible1 = "legendonly" if not area in visible_areas else None
-    x=c[c[nA] == area]["date"].values  # same x for relative and normal plot
+    x=c[c[nA] == area][nX].values  # same x for relative and normal plot
     # print(f"DEBUG: {x=}")
     FRONTSPACE="    "
     color_text=""
