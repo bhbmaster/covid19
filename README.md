@@ -218,7 +218,32 @@ If you get an error during running `usa-ca/county-plot.py` which talks about mis
 
 ### Other Errors
 
-Might need to google your way around or contact me via "Issues" tab
+Might need to google your way around or contact me via "Issues" tab.
+
+### Warnings
+
+Note some messages might just be warnings that can be ignored.
+
+* LZMA Warning
+
+This LZMA warning for me can be ignored - I only get on my linux server but not on MAC or Windows. Regardless of this warning, everything still works and generates proper plots.
+
+```bash
+covid19plot# python3 [covid19plot.py|county-plot.py|states-plot.py]
+/usr/local/lib/python3.9/site-packages/pandas/compat/__init__.py:97: UserWarning:
+
+Could not import the lzma module. Your installed Python is incomplete. Attempting to use lzma compression will result in a RuntimeError.
+
+...next lines not shown as it continued to work...
+```
+
+* Fit Warning
+
+Additionally, this message can be ignored. This messages happens a few times when it makes a prediction linear fit. Regardless we still get a fit.
+
+```bash
+* WARNING in lastXdayslinearpredict: array must not contain infs or NaNs
+```
 
 ## To Do
 
