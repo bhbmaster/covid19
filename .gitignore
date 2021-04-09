@@ -25,3 +25,4 @@ usa-ca/CA-covid19cases_test.csv
 usa-states/us-states.csv
 usa-states/us-states-parsable.csv
 usa-states/*html
+usa-states/run-*.out

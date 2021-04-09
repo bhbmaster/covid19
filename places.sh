@@ -17,10 +17,10 @@ cd /var/www/covid19
    [ -z $N ] && N=10
    echo "<p><b>Which country is Xth place at given date (started from 3/15/2020)</b></p>";
    for i in $(seq $N); do
+      P=$((i-1))
       (
-         P=$((i-1))
          echo "---- $P place ----";
          grep "^$i/" run* | awk -F " - " '{$1=""; print "*"$0}' | uniq
-      )  |  awk '{print "<p>" $0 "</p>"}'
+      )  |  awk -v PLACE="$P" '{print "<p> (" PLACE ") "  $0 "</p>"}'
    done
 ) > places.html
