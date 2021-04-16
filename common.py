@@ -162,6 +162,11 @@ def graph4area(fig, fig_1, area, pop, c, nX, nA, nC, nD, nNC, nND, visible_areas
     print(f"- {area} pop={pop} - last recorded values below:")
     visible1 = "legendonly" if not area in visible_areas else None
     x=c[c[nA] == area][nX].values  # same x for relative and normal plot
+    # print(f"DEBUG: finding -> c[{nA}] == {area}")
+    # print(c[nA] == area)
+    # print(f"DEBUG: {nA=} {area=} {nX=}")
+    # print(f"DEBUG: {c=}")
+    # print(f"DEBUG: {x=}")
     # print(f"DEBUG: {x=}")
     FRONTSPACE="    "
     color_text=""
@@ -180,6 +185,10 @@ def graph4area(fig, fig_1, area, pop, c, nX, nA, nC, nD, nNC, nND, visible_areas
     y_1=orgy        # normal plot
     avgx,avgy=avgN(ndays,x.tolist(),y.tolist())          # relative plot average
     avgx_1,avgy_1=avgN(ndays,x.tolist(),y_1.tolist())    # normal plot average
+    # print(f"DEBUG {avgx=}")
+    # print(f"DEBUG {avgy=}")
+    # print(f"DEBUG {avgx_1=}")
+    # print(f"DEBUG {avgy_1=}")
     LastNewC = avgy[-1]
     LastNewC_1 = avgy_1[-1]
     print(f"{FRONTSPACE}NewCases   \t x = {avgx[-1]} \t org_y = {orgy[-1]:0.0f} \t {ndays}day_avg_y_per{PER_TEXT} = {avgy[-1]:0.2f}{color_text}") # print statement luckily shows both relative + normal
