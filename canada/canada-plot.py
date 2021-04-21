@@ -6,7 +6,7 @@
 # --- get data and manipulate it into correct form --- #
 
 covid_url='https://github.com/ccodwg/Covid19Canada/blob/master/timeseries_prov/active_timeseries_prov.csv' # github
-population_file='canada-pop.csv' # local
+population_file='canada-pop.csv' # local - got data from wikipedia https://en.wikipedia.org/wiki/Population_of_Canada_by_province_and_territory
 
 # --- output names --- #
 covid_rx='canada.csv'
