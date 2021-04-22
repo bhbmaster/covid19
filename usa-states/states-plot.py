@@ -60,6 +60,9 @@ print()
 print(f"{c.describe()=}")
 print()
 print(f"{c.tail()=}")
+print()
+print(f"{c.columns=}")
+print()
 c.to_csv(csv_file) # save it locally
 c_original=c
 
@@ -74,7 +77,11 @@ c0.sort_values(by=['date'])
 # find all the unique states
 unique_states = list(set(c["state"].values.tolist()))  # take a list and convert to set. sets can only have one of the same value. then back to list so we can sort with below func.
 unique_states.sort() # alphabetical
-print(f"{unique_states=}")
+print(f"* covid data -> {unique_states=} length {len(unique_states)}")
+cpops_state_list_sorted = cpops_state_list
+cpops_state_list_sorted.sort()
+print(f"* population -> {cpops_state_list_sorted=} length {len(cpops_state_list_sorted)}")
+print(f"* Do we get the same areas from Covid Data and Population data: {cpops_state_list_sorted==unique_states}")
 
 # create the new parsable dataframe c1, first start with empty one. we look at every state one by one (they are sorted) from the original dataframe.
 # creating a new dataframe from each state (note it just has the cols we want ["date","state","cases","deaths"] and its date sorted)
