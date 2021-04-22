@@ -5,9 +5,9 @@ From there you can access all of the output files that are mentioned below.
 
 ## Outputs
 
-There are 3 python scripts that generate different outputs. The main one, `(1) covid19plot.py`, generates plots for every country. Then one, `(2) county-plot.py`, generates plots for every county in California and another, `(3) states-plot.py`, generates the plots for every state & territory in the USA. The scripts run daily on my infotinks server and the generated plots are linked in each section.
+There are 4 python scripts that generate different outputs. The main one, `(1) covid19plot.py`, generates plots for every country. Then one, `(2) county-plot.py`, generates plots for every county in California and another, `(3) states-plot.py`, generates the plots for every state & territory in the USA. Additionally there is one for Canada's provinces and all of its territories, `(4) canada-plot.py`. The scripts run daily on my infotinks server and the generated plots are linked in each section. They all have access to `common.py` which has the common functions & classes.
 
-**(1) covid19plot.py produces the following graphs:**
+**(1) `covid19plot.py` produces the following graphs:**
 
 - Normal Axes plots of every country to `covid19-normal.html`: **http://www.infotinks.com/covid19/covid19-normal.html**
 
@@ -22,7 +22,7 @@ html-plots/US-plot-NORMAL.html
 html-plots/US-plot-LOG.html
 ```
 
-**(2) usa-ca/county-plot.py produces the following graphs and outputs:**
+**(2) `usa-ca/county-plot.py` produces the following graphs and outputs:**
 
 - Daily New Cases in all California countys plotted to `usa-ca/county-output.html` and `usa-ca/county-output-raw.html`
 - Relative per Population Plot: **http://www.infotinks.com/covid19/usa-ca/county-output.html**
@@ -32,7 +32,7 @@ html-plots/US-plot-LOG.html
 - The moving average only applies to Daily New Cases & Daily New Deaths plots. The Total Cases & Total Deaths plot do not have the moving average function applied to them
 - Also this script saves the raw csv data that was downloaded `usa-ca/CA-covid19cases_test.csv` and then saves the manipulated dataframe(csv) that is parsed by the graph() function to `usa-ca/CA-covid19cases_test-parsable.csv`
 
-**(3) usa-states/states-plot.py produces the similar graphs and outputs:**
+**(3) `usa-states/states-plot.py` produces the similar graphs and outputs:**
 
 - Daily New Cases in every US state is plotted to `usa-states/states-output.html` and `usa-states/states-output-raw.html`
 - Relative per Population Plot: **http://www.infotinks.com/covid19/usa-states/states-output.html**
@@ -41,6 +41,16 @@ html-plots/US-plot-LOG.html
 - `usa-states/states-output-raw.html` shows the raw values of the States of the USA with 7 day moving average
 - The moving average only applies to Daily New Cases & Daily New Deaths plots. The Total Cases & Total Deaths plot do not have the moving average function applied to them
 - Also this script saves the raw csv data that was downloaded `usa-states/us-states.csv` and then saves the manipulated dataframe(csv) that is parsed by the graph4area() function to `usa-states/us-states-parsable.csv`
+
+**(4) `canada/canada-plot.py` produces the similar graphs and outputs:**
+
+- Daily New Cases in every Canada Province & Territory is plotted to `canada/canada-output.html` and `canada/canada-output-raw.html`
+- Relative per Population Plot: **http://www.infotinks.com/covid19/canada/canada-output.html**
+- Normal Plot: **http://www.infotinks.com/covid19/canada/canada-output-raw.html**
+- `canada/canada-output.html` shows the values of the Provinces & Territories of Canada relative to the population per 100K and with 7 day moving average
+- `canada/canada-output-raw.html` shows the raw values of the Provinces & Territories of Canada with 7 day moving average
+- The moving average only applies to Daily New Cases & Daily New Deaths plots. The Total Cases & Total Deaths plot do not have the moving average function applied to them
+- Also this script saves the raw csv data that was downloaded `canada/canada.csv` and then saves the manipulated dataframe(csv) that is parsed by the graph4area() function to `canada/canada-parsable.csv`
 
 ## Wrapper run.sh Script & places.sh
 
@@ -82,9 +92,7 @@ Or install the modules listed in `requirements.txt` one by one using `pip instal
 
 ## Other Requirements
 
-* Internet access to https://pomber.github.io/covid19/timeseries.json 
-
-More info about the timeseries is available directly from the github address: https://github.com/pomber/covid19
+* Internet access to access the data sources
 
 ## Execute Program - Running The Program - Generating The Output Data
 
@@ -203,6 +211,15 @@ drwxr-xr-x 2 root root  4096 Apr 14  2020 img-plots             # old dir, not u
 -rw-r--r-- 1 root root 6169982 Apr  2 18:07 county-output.html       # html output of county-plot.py
 -rw-r--r-- 1 root root 6169982 Apr  2 18:07 county-output-raw.html   # html output of county-plot.py
 -rw-r--r-- 1 root root  649588 Feb 24 16:51 run-$DATE.out            # saved log output of county-plot.py created by ../run.sh
+
+~~~./canada:~~~
+-rw-r--r-- 1 root root  11032 Apr 22 01:58 canada-plot.py            # main code - plot canada provinces & territories
+-rw-r--r-- 1 root root 231660 Apr 22 01:44 canada-parsable.csv       # data source as fed to plotter graph4area()
+-rw-r--r-- 1 root root    289 Apr 21 22:24 canada-pop.csv            # canada population data
+-rw-r--r-- 1 root root 258025 Apr 22 01:44 canada.csv                # the data source
+-rw-r--r-- 1 root root 300000 Apr 22 18:07 canada-output.html        # html output of canada-plot.py
+-rw-r--r-- 1 root root 300000 Apr 22 18:07 canada-output-raw.html    # html output of canada-plot.py
+-rw-r--r-- 1 root root  64988 Apr 22 16:51 run-$DATE.out             # saved log output of county-plot.py created by ../run.sh
 ```
 
 ## Errors
@@ -229,7 +246,7 @@ Note some messages might just be warnings that can be ignored.
 This LZMA warning for me can be ignored - I only get on my linux server but not on MAC or Windows. Regardless of this warning, everything still works and generates proper plots.
 
 ```bash
-covid19plot# python3 [covid19plot.py|county-plot.py|states-plot.py]
+covid19plot# python3 [covid19plot.py|county-plot.py|states-plot.py|canada-plot.py]
 /usr/local/lib/python3.9/site-packages/pandas/compat/__init__.py:97: UserWarning:
 
 Could not import the lzma module. Your installed Python is incomplete. Attempting to use lzma compression will result in a RuntimeError.

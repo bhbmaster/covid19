@@ -8,6 +8,11 @@ import sys
 sys.path.append("..")    # so we can import common from previous directory
 from common import avgN, human_number, lastXdayslinearpredict, graph4area, PER, PER_TEXT, ndays, predictdays, COLOR_LIST, GetVersion, GetTheme  # local module but up one directory hence the sys path append ..
 
+### presettings ###
+
+pd.set_option("max_colwidth", None)
+pd.set_option("max_columns", None)
+
 # prework
 print("------------ initializing -----------")
 print()

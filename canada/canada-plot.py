@@ -8,6 +8,13 @@ import sys
 sys.path.append("..")    # so we can import common from previous directory
 from common import avgN, human_number, lastXdayslinearpredict, graph4area, PER, PER_TEXT, ndays, predictdays, COLOR_LIST, GetVersion, GetTheme  # local module but up one directory hence the sys path append ..
 
+###########################################################
+
+### presettings ###
+
+pd.set_option("max_colwidth", None)
+pd.set_option("max_columns", None)
+
 #### init #####
 
 print("------------ initializing -----------")
@@ -15,6 +22,7 @@ print()
 
 # dataset site: https://github.com/ccodwg/Covid19Canada
 # link: https://github.com/ccodwg/Covid19Canada/blob/master/timeseries_prov/active_timeseries_prov.csv
+# actually getting the date from raw github: https://raw.githubusercontent.com/ccodwg/Covid19Canada/master/timeseries_prov/active_timeseries_prov.csv
 
 # --- get data and manipulate it into correct form --- #
 
@@ -75,15 +83,19 @@ print()
 c.to_csv(covid_csv_rx) # save it locally
 c_original = c
 
+# renaming cols
+rename_dict = {"province": "area", "date_active": "date", "cumulative_cases": "cases", "cumulative_deaths": "deaths"}
+cr = c.rename(columns=rename_dict)
+
 # select whats important
-cols_to_select = [ "province", "date_active", "cumulative_cases", "cumulative_deaths" ]
-c0 = c[cols_to_select]
+cols_to_select = [ "area", "date", "cases", "deaths" ]
+c0 = cr[cols_to_select]
 
 # remove "Repatriated" province as we dont have population data for it, and its kind of a useless stat
-c1 = c0[c0["province"] != "Repatriated"]
+c1 = c0[c0["area"] != "Repatriated"]
 
 # find all unique provinces and compare with population (they must match)
-unique_provinces = list(set(c1["province"].values.tolist()))
+unique_provinces = list(set(c1["area"].values.tolist()))
 unique_provinces.sort()
 print(f"* covid data -> {unique_provinces=} , length {len(unique_provinces)}")
 cpops_prov_list_sorted = cpops_prov_list
@@ -91,11 +103,12 @@ cpops_prov_list_sorted.sort()
 print(f"* population -> {cpops_prov_list_sorted=} , length {len(cpops_prov_list_sorted)}")
 print(f"* Do we get the same areas from Covid Data and Population data: {cpops_prov_list_sorted==unique_provinces}")
 
-# fix dates from dd-mm-yyyy to yyyy-mm-dd - TODO: must fix - convert datetime64 to string
-c2 = c1
-c2.reset_index()
-c2['date_active'] = pd.to_datetime(c2['date_active']) # convert string to datetime (this looks like yyyy-mm-dd when printed but when accessed its 1618963200000000000 so we need to convert to yyyy-mm-dd string using line below)
-c2["date_active"].apply(lambda x: x.strftime('%Y:%m:%d')).astype(str) # this should do it?
+# fix dates from dd-mm-yyyy to yyyy-mm-dd -> extract col, convert to datetime64 then to string, insert new col
+extracted_date_active_col = c1['date']
+converted_to_datetime = pd.to_datetime(extracted_date_active_col) # convert string to datetime (this looks like yyyy-mm-dd when printed but when accessed its 1618963200000000000 so we need to convert to yyyy-mm-dd string using line below)
+correct_datetime_col = converted_to_datetime.apply(lambda x: x.strftime('%Y-%m-%d')) # this should do it?
+c2 = c1 # copy dataframe
+c2["date"] = correct_datetime_col # overwrite corrected date col into old date col
 print()
 print("REMOVED EXTRA COLS AND UNNEEDED 'Repatriated' VALUES & CONVERTED DATE TO yyyy-mm-dd:")
 print(f"{c2=}")
@@ -106,26 +119,32 @@ print(f"{c2=}")
 # Try using .loc[row_indexer,col_indexer] = value instead
 # See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
 
+# sort everything now that its correct datetime format (which is sortable)
+c2.sort_values(by=['date'])
+
 # adding column for delta cases and deaths
-c3 = pd.DataFrame(columns = ["date_active","province","cumulative_cases","new_cases","cumulative_deaths","new_deaths"])
+c3 = pd.DataFrame(columns = ["date","area","cases","new_cases","deaths","new_deaths"])
 for i, current_prov in enumerate(unique_provinces):
 	print("*", i, current_prov)
-	cpart = c2[c2["province"]==current_prov] # select one prov
-	cpart = cpart.set_index('date_active') # can index on date and it works too
-	cpart["new_cases"] = cpart["cumulative_cases"] - cpart["cumulative_cases"].shift(1)     # do the diff math for cases
-	cpart["new_deaths"] = cpart["cumulative_deaths"] - cpart["cumulative_deaths"].shift(1)  # do the diff math for deaths
+	cpart = c2[c2["area"]==current_prov] # select one prov
+	cpart = cpart.set_index('date') # can index on date and it works too
+	cpart["new_cases"] = cpart["cases"] - cpart["cases"].shift(1)     # do the diff math for cases
+	cpart["new_deaths"] = cpart["deaths"] - cpart["deaths"].shift(1)  # do the diff math for deaths
 	cpart = cpart.reset_index() # remove the index so it looks nice (optional as it gets appended)
 	# print(cpart.tail())
 	print(f"{c3.tail()}")
 	c3 = c3.append(cpart, ignore_index = True)
 
+# final covid dataframe
+cf = c3
+
+# print and save
 print()
 print(f"FINAL PARSABLE DATA (saved to {covid_csv_final}):")
 print(f"{c3=}")
 c3.to_csv(covid_csv_final)
 
-# final covid dataframe
-cf = c3
+###########################################################
 
 ##### plot #####
 
@@ -157,9 +176,9 @@ spacing=0.05
 fig = make_subplots(rows=2, cols=2, shared_xaxes=True, subplot_titles=subplot_titles, column_widths=[bigportion, smallportion],horizontal_spacing=spacing,vertical_spacing=spacing) # shared_xaxes to maintain zoom on all
 fig_1 = make_subplots(rows=2, cols=2, shared_xaxes=True, subplot_titles=subplot_titles_1, column_widths=[bigportion, smallportion],horizontal_spacing=spacing,vertical_spacing=spacing) # shared_xaxes to maintain zoom on all
 
-random_province = cpops_prov_list[1] # we picked next one from the top
+random_province = cpops_prov_list[0] # we picked next one from the top
 print(f"* {random_province=}")
-last_x = cf[cf["province"] == random_province]["date_active"].values.tolist()[-1]
+last_x = cf[cf["area"] == random_province]["date"].values.tolist()[-1]
 print(f"* {last_x=} of {random_province=}")
 print()
 
@@ -192,27 +211,27 @@ fig_1.update_layout(title=f"<b>US States Covid19 Stats (Normal / Raw Values)</b>
 # parse each area/province and generate trace in figure
 # * consider each area and trace it on plotly
 color_index = -1 # if originally set to None then we alternate colors for every trace. if we set to -1 here then we match color of prediction
-for state,pop in cpop_list:
+for prov,pop in cpop_list:
 	graph_options = { "fig": fig,
 		"fig_1": fig_1,
-		"area": state,
+		"area": prov,
 		"pop": pop,
 		"c": cf,
-		"nX": "date_active",
-		"nA": "province",
-		"nC": "cumulative_cases",
-		"nD": "cumulative_deaths",
+		"nX": "date",
+		"nA": "area",
+		"nC": "cases",
+		"nD": "deaths",
 		"nNC": "new_cases",
 		"nND": "new_deaths",
 		"visible_areas": visible_provinces,
 		"color_index": color_index }
-	fig, fig_1, color_index = graph4area(**graph_options)
+	fig, fig_1, color_index = graph4area(**graph_options) # fig is relative, fig_1 is raw values
 	print()
 
 # save html
 # * plotly generate html output generation
-fig.write_html(output_html,auto_open=False)
-fig_1.write_html(output_html_1,auto_open=False)
+fig.write_html(covid_html_normal,auto_open=False)
+fig_1.write_html(covid_html_raw,auto_open=False)
 
 # * html div generation (not used)
 div = plotly.offline.offline.plot(fig, show_link=False, include_plotlyjs=False, output_type='div')
