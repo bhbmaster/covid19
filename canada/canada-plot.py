@@ -91,12 +91,14 @@ cpops_prov_list_sorted.sort()
 print(f"* population -> {cpops_prov_list_sorted=} , length {len(cpops_prov_list_sorted)}")
 print(f"* Do we get the same areas from Covid Data and Population data: {cpops_prov_list_sorted==unique_provinces}")
 
-# fix dates from dd-mm-yyyy to yyyy-mm-dd
+# fix dates from dd-mm-yyyy to yyyy-mm-dd - TODO: must fix - convert datetime64 to string
 c2 = c1
 c2.reset_index()
-c2['date_active'] = pd.to_datetime(c2['date_active']) # convert string to datetime
+c2['date_active'] = pd.to_datetime(c2['date_active']) # convert string to datetime (this looks like yyyy-mm-dd when printed but when accessed its 1618963200000000000 so we need to convert to yyyy-mm-dd string using line below)
+c2["date_active"].apply(lambda x: x.strftime('%Y:%m:%d')).astype(str) # this should do it?
+print()
+print("REMOVED EXTRA COLS AND UNNEEDED 'Repatriated' VALUES & CONVERTED DATE TO yyyy-mm-dd:")
 print(f"{c2=}")
-# c2.date.apply(lambda x: x.strftime('%Y-%m-%d')).astype(int) # no need the line above does the trick
 
 # pd.to_datetime line gives us this warning:
 # /Users/kostia/Dropbox/src/covid19/canada/canada-plot.py:97: SettingWithCopyWarning:
@@ -114,6 +116,7 @@ for i, current_prov in enumerate(unique_provinces):
 	cpart["new_deaths"] = cpart["cumulative_deaths"] - cpart["cumulative_deaths"].shift(1)  # do the diff math for deaths
 	cpart = cpart.reset_index() # remove the index so it looks nice (optional as it gets appended)
 	# print(cpart.tail())
+	print(f"{c3.tail()}")
 	c3 = c3.append(cpart, ignore_index = True)
 
 print()
