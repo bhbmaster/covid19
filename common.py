@@ -6,8 +6,10 @@ from sklearn.linear_model import LinearRegression
 from scipy.optimize import curve_fit
 import plotly.graph_objects as go
 import plotly.express as px # for themes/templates
-from os import path
+import os
 import pandas as pd
+import plotly.offline.offline
+from plotly.subplots import make_subplots
 
 # used by covid19plot.py and usa-ca/country-plot.py
 
@@ -25,7 +27,7 @@ COLOR_LIST_LEN = len(COLOR_LIST) # we will use the mod of this later
 
 # get version from Version file
 def GetVersion(VersionFile):
-    return open(VersionFile,"r").readline().rstrip().lstrip() if path.exists(VersionFile) else "NA"
+    return open(VersionFile,"r").readline().rstrip().lstrip() if os.path.exists(VersionFile) else "NA"
 
 # get theme information from Theme file (theme file PLOTLY_THEME has instructions on how to fill it out & copy of it is below just in case)
 def GetTheme(ThemeFile):
@@ -48,9 +50,9 @@ def GetTheme(ThemeFile):
     # more info - in depth: https://plotly.com/python/reference/layout/
     """
     ThemeFileContents = open(ThemeFile,"r").readline().rstrip().lstrip().split(",")
-    Theme_Template = ThemeFileContents[0] if path.exists(ThemeFile) else "none"
-    Theme_Font = ThemeFileContents[1] if path.exists(ThemeFile) else "Arial"
-    Theme_FontSize = int(ThemeFileContents[2]) if path.exists(ThemeFile) else 12
+    Theme_Template = ThemeFileContents[0] if os.path.exists(ThemeFile) else "none"
+    Theme_Font = ThemeFileContents[1] if os.path.exists(ThemeFile) else "Arial"
+    Theme_FontSize = int(ThemeFileContents[2]) if os.path.exists(ThemeFile) else 12
     return Theme_Template, Theme_Font, Theme_FontSize
 
 
@@ -352,6 +354,129 @@ def graph4area(fig, fig_1, area, pop, c, nX, nA, nC, nD, nNC, nND, visible_areas
 
     # return the altered plotly figures which now have all of the plots & also we return the color_index as we keep track of it for next plot
     return fig, fig_1, color_index
+
+# covid_init_and_plot() - init plots and plot every area with graph4area and output
+# * covid_dataframe: the pandas dataframe which has all of the columns listed below in col_names
+# * area_and_pop_listoftups: list of all areas and their pop ex: [ ("BC",2000000) ("Ontario",3000000) ]
+# * filename_prefix: ex: "canada"
+# * main_title: ex "Canada Provinces & Territories"
+# * col_names: map the col names of covid_dataframe correctly to this. has to be this order. ex: [ "date", "area", "cases", "deaths", "new_cases", "new_deaths" ]
+# * visible_areas: list of areas that will be active when graph is first shown. ex: [ "BC", "Ontario" ]
+# * to_get_to_root: where VERSION & PLOTLY_THEME file are. can do "." or ".." or full path. most likely we just need to do ".." (which is default)
+def covid_init_and_plot(covid_dataframe,area_and_pop_listoftups,filename_prefix,main_title,col_names,visible_areas,to_get_to_root=".."):
+
+    # pre init vars (note the files are with respect to when imported so we a)
+    VersionFile = to_get_to_root+"/VERSION"  # Last Update YY.MM.DD
+    ThemeFile = to_get_to_root+"/PLOTLY_THEME" # contents are comma sep: theme,font family,font size
+    updatedate_dt = datetime.datetime.now()
+    updatedate_str = updatedate_dt.strftime("%Y-%m-%d %H:%M:%S")
+
+    # Get Version
+    Version = GetVersion(VersionFile)
+
+    # Get Theme
+    Theme_Template, Theme_Font, Theme_FontSize = GetTheme(ThemeFile)
+
+    # main plot
+
+    print()
+    print("------------ main work -----------")
+
+    print()
+    print(f"- plotting start (theme,font,size: {Theme_Template},{Theme_Font},{Theme_FontSize})")
+    print()
+
+    # init plots / both figures
+    # get titles
+    subplot_titles = (f"<b>Daily New Cases per {PER_TEXT} {ndays}-day Moving Average</b>",
+                      f"<b>Total Cases per {PER_TEXT}</b>",
+                      f"<b>Daily New Deaths per {PER_TEXT} {ndays}-day Moving Average</b>",
+                      f"<b>Total Deaths per {PER_TEXT}</b>")
+    subplot_titles_1 = (f"<b>Daily New Cases {ndays}-day Moving Average</b>",
+                      f"<b>Total Cases</b>",
+                      f"<b>Daily New Deaths {ndays}-day Moving Average</b>",
+                      f"<b>Total Deaths</b>")
+
+    # spacings for subplots
+    bigportion = 0.618 # ratio of screen space for left plots
+    smallportion = 1-bigportion
+    spacing=0.05
+
+    # init plotly figures and their subplots
+    # subplots
+    fig = make_subplots(rows=2, cols=2, shared_xaxes=True, subplot_titles=subplot_titles, column_widths=[bigportion, smallportion],horizontal_spacing=spacing,vertical_spacing=spacing) # shared_xaxes to maintain zoom on all
+    fig_1 = make_subplots(rows=2, cols=2, shared_xaxes=True, subplot_titles=subplot_titles_1, column_widths=[bigportion, smallportion],horizontal_spacing=spacing,vertical_spacing=spacing) # shared_xaxes to maintain zoom on 
+
+    # TODO - got to here
+
+    random_province = cpops_prov_list[0] # we picked next one from the top
+    print(f"* {random_province=}")
+    last_x = cf[cf["area"] == random_province]["date"].values.tolist()[-1]
+    print(f"* {last_x=} of {random_province=}")
+    print()
+
+    # plot options
+    # supported fonts: https://plotly.com/python/reference/layout/
+    plot_options={
+        "hoverlabel_font_size": Theme_FontSize,
+        "title_font_size": Theme_FontSize+2,
+        "legend_font_size": Theme_FontSize-1,
+        "legend_title_font_size": Theme_FontSize+1,
+        "font_size": Theme_FontSize,
+        "hoverlabel_font_family": Theme_Font,
+        "title_font_family": Theme_Font,
+        "legend_font_family": Theme_Font,
+        "font_family": Theme_Font,
+        "hoverlabel_namelength": -1,  # the full line instead of the default 15
+        "hovermode": 'x',
+        "template": Theme_Template,
+        "colorway": COLOR_LIST,
+        "legend_title_text": "<b>* Legend Format:</b><br><b>Area</b> (Pop) <b>NewC</b>|TotalC|<b>NewD</b>|TotalD<br><b>* Note1:</b> Latest values are presented<br><b>* Note2:</b> K=1,000 and M=1,000,000<br>----------------------------------------------"
+    }
+
+    # give the figures the options and titles we want
+    predictnote =  f", <b>Note:</b> Prediction uses {predictdays} day linear fit, appears as black-dashed line."
+
+    # init settings for both figures (settings for plots and subplots)
+    fig.update_layout(title=f"<b>Canada Provinces & Territories Covid19 Stats (Relative to Population Values)</b> (v{Version})<br><b>Last Data Point:</b> {last_x} , <b>Updated On:</b> {updatedate_str} {predictnote}",**plot_options) # main title & theme & hover options & font options unpacked
+    fig_1.update_layout(title=f"<b>Canada Provinces & Territories Covid19 Stats (Normal / Raw Values)</b> (v{Version})<br><b>Last Data Point:</b> {last_x} , <b>Updated On:</b> {updatedate_str}  {predictnote}",**plot_options) # main title & theme & hover options & font options unpacked
+
+    # parse each area/province and generate trace in figure
+    # * consider each area and trace it on plotly
+    color_index = -1 # if originally set to None then we alternate colors for every trace. if we set to -1 here then we match color of prediction
+    for prov,pop in cpop_list:
+        graph_options = { "fig": fig,
+            "fig_1": fig_1,
+            "area": prov,
+            "pop": pop,
+            "c": cf,
+            "nX": "date",
+            "nA": "area",
+            "nC": "cases",
+            "nD": "deaths",
+            "nNC": "new_cases",
+            "nND": "new_deaths",
+            "visible_areas": visible_provinces,
+            "color_index": color_index }
+        # fig, fig_1, color_index = graph4area(**graph_options,DEBUGAREA="BC") # fig is relative, fig_1 is raw values
+        fig, fig_1, color_index = graph4area(**graph_options) # fig is relative, fig_1 is raw values
+        print()
+
+    # save html
+    # * plotly generate html output generation
+    fig.write_html(covid_html_normal,auto_open=False)
+    fig_1.write_html(covid_html_raw,auto_open=False)
+
+    # * html div generation (not used)
+    div = plotly.offline.offline.plot(fig, show_link=False, include_plotlyjs=False, output_type='div')
+    div_1 = plotly.offline.offline.plot(fig_1, show_link=False, include_plotlyjs=False, output_type='div')
+    print(f"* size of type & div of relative plot - type(div)={type(div)} len(div)={len(div)}") # div not used
+    print(f"* size of type & div of normal plot - type(div_1)={type(div_1)} len(div)={len(div_1)}") # div not used
+    print()
+
+    # the end
+    print("- plotting end")
+
 
 ### classes ###
 

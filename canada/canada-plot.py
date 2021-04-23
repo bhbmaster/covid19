@@ -1,12 +1,12 @@
 import pandas as pd
 import plotly.graph_objects as go
-import plotly.offline.offline
-from plotly.subplots import make_subplots
+import plotly.offline.offline # TODO - can remove
+from plotly.subplots import make_subplots # TODO - can remove
 import numpy as np
 import datetime
 import sys
 sys.path.append("..")    # so we can import common from previous directory
-from common import avgN, human_number, lastXdayslinearpredict, graph4area, PER, PER_TEXT, ndays, predictdays, COLOR_LIST, GetVersion, GetTheme  # local module but up one directory hence the sys path append ..
+from common import avgN, human_number, lastXdayslinearpredict, graph4area, PER, PER_TEXT, ndays, predictdays, COLOR_LIST, GetVersion, GetTheme, covid_init_and_plot  # local module but up one directory hence the sys path append .. # TODO - remove unneeded an add covid_init_and_plot
 
 ###########################################################
 
@@ -32,21 +32,21 @@ population_file='canada-pop.csv' # local - got data from wikipedia https://en.wi
 # --- output names --- #
 covid_csv_rx='canada.csv'
 covid_csv_final='canada-parsable.csv'
-covid_html_normal='canada-output.html' # relative plots
-covid_html_raw='canada-output-raw.html'
+covid_html_normal='canada-output.html' # relative plots - TODO: can uncomment
+covid_html_raw='canada-output-raw.html' # TODO - can uncomment
 
 # --- other variables --- #
 
-VersionFile = "../VERSION"  # Last Update YY.MM.DD
+VersionFile = "../VERSION"  # Last Update YY.MM.DD # TODO - can remove
 SHOW_TOP_NUMBER = 6 # 12 # how many counties to have enabled when graph shows (others can be toggled on interactively)
-ThemeFile = "../PLOTLY_THEME" # contents are comma sep: theme,font family,font size
-updatedate_dt = datetime.datetime.now()
-updatedate_str = updatedate_dt.strftime("%Y-%m-%d %H:%M:%S")
+ThemeFile = "../PLOTLY_THEME" # contents are comma sep: theme,font family,font size # TODO - can remove
+updatedate_dt = datetime.datetime.now() # TODO - can remove
+updatedate_str = updatedate_dt.strftime("%Y-%m-%d %H:%M:%S") # TODO - can remove
 
-# Get Version
+# Get Version - TODO: can remove
 Version = GetVersion(VersionFile)
 
-# Get Theme
+# Get Theme - TODO: can remove
 Theme_Template, Theme_Font, Theme_FontSize = GetTheme(ThemeFile)
 
 ##### downloading/accessing and manipulating population dataframe #####
@@ -243,5 +243,8 @@ print()
 
 # the end
 print("- plotting end")
+
+# test:
+covid_init_and_plot(0,0,0,0,0,0)
 
 ##### END #####
