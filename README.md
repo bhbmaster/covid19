@@ -262,6 +262,10 @@ Additionally, this message can be ignored. This messages happens a few times whe
 * WARNING in lastXdayslinearpredict: array must not contain infs or NaNs
 ```
 
+## Data Sources
+
+The data sources are mentioned in 2 areas. So putting it here as well will be redundant. First you can catch the data sources on http://www.infotinks.com/coronavirus-dashboard-covid19-py/ and scrolling down to "Data Sources". Also the data sources are mentioned in the world plots HTML (log, http://www.infotinks.com/covid19/covid19-log.html, and normal, http://www.infotinks.com/covid19/covid19-normal.html, plots) at the end of the notes section (at the top of the HTML before the countries are plotted).
+
 ## To Do
 
 * added population info to country and create new plot html or add subplot with per 100K
