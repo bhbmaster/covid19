@@ -77,7 +77,7 @@ c_original=c
 # remove fips column
 cols_to_select = ["date","state","cases","deaths"]
 c0 = c[cols_to_select]
-c0.sort_values(by=['date'])
+c0s = c0.sort_values(by=['date'])
 
 # find all the unique states
 unique_states = list(set(c["state"].values.tolist()))  # take a list and convert to set. sets can only have one of the same value. then back to list so we can sort with below func.
@@ -95,7 +95,7 @@ print(f"* Do we get the same areas from Covid Data and Population data: {cpops_s
 c1 = pd.DataFrame(columns = ["date","state","cases","newcases","deaths","newdeaths"])
 for i,current_state in enumerate(unique_states):
 	# print("*", i,current_state)
-	cpart = c0[c0["state"]==current_state] # select one state
+	cpart = c0s[c0s["state"]==current_state] # select one state
 	cpart = cpart.set_index('date') # can index on date and it works too
 	cpart["newcases"] = cpart["cases"] - cpart["cases"].shift(1)     # do the diff math for cases
 	cpart["newdeaths"] = cpart["deaths"] - cpart["deaths"].shift(1)  # do the diff math for deaths
@@ -205,6 +205,7 @@ for state,pop in cpop_list:
 		"nND": "newdeaths",
 		"visible_areas": visible_states,
 		"color_index": color_index }
+	# fig, fig_1, color_index = graph4area(**graph_options,DEBUGAREA="Utah")
 	fig, fig_1, color_index = graph4area(**graph_options)
 	print()
 

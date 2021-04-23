@@ -7,6 +7,7 @@ from scipy.optimize import curve_fit
 import plotly.graph_objects as go
 import plotly.express as px # for themes/templates
 from os import path
+import pandas as pd
 
 # used by covid19plot.py and usa-ca/country-plot.py
 
@@ -157,7 +158,8 @@ def human_number(number):
 # nND = name of new deaths column <- bottom left graph (3rd)
 # "visible_area" = list of areas to show
 # "color_index" = if originally set to None then we alternate colors for every trace. if originally we set to -1 here then we match color of prediction
-def graph4area(fig, fig_1, area, pop, c, nX, nA, nC, nD, nNC, nND, visible_areas, color_index):
+# DEBUGAREA leave blank for no debug, otherwise set to name of area to list values -> debug shows dataframe just for area, and all of the plotted x and ys for new cases and total cases
+def graph4area(fig, fig_1, area, pop, c, nX, nA, nC, nD, nNC, nND, visible_areas, color_index, DEBUGAREA=""):
     # global color_index
     print(f"- {area} pop={pop} - last recorded values below:")
     visible1 = "legendonly" if not area in visible_areas else None
@@ -171,6 +173,17 @@ def graph4area(fig, fig_1, area, pop, c, nX, nA, nC, nD, nNC, nND, visible_areas
     FRONTSPACE="    "
     color_text=""
     # note where you see _1 thats for normal plot example: y is for relative original plot and y_1 is for new normal plot
+    # print the whole thing possibly if debug
+    if area == DEBUGAREA:
+        print(f"*** DEBUG printing data frame for {area} ***")
+        option_value_rows = pd.get_option('display.max_rows')
+        option_value_cols = pd.get_option('display.max_columns')
+        pd.set_option('display.max_rows', None)
+        pd.set_option('display.max_columns', None)
+        carea = c[c[nA] == area]
+        print(carea)
+        pd.set_option('display.max_rows', option_value_rows)
+        pd.set_option('display.max_columns', option_value_cols)
 
     #####################################################
     # -- newcountconfirmed per 100K (moving average) -- #
@@ -185,6 +198,14 @@ def graph4area(fig, fig_1, area, pop, c, nX, nA, nC, nD, nNC, nND, visible_areas
     y_1=orgy        # normal plot
     avgx,avgy=avgN(ndays,x.tolist(),y.tolist())          # relative plot average
     avgx_1,avgy_1=avgN(ndays,x.tolist(),y_1.tolist())    # normal plot average
+    if area == DEBUGAREA: # FOR DEBUG
+        print(f"*** DEBUG new cases {area=} ***")
+        print(f"* DEBUG - {area=} - X      len {len(x)} {x=}")
+        print(f"* DEBUG - {area=} - XAvg   len {len(avgx)} {avgx=}")
+        print(f"* DEBUG - {area=} - Raw    len {len(orgy)} {orgy=}")
+        print(f"* DEBUG - {area=} - Rel    len {len(y)} {y=}")
+        print(f"* DEBUG - {area=} - RawAvg len {len(avgy)} {avgy=}")
+        print(f"* DEBUG - {area=} - RelAvg len {len(avgy_1)} {avgy_1=}")
     # print(f"DEBUG {avgx=}")
     # print(f"DEBUG {avgy=}")
     # print(f"DEBUG {avgx_1=}")
@@ -284,6 +305,11 @@ def graph4area(fig, fig_1, area, pop, c, nX, nA, nC, nD, nNC, nND, visible_areas
     y_1=orgy
     LastC = y[-1]
     LastC_1 = y_1[-1]
+    if area == DEBUGAREA: # FOR DEBUG
+        print(f"*** DEBUG total cases {area=} ***")
+        print(f"* DEBUG - {area=} - X      len {len(x)} {x=}")
+        print(f"* DEBUG - {area=} - Raw    len {len(orgy)} {orgy=}")
+        print(f"* DEBUG - {area=} - Rel    len {len(y)} {y=}")
     print(f"{FRONTSPACE}TotalCases \t x = {x[-1]} \t org_y = {orgy[-1]:0.0f} \t y_per{PER_TEXT} = {y[-1]:0.2f}{color_text}") # print statement luckily shows both relative + normal
     legendtext=f"<b>{area}</b> pop={pop:,} TotC<sub>final</sub>=<b>{y[-1]:0.2f}</b>"        # this is not shown - but have it just in case
     legendtext_1=f"<b>{area}</b> pop={pop:,} TotC<sub>final</sub>=<b>{y_1[-1]:0.2f}</b>"    # this is not shown - but have it just in case

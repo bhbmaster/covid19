@@ -120,13 +120,13 @@ print(f"{c2=}")
 # See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
 
 # sort everything now that its correct datetime format (which is sortable)
-c2.sort_values(by=['date'])
+c2s = c2.sort_values(by=['date'])
 
 # adding column for delta cases and deaths
 c3 = pd.DataFrame(columns = ["date","area","cases","new_cases","deaths","new_deaths"])
 for i, current_prov in enumerate(unique_provinces):
 	print("*", i, current_prov)
-	cpart = c2[c2["area"]==current_prov] # select one prov
+	cpart = c2s[c2s["area"]==current_prov] # select one prov
 	cpart = cpart.set_index('date') # can index on date and it works too
 	cpart["new_cases"] = cpart["cases"] - cpart["cases"].shift(1)     # do the diff math for cases
 	cpart["new_deaths"] = cpart["deaths"] - cpart["deaths"].shift(1)  # do the diff math for deaths
@@ -135,14 +135,14 @@ for i, current_prov in enumerate(unique_provinces):
 	print(f"{c3.tail()}")
 	c3 = c3.append(cpart, ignore_index = True)
 
-# final covid dataframe
-cf = c3
-
 # print and save
 print()
 print(f"FINAL PARSABLE DATA (saved to {covid_csv_final}):")
 print(f"{c3=}")
 c3.to_csv(covid_csv_final)
+
+# copy to final dataframe cf
+cf = c3
 
 ###########################################################
 
@@ -225,7 +225,7 @@ for prov,pop in cpop_list:
 		"nND": "new_deaths",
 		"visible_areas": visible_provinces,
 		"color_index": color_index }
-	fig, fig_1, color_index = graph4area(**graph_options) # fig is relative, fig_1 is raw values
+	fig, fig_1, color_index = graph4area(**graph_options,DEBUGAREA="BC") # fig is relative, fig_1 is raw values
 	print()
 
 # save html
