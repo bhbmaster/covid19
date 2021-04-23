@@ -105,7 +105,7 @@ print(f"* Do we get the same areas from Covid Data and Population data: {cpops_p
 
 # fix dates from dd-mm-yyyy to yyyy-mm-dd -> extract col, convert to datetime64 then to string, insert new col
 extracted_date_active_col = c1['date']
-converted_to_datetime = pd.to_datetime(extracted_date_active_col) # convert string to datetime (this looks like yyyy-mm-dd when printed but when accessed its 1618963200000000000 so we need to convert to yyyy-mm-dd string using line below)
+converted_to_datetime = pd.to_datetime(extracted_date_active_col, dayfirst=True) # convert date string string to datetime object. it guesses the date format, so first it might pick mm-dd-yyyy even though its dd-mm-yyyy. we tell it that its canadien format with dayfirst=True. another way is with format='%d-%m-%Y'. this looks like yyyy-mm-dd when printed but when accessed its 1618963200000000000 so we need to convert to yyyy-mm-dd string using line below.
 correct_datetime_col = converted_to_datetime.apply(lambda x: x.strftime('%Y-%m-%d')) # this should do it?
 c2 = c1 # copy dataframe
 c2["date"] = correct_datetime_col # overwrite corrected date col into old date col
@@ -225,7 +225,8 @@ for prov,pop in cpop_list:
 		"nND": "new_deaths",
 		"visible_areas": visible_provinces,
 		"color_index": color_index }
-	fig, fig_1, color_index = graph4area(**graph_options,DEBUGAREA="BC") # fig is relative, fig_1 is raw values
+	# fig, fig_1, color_index = graph4area(**graph_options,DEBUGAREA="BC") # fig is relative, fig_1 is raw values
+	fig, fig_1, color_index = graph4area(**graph_options) # fig is relative, fig_1 is raw values
 	print()
 
 # save html
