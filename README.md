@@ -1,7 +1,21 @@
 # covid19plot.py
 
-The public facing version of this site sits on my personal blog at **infotinks.com**: **http://www.infotinks.com/coronavirus-dashboard-covid19-py/**.
-From there you can access all of the output files that are mentioned below.
+The public facing version of this project resides on my personal blog, **infotinks.com**:
+
+**http://www.infotinks.com/coronavirus-dashboard-covid19-py/**.
+
+From there all of the plot outputs can be accessed + some other interesting information.
+
+Additionally, the data sources are mentioned in the "Data Sources section" there.
+
+The rest of this Readme covers the following:
+* The different outputs that are provided by the different scripts. 
+* Requirements to run the scripts.
+* How to run the scripts
+* Wrapper scripts that are helpful in launching all of the scripts at once. 
+* Some notes on running this from VirtualEnv.
+* Some notes on all of the files seen in each directory and what they are for.
+* Then some final words on some errors and ignorable warnings that might be encoutered.
 
 ## Outputs
 
@@ -52,6 +66,66 @@ html-plots/US-plot-LOG.html
 - The moving average only applies to Daily New Cases & Daily New Deaths plots. The Total Cases & Total Deaths plot do not have the moving average function applied to them
 - Also this script saves the raw csv data that was downloaded `canada/canada.csv` and then saves the manipulated dataframe(csv) that is parsed by the graph4area() function to `canada/canada-parsable.csv`
 
+## Requirements
+
+* View requirements.txt to see the required python modules
+
+* This only works with Python 3.9. Why? The new `f"{var=}"` format is used in some of the prints
+
+* Internet access (see Other Requirements below)
+
+## Required Python version & how to launch the scripts
+
+### Which python executable to use
+
+As noted we use Python3.9 or newer. Launching the scripts might be different on each system. Therefore minor editing of `run.sh` or the example commands might be necessary for them to work.
+
+Assuming you have python 3.9 installed correct, launching the scripts should work using one of these methods:
+
+```bash
+python script.py
+python3 script.py
+python3.9 script.py
+```
+
+Tip: You can find out which one will work before hand by running `python -V`, `python3 -V` or `python3.9 -V`. Which ever returns python 3.9 or greated is the version you shall use on that system. Similar care must be taken when installing the required modules.
+
+### Current working directory
+
+Additionally, care must be taken of the current working directory. This is because all of the required files that the script might need are referenced from their directory. Additionally, all of the outputs go into the directory where the script lies.
+
+In otherwords, make sure you `cd` into the directory where each script lies.
+
+Example 1: For the world plots which lie on the root directory of the project, cd to the root directory of the project.
+```bash
+cd /.../covid19/
+python covid19plot.py
+```
+
+Example 2: For the USA state plots which lie in the usa-state directory in the project, cd to that directory and then run the pthon script. Since this is a subdirectory its generally good to follow up with cd .. so we return to the root. 
+
+```bash
+cd /.../covid19/usa-states/
+python states-plot.py
+cd ..
+```
+
+## Required Python Module
+
+The required python modules can be installed using pip.
+
+* Install all modules like so:
+
+```bash
+pip install -r requirements.txt
+```
+
+Or install the modules listed in `requirements.txt` one by one using `pip install <module>`
+
+## Other Requirements
+
+* Internet access to access the data sources
+
 ## Wrapper run.sh Script & places.sh
 
 The wrapper script `run.sh` execute `covid19plot.py` which generates both of the html files to same directory - while also logging any terminal output to a log file, `run-$DATE.out` (this output is used by a log parser tool I call places.sh). It also runs `usa-ca/county-plot.py` which generates `usa-ca/county-output.html` and redirects its logout to `usa-ca/run-$DATE.out`
@@ -72,41 +146,22 @@ From a MAC run `run-simple-open-mac.sh` which runs the same two scripts and then
 
 *Sidenote:* These scripts call the default python program using python. So if that calls `python2.7` for you, this script will fail. To fix that, you will need to edit the script to call `python3.x`, such as `python3.9`, instead just `python`.
 
-## Requirements
-
-* View requirements.txt to see the required python modules
-
-* Tested with Python 3.7 and 3.9 - but probably works with Python 3.6 and higher (as we use f strings introduced)
-
-* Internet access (see Other Requirements below)
-
-## Required Python Module
-
-The required python modules can be installed using pip.
-
-* Install all modules like so:
-
-        pip install -r requirements.txt
-
-Or install the modules listed in `requirements.txt` one by one using `pip install <module>`
-
-## Other Requirements
-
-* Internet access to access the data sources
-
 ## Execute Program - Running The Program - Generating The Output Data
 
-Just run `covid19plot.py` with `python3.7` or newer, that will gather data, parse it and generate directory html_plots/ and dump 2 graphs for each country (normal y axes and log y axes) in dir. As Total worldwide cases/recovery/deaths is not provided in the json time series, the script manually calculates from the data for each day by summing through all of the countries. It will provide both plots for TOTAL in the same dir as well. It then creates covid19-log.html and covid19-normal.html in the root directory for all of the countries, TOTAL at the top, then sorted by number of cases.
+Just run `covid19plot.py` with `python3.9` or newer, that will gather data, parse it and generate directory html_plots/ and dump 2 graphs for each country (normal y axes and log y axes) in dir. As Total worldwide cases/recovery/deaths is not provided in the json time series, the script manually calculates from the data for each day by summing through all of the countries. It will provide both plots for TOTAL in the same dir as well. It then creates covid19-log.html and covid19-normal.html in the root directory for all of the countries, TOTAL at the top, then sorted by number of cases.
 
 If you want to run this on a schedule, I recommend running it after midnight each day as the timeseries data updates once a day. On my infotinks site it runs 3 times a day 00:05, 06:05, 12:05, 18:05 using crontab. It executes `run.sh` which runs `covid19plot.sh` and saves the output to `run-$DATE.out` and then it run `places.sh` (to generate the extra places document). All of this generates the output files `covid19-log.html`, `covid19-normal.html` and `places.html` which are linked to from my infotinks site.
 
-To run (the python program hooks to python 3.7):
+Run each script like so (python = python3.9 or newer):
 
 ```bash
-python covid19plot.py
+python covid19plot.py                           # main world plotted
+cd canada; python canada-plot.py; cd ..         # plot canada provinces
+cd usa-states; python states-plots.py; cd ..    # plot usa states
+cd usa-ca; python county-plot.py; cd ..         # plot california counties
 ```
 
-Or:
+Or run with python wrapper script:
 
 ```bash
 ./run.sh &
@@ -129,9 +184,10 @@ Then run the script using the above execute instructions.
 To run `covid19ploy.py` and `usa-ca/county-plot.py` and `usa-states/us-states.csv` please kick off any of the following
 
 ```
-python3 covid19ploy.py
-python3 usa-ca/county-plot.py
-python3 usa-states/us-states.csv
+python3 covid19plot.py
+cd canada; python3 canada-plot.py; cd ..
+cd usa-states; python3 states-plots.py; cd ..
+cd usa-ca; python3 county-plot.py; cd ..
 ```
 
 or:
