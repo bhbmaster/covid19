@@ -1,0 +1,293 @@
+/Users/kostia/Dropbox/src/covid19/canada/canada-plot.py:111: SettingWithCopyWarning:
+
+
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+
+------------ initializing -----------
+
+PARSING population:
+* cpop_list=[('Alberta', 4436258), ('BC', 5153039), ('Manitoba', 1380935), ('NL', 520438), ('NWT', 45136), ('New Brunswick', 782078), ('Nova Scotia', 979449), ('Nunavut', 39407), ('Ontario', 14755211), ('PEI', 159819), ('Quebec', 8575944), ('Saskatchewan', 1178832), ('Yukon', 42192)]
+* visible_provinces=['Ontario', 'Quebec', 'BC', 'Alberta', 'Manitoba', 'Saskatchewan']
+
+RECEIVED DATA (saved to canada.csv):
+
+c.describe()=       cumulative_cases  cumulative_recovered  cumulative_deaths  \
+count       6356.000000           6356.000000        6356.000000   
+mean       22887.867369          19793.107615         742.518722   
+std        60945.135872          54929.513525        1956.591554   
+min            0.000000              0.000000           0.000000   
+25%           13.000000             13.000000           0.000000   
+50%          280.500000            259.000000           3.000000   
+75%         7829.250000           5206.000000         177.000000   
+max       440663.000000         383014.000000       10845.000000   
+
+       active_cases  active_cases_change  
+count   6356.000000          6356.000000  
+mean    2352.241032            14.889553  
+std     5794.698352           391.555580  
+min       -1.000000        -23546.000000  
+25%        0.000000             0.000000  
+50%       13.000000             0.000000  
+75%     1252.000000             2.000000  
+max    50359.000000          7542.000000  
+
+c.tail()=     province date_active  cumulative_cases  cumulative_recovered  \
+6351    Yukon  18-04-2021                76                    73   
+6352    Yukon  19-04-2021                77                    73   
+6353    Yukon  20-04-2021                77                    74   
+6354    Yukon  21-04-2021                78                    75   
+6355    Yukon  22-04-2021                78                    75   
+
+      cumulative_deaths  active_cases  active_cases_change  
+6351                  1             2                    0  
+6352                  1             3                    1  
+6353                  1             2                   -1  
+6354                  1             2                    0  
+6355                  1             2                    0  
+
+c.columns=Index(['province', 'date_active', 'cumulative_cases', 'cumulative_recovered',
+       'cumulative_deaths', 'active_cases', 'active_cases_change'],
+      dtype='object')
+
+* covid data -> unique_provinces=['Alberta', 'BC', 'Manitoba', 'NL', 'NWT', 'New Brunswick', 'Nova Scotia', 'Nunavut', 'Ontario', 'PEI', 'Quebec', 'Saskatchewan', 'Yukon'] , length 13
+* population -> cpops_prov_list_sorted=['Alberta', 'BC', 'Manitoba', 'NL', 'NWT', 'New Brunswick', 'Nova Scotia', 'Nunavut', 'Ontario', 'PEI', 'Quebec', 'Saskatchewan', 'Yukon'] , length 13
+* Do we get the same areas from Covid Data and Population data: True
+
+REMOVED EXTRA COLS AND UNNEEDED 'Repatriated' VALUES & CONVERTED DATE TO yyyy-mm-dd:
+c2=         area        date  cases  deaths
+0     Alberta  2020-01-25      0       0
+1     Alberta  2020-01-26      0       0
+2     Alberta  2020-01-27      0       0
+3     Alberta  2020-01-28      0       0
+4     Alberta  2020-01-29      0       0
+...       ...         ...    ...     ...
+6351    Yukon  2021-04-18     76       1
+6352    Yukon  2021-04-19     77       1
+6353    Yukon  2021-04-20     77       1
+6354    Yukon  2021-04-21     78       1
+6355    Yukon  2021-04-22     78       1
+
+[5902 rows x 4 columns]
+* 0 Alberta
+Empty DataFrame
+Columns: [date, area, cases, new_cases, deaths, new_deaths]
+Index: []
+* 1 BC
+           date     area   cases  new_cases deaths  new_deaths
+449  2021-04-18  Alberta  170793     1514.0   2040         3.0
+450  2021-04-19  Alberta  172184     1391.0   2043         3.0
+451  2021-04-20  Alberta  173531     1347.0   2048         5.0
+452  2021-04-21  Alberta  173531        0.0   2048         0.0
+453  2021-04-22  Alberta  177087     3556.0   2054         6.0
+* 2 Manitoba
+           date area   cases  new_cases deaths  new_deaths
+903  2021-04-18   BC  117080        0.0   1530         0.0
+904  2021-04-19   BC  120040     2960.0   1538         8.0
+905  2021-04-20   BC  120889      849.0   1539         1.0
+906  2021-04-21   BC  121751      862.0   1546         7.0
+907  2021-04-22   BC  122757     1006.0   1550         4.0
+* 3 NL
+            date      area  cases  new_cases deaths  new_deaths
+1357  2021-04-18  Manitoba  36159      170.0    959         1.0
+1358  2021-04-19  Manitoba  36259      100.0    959         0.0
+1359  2021-04-20  Manitoba  36468      209.0    960         1.0
+1360  2021-04-21  Manitoba  36629      161.0    961         1.0
+1361  2021-04-22  Manitoba  36890      261.0    962         1.0
+* 4 NWT
+            date area cases  new_cases deaths  new_deaths
+1811  2021-04-18   NL  1043        1.0      6         0.0
+1812  2021-04-19   NL  1046        3.0      6         0.0
+1813  2021-04-20   NL  1048        2.0      6         0.0
+1814  2021-04-21   NL  1049        1.0      6         0.0
+1815  2021-04-22   NL  1052        3.0      6         0.0
+* 5 New Brunswick
+            date area cases  new_cases deaths  new_deaths
+2265  2021-04-18  NWT    49        0.0      0         0.0
+2266  2021-04-19  NWT    49        0.0      0         0.0
+2267  2021-04-20  NWT    49        0.0      0         0.0
+2268  2021-04-21  NWT    51        2.0      0         0.0
+2269  2021-04-22  NWT    51        0.0      0         0.0
+* 6 Nova Scotia
+            date           area cases  new_cases deaths  new_deaths
+2719  2021-04-18  New Brunswick  1788       10.0     33         0.0
+2720  2021-04-19  New Brunswick  1797        9.0     33         0.0
+2721  2021-04-20  New Brunswick  1797        0.0     33         0.0
+2722  2021-04-21  New Brunswick  1804        7.0     34         1.0
+2723  2021-04-22  New Brunswick  1823       19.0     34         0.0
+* 7 Nunavut
+            date         area cases  new_cases deaths  new_deaths
+3173  2021-04-18  Nova Scotia  1807        7.0     67         0.0
+3174  2021-04-19  Nova Scotia  1822       15.0     67         0.0
+3175  2021-04-20  Nova Scotia  1831        9.0     67         0.0
+3176  2021-04-21  Nova Scotia  1856       25.0     67         0.0
+3177  2021-04-22  Nova Scotia  1894       38.0     67         0.0
+* 8 Ontario
+            date     area cases  new_cases deaths  new_deaths
+3627  2021-04-18  Nunavut   417        3.0      5         0.0
+3628  2021-04-19  Nunavut   423        6.0      5         0.0
+3629  2021-04-20  Nunavut   428        5.0      5         0.0
+3630  2021-04-21  Nunavut   429        1.0      5         0.0
+3631  2021-04-22  Nunavut   432        3.0      5         0.0
+* 9 PEI
+            date     area   cases  new_cases deaths  new_deaths
+4081  2021-04-18  Ontario  424014     4303.0   7703        23.0
+4082  2021-04-19  Ontario  428833     4819.0   7719        16.0
+4083  2021-04-20  Ontario  432318     3485.0   7746        27.0
+4084  2021-04-21  Ontario  436283     3965.0   7794        48.0
+4085  2021-04-22  Ontario  440663     4380.0   7817        23.0
+* 10 Quebec
+            date area cases  new_cases deaths  new_deaths
+4535  2021-04-18  PEI   170        3.0      0         0.0
+4536  2021-04-19  PEI   173        3.0      0         0.0
+4537  2021-04-20  PEI   174        1.0      0         0.0
+4538  2021-04-21  PEI   174        0.0      0         0.0
+4539  2021-04-22  PEI   175        1.0      0         0.0
+* 11 Saskatchewan
+            date    area   cases  new_cases deaths  new_deaths
+4989  2021-04-18  Quebec  336952     1344.0  10802         9.0
+4990  2021-04-19  Quebec  338044     1092.0  10816        14.0
+4991  2021-04-20  Quebec  339180     1136.0  10833        17.0
+4992  2021-04-21  Quebec  340397     1217.0  10838         5.0
+4993  2021-04-22  Quebec  341645     1248.0  10845         7.0
+* 12 Yukon
+            date          area  cases  new_cases deaths  new_deaths
+5443  2021-04-18  Saskatchewan  38158      289.0    465         1.0
+5444  2021-04-19  Saskatchewan  38400      242.0    465         0.0
+5445  2021-04-20  Saskatchewan  38651      251.0    465         0.0
+5446  2021-04-21  Saskatchewan  38883      232.0    469         4.0
+5447  2021-04-22  Saskatchewan  39137      254.0    470         1.0
+
+FINAL PARSABLE DATA (saved to canada-parsable.csv):
+c3=            date     area cases  new_cases deaths  new_deaths
+0     2020-01-25  Alberta     0        NaN      0         NaN
+1     2020-01-26  Alberta     0        0.0      0         0.0
+2     2020-01-27  Alberta     0        0.0      0         0.0
+3     2020-01-28  Alberta     0        0.0      0         0.0
+4     2020-01-29  Alberta     0        0.0      0         0.0
+...          ...      ...   ...        ...    ...         ...
+5897  2021-04-18    Yukon    76        0.0      1         0.0
+5898  2021-04-19    Yukon    77        1.0      1         0.0
+5899  2021-04-20    Yukon    77        0.0      1         0.0
+5900  2021-04-21    Yukon    78        1.0      1         0.0
+5901  2021-04-22    Yukon    78        0.0      1         0.0
+
+[5902 rows x 6 columns]
+
+------------ main work -----------
+
+- plotting start (theme,font,size: seaborn,Balto,14)
+
+* random_province='Alberta'
+* last_x='2021-04-22' of random_province='Alberta'
+
+- Alberta pop=4436258 - last recorded values below:
+    NewCases   	 x = 2021-04-22 	 org_y = 3556 	 7day_avg_y_per100K = 35.13	color=0
+    - predicted cross (relative)   	 y = 0.8682x+9.72 	 r^2=0.7722 	 daycross='2021-03-12'	color=1
+    - predicted cross (normal)   	 y = 38.5138x+431.41 	 r^2=0.7722 	 daycross='2021-03-12'	color=1
+    NewDeaths      	 x = 2021-04-22 	 org_y = 6 	 7day_avg_y_per100K = 0.06	color=2
+    TotalCases 	 x = 2021-04-22 	 org_y = 177087 	 y_per100K = 3991.81	color=3
+    TotalDeaths    	 x = 2021-04-22 	 org_y = 2054 	 y_per100K = 46.30	color=4
+
+- BC pop=5153039 - last recorded values below:
+    NewCases   	 x = 2021-04-22 	 org_y = 1006 	 7day_avg_y_per100K = 18.52	color=5
+    - predicted cross (relative)   	 y = 0.3075x+13.71 	 r^2=0.6662 	 daycross='2021-02-07'	color=6
+    - predicted cross (normal)   	 y = 15.8468x+706.70 	 r^2=0.6662 	 daycross='2021-02-07'	color=6
+    NewDeaths      	 x = 2021-04-22 	 org_y = 4 	 7day_avg_y_per100K = 0.07	color=7
+    TotalCases 	 x = 2021-04-22 	 org_y = 122757 	 y_per100K = 2382.23	color=8
+    TotalDeaths    	 x = 2021-04-22 	 org_y = 1550 	 y_per100K = 30.08	color=9
+
+- Manitoba pop=1380935 - last recorded values below:
+    NewCases   	 x = 2021-04-22 	 org_y = 261 	 7day_avg_y_per100K = 12.43	color=10
+    - predicted cross (relative)   	 y = 0.1842x+4.51 	 r^2=0.6364 	 daycross='2021-02-27'	color=11
+    - predicted cross (normal)   	 y = 2.5436x+62.27 	 r^2=0.6364 	 daycross='2021-02-27'	color=11
+    NewDeaths      	 x = 2021-04-22 	 org_y = 1 	 7day_avg_y_per100K = 0.07	color=12
+    TotalCases 	 x = 2021-04-22 	 org_y = 36890 	 y_per100K = 2671.38	color=13
+    TotalDeaths    	 x = 2021-04-22 	 org_y = 962 	 y_per100K = 69.66	color=14
+
+- NL pop=520438 - last recorded values below:
+    NewCases   	 x = 2021-04-22 	 org_y = 3 	 7day_avg_y_per100K = 0.44	color=15
+    - predicted cross (relative)   	 y = 0.0153x+-0.03 	 r^2=0.8322 	 daycross='2021-03-25'	color=16
+    - predicted cross (normal)   	 y = 0.0794x+-0.17 	 r^2=0.8322 	 daycross='2021-03-25'	color=16
+    NewDeaths      	 x = 2021-04-22 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=17
+    TotalCases 	 x = 2021-04-22 	 org_y = 1052 	 y_per100K = 202.14	color=18
+    TotalDeaths    	 x = 2021-04-22 	 org_y = 6 	 y_per100K = 1.15	color=19
+
+- NWT pop=45136 - last recorded values below:
+    NewCases   	 x = 2021-04-22 	 org_y = 0 	 7day_avg_y_per100K = 0.63	color=20
+    - predicted cross (relative)   	 y = 0.0090x+0.04 	 r^2=0.0777 	 daycross='2021-03-19'	color=21
+    - predicted cross (normal)   	 y = 0.0041x+0.02 	 r^2=0.0777 	 daycross='2021-03-19'	color=21
+    NewDeaths      	 x = 2021-04-22 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=22
+    TotalCases 	 x = 2021-04-22 	 org_y = 51 	 y_per100K = 112.99	color=23
+    TotalDeaths    	 x = 2021-04-22 	 org_y = 0 	 y_per100K = 0.00	color=24
+
+- New Brunswick pop=782078 - last recorded values below:
+    NewCases   	 x = 2021-04-22 	 org_y = 19 	 7day_avg_y_per100K = 1.19	color=25
+    - predicted cross (relative)   	 y = -0.0022x+1.30 	 r^2=0.0056 	 daycross='2022-11-08'	color=26
+    - predicted cross (normal)   	 y = -0.0171x+10.20 	 r^2=0.0056 	 daycross='2022-11-08'	color=26
+    NewDeaths      	 x = 2021-04-22 	 org_y = 0 	 7day_avg_y_per100K = 0.02	color=27
+    TotalCases 	 x = 2021-04-22 	 org_y = 1823 	 y_per100K = 233.10	color=28
+    TotalDeaths    	 x = 2021-04-22 	 org_y = 34 	 y_per100K = 4.35	color=29
+
+- Nova Scotia pop=979449 - last recorded values below:
+    NewCases   	 x = 2021-04-22 	 org_y = 38 	 7day_avg_y_per100K = 1.58	color=30
+    - predicted cross (relative)   	 y = 0.0148x+0.24 	 r^2=0.6523 	 daycross='2021-03-07'	color=31
+    - predicted cross (normal)   	 y = 0.1447x+2.34 	 r^2=0.6523 	 daycross='2021-03-07'	color=31
+    NewDeaths      	 x = 2021-04-22 	 org_y = 0 	 7day_avg_y_per100K = 0.01	color=32
+    TotalCases 	 x = 2021-04-22 	 org_y = 1894 	 y_per100K = 193.37	color=33
+    TotalDeaths    	 x = 2021-04-22 	 org_y = 67 	 y_per100K = 6.84	color=34
+
+- Nunavut pop=39407 - last recorded values below:
+    NewCases   	 x = 2021-04-22 	 org_y = 3 	 7day_avg_y_per100K = 13.05	color=35
+    - predicted cross (relative)   	 y = 0.2740x+-2.02 	 r^2=0.3876 	 daycross='2021-03-30'	color=36
+    - predicted cross (normal)   	 y = 0.1080x+-0.79 	 r^2=0.3876 	 daycross='2021-03-30'	color=36
+    NewDeaths      	 x = 2021-04-22 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=37
+    TotalCases 	 x = 2021-04-22 	 org_y = 432 	 y_per100K = 1096.25	color=38
+    TotalDeaths    	 x = 2021-04-22 	 org_y = 5 	 y_per100K = 12.69	color=39
+
+- Ontario pop=14755211 - last recorded values below:
+    NewCases   	 x = 2021-04-22 	 org_y = 4380 	 7day_avg_y_per100K = 28.53	color=40
+    - predicted cross (relative)   	 y = 0.7356x+10.38 	 r^2=0.9732 	 daycross='2021-03-09'	color=41
+    - predicted cross (normal)   	 y = 108.5444x+1532.02 	 r^2=0.9732 	 daycross='2021-03-09'	color=41
+    NewDeaths      	 x = 2021-04-22 	 org_y = 23 	 7day_avg_y_per100K = 0.19	color=42
+    TotalCases 	 x = 2021-04-22 	 org_y = 440663 	 y_per100K = 2986.49	color=43
+    TotalDeaths    	 x = 2021-04-22 	 org_y = 7817 	 y_per100K = 52.98	color=44
+
+- PEI pop=159819 - last recorded values below:
+    NewCases   	 x = 2021-04-22 	 org_y = 1 	 7day_avg_y_per100K = 0.72	color=45
+    - predicted cross (relative)   	 y = -0.0043x+0.56 	 r^2=0.0270 	 daycross='2021-07-29'	color=46
+    - predicted cross (normal)   	 y = -0.0069x+0.89 	 r^2=0.0270 	 daycross='2021-07-29'	color=46
+    NewDeaths      	 x = 2021-04-22 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=47
+    TotalCases 	 x = 2021-04-22 	 org_y = 175 	 y_per100K = 109.50	color=48
+    TotalDeaths    	 x = 2021-04-22 	 org_y = 0 	 y_per100K = 0.00	color=49
+
+- Quebec pop=8575944 - last recorded values below:
+    NewCases   	 x = 2021-04-22 	 org_y = 1248 	 7day_avg_y_per100K = 15.16	color=50
+    - predicted cross (relative)   	 y = 0.3709x+8.53 	 r^2=0.8707 	 daycross='2021-03-01'	color=51
+    - predicted cross (normal)   	 y = 31.8043x+731.46 	 r^2=0.8707 	 daycross='2021-03-01'	color=51
+    NewDeaths      	 x = 2021-04-22 	 org_y = 7 	 7day_avg_y_per100K = 0.11	color=52
+    TotalCases 	 x = 2021-04-22 	 org_y = 341645 	 y_per100K = 3983.76	color=53
+    TotalDeaths    	 x = 2021-04-22 	 org_y = 10845 	 y_per100K = 126.46	color=54
+
+- Saskatchewan pop=1178832 - last recorded values below:
+    NewCases   	 x = 2021-04-22 	 org_y = 254 	 7day_avg_y_per100K = 21.12	color=55
+    - predicted cross (relative)   	 y = 0.2975x+14.97 	 r^2=0.8797 	 daycross='2021-02-01'	color=56
+    - predicted cross (normal)   	 y = 3.5074x+176.42 	 r^2=0.8797 	 daycross='2021-02-01'	color=56
+    NewDeaths      	 x = 2021-04-22 	 org_y = 1 	 7day_avg_y_per100K = 0.12	color=57
+    TotalCases 	 x = 2021-04-22 	 org_y = 39137 	 y_per100K = 3319.98	color=58
+    TotalDeaths    	 x = 2021-04-22 	 org_y = 470 	 y_per100K = 39.87	color=59
+
+- Yukon pop=42192 - last recorded values below:
+    NewCases   	 x = 2021-04-22 	 org_y = 0 	 7day_avg_y_per100K = 0.68	color=60
+    - predicted cross (relative)   	 y = 0.0146x+0.15 	 r^2=0.2639 	 daycross='2021-03-13'	color=61
+    - predicted cross (normal)   	 y = 0.0062x+0.06 	 r^2=0.2639 	 daycross='2021-03-13'	color=61
+    NewDeaths      	 x = 2021-04-22 	 org_y = 0 	 7day_avg_y_per100K = 0.00	color=62
+    TotalCases 	 x = 2021-04-22 	 org_y = 78 	 y_per100K = 184.87	color=63
+    TotalDeaths    	 x = 2021-04-22 	 org_y = 1 	 y_per100K = 2.37	color=64
+
+* size of type & div of relative plot - type(div)=<class 'str'> len(div)=735029
+* size of type & div of normal plot - type(div_1)=<class 'str'> len(div)=586017
+
+- plotting end
