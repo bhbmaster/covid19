@@ -7,14 +7,14 @@ from common import covid_init_and_plot  # local module but up one directory henc
 
 ###########################################################
 
-### presettings ###
+### presetting pandas for correct stdout output ###
 
 pd.set_option("max_colwidth", None)
 pd.set_option("max_columns", None)
 
 #### init #####
 
-print("------------ initializing -----------")
+print("------------ preparing dataset -----------")
 print()
 
 # dataset site: https://github.com/ccodwg/Covid19Canada
@@ -131,7 +131,9 @@ c3.to_csv(covid_csv_final)
 # copy to final dataframe cf
 cf = c3
 
-###########################################################
+#################################################
+#                     PLOT                      #
+#################################################
 
 # plot
 covid_init_and_plot(cf,cpop_list,filename_prefix,plot_title,[ "date", "area", "cases", "deaths", "new_cases", "new_deaths" ],visible_provinces,to_get_to_root="..",DEBUGAREA="")

@@ -394,7 +394,7 @@ def covid_init_and_plot(covid_dataframe,area_and_pop_listoftups,filename_prefix,
     # main plot
 
     print()
-    print("------------ main work -----------")
+    print("------------ plotting -----------")
 
     print()
     print(f"- plotting start (theme,font,size: {Theme_Template},{Theme_Font},{Theme_FontSize})")
