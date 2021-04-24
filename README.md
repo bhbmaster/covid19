@@ -161,7 +161,7 @@ covid19plot# ls --hide "run*" --hide "*html" -R -l
 
 ~~~.:~~~
 -rwxr-xr-x 1 root root 42888 Mar  2 18:55 covid19plot.py          # main code - plots countrys and creates html output
--rw-r--r-- 1 root root 26049 Apr  1 18:20 common.py               # common code between `usa-ca/county-plot.py` & `usa-states/us-states.csv` 
+-rw-r--r-- 1 root root 26049 Apr  1 18:20 common.py               # common code between all of the scripts
 -rw-r--r-- 1 root root 27340556 Mar  2 18:07 covid19-log.html     # log plots of country covid stats
 -rw-r--r-- 1 root root 27338240 Mar  2 18:07 covid19-normal.html  # normal plots of country covid stats
 -rw-r--r-- 1 root root  7189726 Mar  2 18:07 places.html          # ranking countries from highest to lowest cases each day
@@ -197,7 +197,7 @@ drwxr-xr-x 2 root root  4096 Apr 14  2020 img-plots             # old dir, not u
 ~~~./usa-ca:~~~
 -rw-r--r-- 1 root root 12833 Mar  2 17:41 county-plot.py         # main code - plots california counties and creates html output
 -rw-r--r-- 1 root root  1069 Feb 24 16:18 county-pop.csv         # csv showing each counties population (called by county-plot.py)
--rw-r--r-- 1 root root 1237742 Apr  2 06:07 CA-covid19cases_test-parsable.csv  # the adjusted dataframe is saved as csv. the df is read by graph4area()
+-rw-r--r-- 1 root root 1237742 Apr  2 06:07 CA-covid19cases_test-parsable.csv  # the final modified dataframe is saved as csv and fed to plotter covid_init_and_plot() -> graph4area()
 -rw-r--r-- 1 root root 3192794 Apr  2 06:07 CA-covid19cases_test.csv           # output csv file as downloaded from source
 -rw-r--r-- 1 root root 6169982 Mar  2 18:07 county-output.html           # html output of county-plot.py
 -rw-r--r-- 1 root root 6169982 Mar  2 18:07 county-output-raw.html       # html output of county-plot.py
@@ -206,7 +206,7 @@ drwxr-xr-x 2 root root  4096 Apr 14  2020 img-plots             # old dir, not u
 ~~~./usa-states:~~~
 -rw-r--r-- 1 root root    9544 Apr  1 18:20 states-plot.py           # main code - plots usa-states counties and creates html output
 -rw-r--r-- 1 root root    1508 Mar 31 23:31 states-pop.csv           # population csv of every state and territory
--rw-r--r-- 1 root root 1034072 Apr  5 12:07 us-states-parsable.csv   # the adjusted dataframe is saved as csv. the df is read by graph4area()
+-rw-r--r-- 1 root root 1034072 Apr  5 12:07 us-states-parsable.csv   # the final modified dataframe is saved as csv and fed to plotter covid_init_and_plot() -> graph4area()
 -rw-r--r-- 1 root root  868077 Apr  5 12:07 us-states.csv            # output csv file as downloaded by source
 -rw-r--r-- 1 root root 6169982 Apr  2 18:07 county-output.html       # html output of county-plot.py
 -rw-r--r-- 1 root root 6169982 Apr  2 18:07 county-output-raw.html   # html output of county-plot.py
@@ -214,7 +214,7 @@ drwxr-xr-x 2 root root  4096 Apr 14  2020 img-plots             # old dir, not u
 
 ~~~./canada:~~~
 -rw-r--r-- 1 root root  11032 Apr 22 01:58 canada-plot.py            # main code - plot canada provinces & territories
--rw-r--r-- 1 root root 231660 Apr 22 01:44 canada-parsable.csv       # data source as fed to plotter graph4area()
+-rw-r--r-- 1 root root 231660 Apr 22 01:44 canada-parsable.csv       # the final modified dataframe is saved as csv and fed to plotter covid_init_and_plot() -> graph4area()
 -rw-r--r-- 1 root root    289 Apr 21 22:24 canada-pop.csv            # canada population data
 -rw-r--r-- 1 root root 258025 Apr 22 01:44 canada.csv                # the data source
 -rw-r--r-- 1 root root 300000 Apr 22 18:07 canada-output.html        # html output of canada-plot.py
@@ -241,12 +241,12 @@ Might need to google your way around or contact me via "Issues" tab.
 
 Note some messages might just be warnings that can be ignored.
 
-* LZMA Warning
+* LZMA Warning in all scripts
 
 This LZMA warning for me can be ignored - I only get on my linux server but not on MAC or Windows. Regardless of this warning, everything still works and generates proper plots.
 
 ```bash
-covid19plot# python3 [covid19plot.py|county-plot.py|states-plot.py|canada-plot.py]
+covid19plot# python3 [covid19plot.py|usa-ca/county-plot.py|usa-states/states-plot.py|canada/canada-plot.py]
 /usr/local/lib/python3.9/site-packages/pandas/compat/__init__.py:97: UserWarning:
 
 Could not import the lzma module. Your installed Python is incomplete. Attempting to use lzma compression will result in a RuntimeError.
@@ -254,12 +254,26 @@ Could not import the lzma module. Your installed Python is incomplete. Attemptin
 ...next lines not shown as it continued to work...
 ```
 
-* Fit Warning
+* Fit Warning in all scripts
 
 Additionally, this message can be ignored. This messages happens a few times when it makes a prediction linear fit. Regardless we still get a fit.
 
 ```bash
 * WARNING in lastXdayslinearpredict: array must not contain infs or NaNs
+```
+
+* Copy Warning in Canada script
+
+This warning appears when we use Pandas to convert the Canadian formatted date column from dd-mm-yyyy to DateTime64 Object. This action generates the warning that can be ignored - perhaps there is another way to do it, without generating the warning, but regardless it all works out so we just ignore it. Sidenote: After converting to Datetime64 object, we convert it to yyyy-mm-dd. You can see this by analyzing canada.csv (which is the original dataset with the Canadian dates dd-mm-yyyy) and then analyzing the canada-parsable.csv (which is the final dataframe that gets read in by the covid_init_and_plot() function)
+
+```bash
+covid19plot# python3 canada-plot.py
+./covid19/canada/canada-plot.py:98: SettingWithCopyWarning:
+
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
 ```
 
 ## Data Sources
