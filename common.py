@@ -363,7 +363,21 @@ def graph4area(fig, fig_1, area, pop, c, nX, nA, nC, nD, nNC, nND, visible_areas
 # * col_names: map the col names of covid_dataframe correctly to this. has to be this order. ex: [ "date", "area", "cases", "deaths", "new_cases", "new_deaths" ]
 # * visible_areas: list of areas that will be active when graph is first shown. ex: [ "BC", "Ontario" ]
 # * to_get_to_root: where VERSION & PLOTLY_THEME file are. can do "." or ".." or full path. most likely we just need to do ".." (which is default)
-def covid_init_and_plot(covid_dataframe,area_and_pop_listoftups,filename_prefix,main_title,col_names,visible_areas,to_get_to_root=".."):
+# * DEBUGAREA: see graph4area comments
+def covid_init_and_plot(covid_dataframe,area_and_pop_listoftups,filename_prefix,main_title,col_names,visible_areas,to_get_to_root="..",DEBUGAREA=""):
+
+    # map col names to vars
+    cvDATE = col_names[0]
+    cvAREA = col_names[1]
+    cvCASES = col_names[2]
+    cvDEATHS = col_names[3]
+    cvNEWCASES = col_names[4]
+    cvNEWDEATHS = col_names[5]
+
+    # html output names
+    # example: filename_prefix = "canada"
+    html_normal = filename_prefix + "-output.html" # ex: canada-output.html
+    html_raw = filename_prefix + "-output-raw.html" # ex: output-output-raw.html
 
     # pre init vars (note the files are with respect to when imported so we a)
     VersionFile = to_get_to_root+"/VERSION"  # Last Update YY.MM.DD
@@ -409,10 +423,10 @@ def covid_init_and_plot(covid_dataframe,area_and_pop_listoftups,filename_prefix,
 
     # TODO - got to here
 
-    random_province = cpops_prov_list[0] # we picked next one from the top
-    print(f"* {random_province=}")
-    last_x = cf[cf["area"] == random_province]["date"].values.tolist()[-1]
-    print(f"* {last_x=} of {random_province=}")
+    random_area = area_and_pop_listoftups[0][0]
+    print(f"* {random_area=}")
+    last_x = covid_dataframe[covid_dataframe[cvAREA] == random_area][cvDATE].values.tolist()[-1]
+    print(f"* {last_x=} of {random_area=}")
     print()
 
     # plot options
@@ -438,34 +452,34 @@ def covid_init_and_plot(covid_dataframe,area_and_pop_listoftups,filename_prefix,
     predictnote =  f", <b>Note:</b> Prediction uses {predictdays} day linear fit, appears as black-dashed line."
 
     # init settings for both figures (settings for plots and subplots)
-    fig.update_layout(title=f"<b>Canada Provinces & Territories Covid19 Stats (Relative to Population Values)</b> (v{Version})<br><b>Last Data Point:</b> {last_x} , <b>Updated On:</b> {updatedate_str} {predictnote}",**plot_options) # main title & theme & hover options & font options unpacked
-    fig_1.update_layout(title=f"<b>Canada Provinces & Territories Covid19 Stats (Normal / Raw Values)</b> (v{Version})<br><b>Last Data Point:</b> {last_x} , <b>Updated On:</b> {updatedate_str}  {predictnote}",**plot_options) # main title & theme & hover options & font options unpacked
+    fig.update_layout(title=f"<b>{main_title} Covid19 Stats (Relative to Population Values)</b> (v{Version})<br><b>Last Data Point:</b> {last_x} , <b>Updated On:</b> {updatedate_str} {predictnote}",**plot_options) # main title & theme & hover options & font options unpacked
+    fig_1.update_layout(title=f"<b>{main_title} Stats (Normal / Raw Values)</b> (v{Version})<br><b>Last Data Point:</b> {last_x} , <b>Updated On:</b> {updatedate_str}  {predictnote}",**plot_options) # main title & theme & hover options & font options unpacked
 
     # parse each area/province and generate trace in figure
     # * consider each area and trace it on plotly
     color_index = -1 # if originally set to None then we alternate colors for every trace. if we set to -1 here then we match color of prediction
-    for prov,pop in cpop_list:
+    for area,pop in area_and_pop_listoftups:
         graph_options = { "fig": fig,
             "fig_1": fig_1,
-            "area": prov,
+            "area": area,
             "pop": pop,
-            "c": cf,
-            "nX": "date",
-            "nA": "area",
-            "nC": "cases",
-            "nD": "deaths",
-            "nNC": "new_cases",
-            "nND": "new_deaths",
-            "visible_areas": visible_provinces,
+            "c": covid_dataframe,
+            "nX": cvDATE,
+            "nA": cvAREA,
+            "nC": cvCASES,
+            "nD": cvDEATHS,
+            "nNC": cvNEWCASES,
+            "nND": cvNEWDEATHS,
+            "visible_areas": visible_areas,
             "color_index": color_index }
         # fig, fig_1, color_index = graph4area(**graph_options,DEBUGAREA="BC") # fig is relative, fig_1 is raw values
-        fig, fig_1, color_index = graph4area(**graph_options) # fig is relative, fig_1 is raw values
+        fig, fig_1, color_index = graph4area(**graph_options,DEBUGAREA=DEBUGAREA) # fig is relative, fig_1 is raw values
         print()
 
     # save html
     # * plotly generate html output generation
-    fig.write_html(covid_html_normal,auto_open=False)
-    fig_1.write_html(covid_html_raw,auto_open=False)
+    fig.write_html(html_normal,auto_open=False)
+    fig_1.write_html(html_raw,auto_open=False)
 
     # * html div generation (not used)
     div = plotly.offline.offline.plot(fig, show_link=False, include_plotlyjs=False, output_type='div')
