@@ -224,7 +224,7 @@ drwxr-xr-x 2 root root  4096 Apr 14  2020 img-plots             # old dir, not u
 
 ## Errors
 
-Possible errors that might be seen:
+Possible halting errors that might need to be addressed if encountered.
 
 ### Missing *_bz2* On Linux
 
@@ -237,7 +237,7 @@ If you get an error during running `usa-ca/county-plot.py` which talks about mis
 
 Might need to google your way around or contact me via "Issues" tab.
 
-### Warnings
+## Warnings
 
 Note some messages might just be warnings that can be ignored.
 
