@@ -264,7 +264,13 @@ Additionally, this message can be ignored. This messages happens a few times whe
 
 ## Data Sources
 
-The data sources are mentioned in 2 areas. So putting it here as well will be redundant. First you can catch the data sources on http://www.infotinks.com/coronavirus-dashboard-covid19-py/ and scrolling down to "Data Sources". Also the data sources are mentioned in the world plots HTML (log, http://www.infotinks.com/covid19/covid19-log.html, and normal, http://www.infotinks.com/covid19/covid19-normal.html, plots) at the end of the notes section (at the top of the HTML before the countries are plotted).
+The data sources are mentioned in two areas. So putting it here as well will be redundant.
+
+* First, you can see the data sources on http://www.infotinks.com/coronavirus-dashboard-covid19-py/. Scroll down to "Data Sources". 
+
+* Second, The world covid plots also list the data sources for all of the plots. These are at the bottom of the notes section, which comes before all of the country plots. The world covid plots can be viewed from two links (y-log or y-normal plot): 
+	* y-log plot: http://www.infotinks.com/covid19/covid19-log.html
+	* y-normal plot: http://www.infotinks.com/covid19/covid19-normal.html
 
 ## To Do
 
