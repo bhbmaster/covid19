@@ -2,7 +2,6 @@ import string
 import datetime
 import numpy as np
 from sklearn.linear_model import LinearRegression
-# from sklearn.preprocessing import PolynomialFeatures
 from scipy.optimize import curve_fit
 import plotly.graph_objects as go
 import plotly.express as px # for themes/templates
@@ -11,9 +10,11 @@ import pandas as pd
 import plotly.offline.offline
 from plotly.subplots import make_subplots
 
-# used by covid19plot.py and usa-ca/country-plot.py
+# common.py is used by covid19plot.py and usa-states/states-plot.py and usa-ca/county-plot.py and canada/canada-plot.py
 
-### globals ###
+#################
+### variables ###
+#################
 
 valid_chars = "-_.%s%s" % (string.ascii_letters, string.digits)
 PER = 100000 # when we display relative data this is the per value so we do per 100,000 people aka 100K
@@ -23,7 +24,9 @@ predictdays = 30 # how many days to predict back and forward with linear regress
 COLOR_LIST = px.colors.qualitative.Vivid # this sets the colorway option in layout
 COLOR_LIST_LEN = len(COLOR_LIST) # we will use the mod of this later
 
+#################
 ### functions ###
+#################
 
 # get version from Version file
 def GetVersion(VersionFile):
@@ -54,8 +57,6 @@ def GetTheme(ThemeFile):
     Theme_Font = ThemeFileContents[1] if os.path.exists(ThemeFile) else "Arial"
     Theme_FontSize = int(ThemeFileContents[2]) if os.path.exists(ThemeFile) else 12
     return Theme_Template, Theme_Font, Theme_FontSize
-
-
 
 # N day moving average (ex: 7 day average). averages the y values over window size N, our array shrinks by N-1 due to this. therefore, we also truncate the x array values by N-1 from the left side (older dates are on the left side)
 def avgN(N,x,y):
@@ -491,8 +492,9 @@ def covid_init_and_plot(covid_dataframe,area_and_pop_listoftups,filename_prefix,
     # the end
     print("- plotting end")
 
-
+###############
 ### classes ###
+###############
 
 # a single entry class
 class Entry:
