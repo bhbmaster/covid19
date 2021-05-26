@@ -492,6 +492,12 @@ def covid_init_and_plot(covid_dataframe,area_and_pop_listoftups,filename_prefix,
     # the end
     print("- plotting end")
 
+# returns thousand seperated number. Ex: 3000 --> 3,000 and -23423.245 --> -23,423.245
+def THOUSAND(number):
+    if number is None:
+        return f"N/A"
+    return f"{number:,}"
+
 ###############
 ### classes ###
 ###############
