@@ -310,27 +310,27 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
         </tr>
         <tr>
         <td>Cases</td>
-        <td>{country.last_cases}</td>
-        <td>{country.last_delta_cases}</td>
-        <td>{ldr_cases}</td>
+        <td>{country.last_cases:,}</td>
+        <td>{country.last_delta_cases:,}</td>
+        <td>{ldr_cases:,}</td>
         </tr>
         <tr>
         <td>Deaths</td>
-        <td>{country.last_deaths}</td>
-        <td>{country.last_delta_deaths}</td>
-        <td>{ldr_deaths}</td>
+        <td>{country.last_deaths:,}</td>
+        <td>{country.last_delta_deaths:,}</td>
+        <td>{ldr_deaths:,}</td>
         </tr>
         <tr>
         <td>Recovered</td>
-        <td>{country.last_recovered}</td>
-        <td>{country.last_delta_recovered}</td>
-        <td>{ldr_recovered}</td>
+        <td>{country.last_recovered:,}</td>
+        <td>{country.last_delta_recovered:,}</td>
+        <td>{ldr_recovered:,}</td>
         </tr>
         <tr>
         <td>Active Cases</td>
-        <td>{country.last_active}</td>
-        <td>{country.last_delta_active}</td>
-        <td>{ldr_active}</td>
+        <td>{country.last_active:,}</td>
+        <td>{country.last_delta_active:,}</td>
+        <td>{ldr_active:,}</td>
         </tr>
         </tbody>
         </table>\n"""

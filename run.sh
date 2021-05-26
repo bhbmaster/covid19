@@ -20,17 +20,21 @@
 PYTHON="python3.9"
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-cd "$DIR"
 DATE=`date +%Y%m%d-%H%M%S`
+
+cd "$DIR"
+
 echo "Logging to $PWD/run-$DATE.out"
-# --- main run (all countries) --- #
+
+### --- main run (all countries) --- ###
 # run covid19plot.py to generate all data
 echo "`date` - start" | tee -a run.timelog > run-$DATE.out
 $PYTHON covid19plot.py >> run-$DATE.out 2>&1
 echo "`date` - end" | tee -a run.timelog >> run-$DATE.out
 # --- run places --- #
 ./places.sh
-# --- run california plots --- #
+
+### --- run california plots --- ###
 # notify main log above to do california plots
 echo "`date` - starting california counties plot" >> run-$DATE.out
 cd "$DIR"/usa-ca
@@ -38,7 +42,8 @@ $PYTHON county-plot.py >> run-$DATE.out 2>&1
 # notify main log we are done
 cd "$DIR"
 echo "`date` - finished california counties plot - completely done" >> run-$DATE.out
-#  --- run USA plots --- #
+
+###  --- run USA plots --- ###
 # notify main log above to do US States
 echo "`date` - starting usa states plot" >> run-$DATE.out
 cd "$DIR"/usa-states
@@ -46,7 +51,8 @@ $PYTHON states-plot.py >> run-$DATE.out 2>&1
 # notify main log we are done
 cd "$DIR"
 echo "`date` - finished usa states plot - completely done" >> run-$DATE.out
-#  --- run CANADA plots --- #
+
+###  --- run CANADA plots --- ###
 # notify main log above to do CANADA
 echo "`date` - starting canada provinces & territories plot" >> run-$DATE.out
 cd "$DIR"/canada
@@ -54,5 +60,6 @@ $PYTHON canada-plot.py >> run-$DATE.out 2>&1
 # notify main log we are done
 cd "$DIR"
 echo "`date` - finished canada provinces & territories plot - completely done" >> run-$DATE.out
+
 # --- exit --- #
 exit 0
