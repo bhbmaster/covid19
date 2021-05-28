@@ -259,7 +259,8 @@ def graph4area(fig, fig_1, area, pop, c, nX, nA, nC, nD, nNC, nND, visible_areas
                 color_index_to_use = used_colors_index % COLOR_LIST_LEN # we circulate thru the color_way so we use modulus
                 color_to_use = COLOR_LIST[color_index_to_use] # call that color via index from colorway list
                 figure.add_trace(go.Scatter(x=xfinal, y=yfinal, name=legendtext, showlegend=False,legendgroup=area,visible=visible1,line=dict(color=color_to_use,dash='dash')),row=1,col=1)
-        return entered_prediction_if_loop, color_to_use  # return if we successfully predicted (meaning slope isnt 0 and the prediction function returned some good stuff)
+            return entered_prediction_if_loop, color_to_use  # return if we successfully predicted (meaning slope isnt 0 and the prediction function returned some good stuff)
+        return entered_prediction_if_loop, None # otherwise if didn't get into this "if" statement, then spit out false because we didn't get into loop, and None as we don't really need a color now
 
     # for relative plot
     entered_prediction_if_loop, color_to_use = plot_regression(fig,avgx,avgy,"relative")
