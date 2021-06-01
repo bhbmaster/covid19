@@ -454,8 +454,8 @@ def covid_init_and_plot(covid_dataframe,area_and_pop_listoftups,filename_prefix,
     predictnote =  f", <b>Note:</b> Prediction uses {predictdays} day linear fit, appears as black-dashed line."
 
     # init settings for both figures (settings for plots and subplots)
-    fig.update_layout(title=f"<b>{main_title} Covid19 Stats (Relative to Population, {PER_TEXT} people)</b> (v{Version})<br><b>Last Data Point:</b> {last_x} , <b>Updated On:</b> {updatedate_str} {predictnote}",**plot_options) # main title & theme & hover options & font options unpacked
-    fig_1.update_layout(title=f"<b>{main_title} Stats (Normal / Raw Values)</b> (v{Version})<br><b>Last Data Point:</b> {last_x} , <b>Updated On:</b> {updatedate_str}  {predictnote}",**plot_options) # main title & theme & hover options & font options unpacked
+    fig.update_layout(title=f"<b>{main_title} Covid19 Stats (values relative to population per {PER_TEXT} people)</b> (v{Version})<br><b>Last Data Point:</b> {last_x} , <b>Updated On:</b> {updatedate_str} {predictnote}",**plot_options) # main title & theme & hover options & font options unpacked
+    fig_1.update_layout(title=f"<b>{main_title} Stats (normal raw values)</b> (v{Version})<br><b>Last Data Point:</b> {last_x} , <b>Updated On:</b> {updatedate_str}  {predictnote}",**plot_options) # main title & theme & hover options & font options unpacked
 
     # parse each area/province and generate trace in figure
     # * consider each area and trace it on plotly
