@@ -569,7 +569,7 @@ class Entry:
 
 # a country class, full of entries
 class Country:
-    def __init__(self,country,entrylist):
+    def __init__(self,country,entrylist,population=None):
         self.country=country
         self.countryposix=''.join(c for c in self.country if c in valid_chars)
         self.entrylist=entrylist
@@ -630,6 +630,35 @@ class Country:
         self.last_recovery_percent = entrylist[lasti].recovery_percent
         # prediction of when we get 0 daily new cases (this is calculated later; but i guess if we refactor can bring it into this class)
         self.predict_date_zero = None # calculated and set in graph2div, called from there and div2html
+        # null variable, create it in graph function anyways (which can be done like that in python). so this next line is optional
+        self.predict_date_zero = None
+        # get the relative to population values using math operation function and mapping to list
+        self.relative_possible = False
+        if population != None and population > 0:
+            # possible bool
+            self.relative_possible = True
+            # math operator
+            population_math = lambda x: x * PER / population
+            # mine
+            self.rel_cases_list = list(map(population_math,self.cases_list))
+            self.rel_deaths_list = list(map(population_math,self.deaths_list))
+            self.rel_active_list = list(map(population_math,self.active_list))
+            self.rel_recovered_list = list(map(population_math,self.recovered_list))
+            self.rel_death_percent_list = list(map(population_math,self.death_percent_list))
+            self.rel_recovery_percent_list = list(map(population_math,self.recovery_percent_list))
+            self.rel_delta_cases_list = list(map(population_math,self.delta_cases_list))
+            self.rel_delta_deaths_list = list(map(population_math,self.delta_deaths_list))
+            # last values
+            self.rel_last_case = self.rel_cases_list[-1]
+            self.rel_last_death = self.rel_deaths_list[-1]
+            self.rel_last_active = self.rel_active_list[-1]
+            self.rel_last_recovered = self.rel_recovered_list[-1]
+            self.rel_last_death_percent = self.rel_death_percent_list[-1]
+            self.rel_last_recovery_percent = self.rel_recovery_percent_list[-1]
+            self.rel_last_delta_cases = self.rel_delta_cases_list[-1]
+            self.rel_last_delta_deaths = self.rel_delta_deaths_list[-1]
+            # note there can be more but we don't use them so might as well not create them
+            self.rel_predict_date_zero = None
 
     # input list type, output x (date list) and y (values) and r^2 and m and b0. uses last X days to predict
     def lastXdayslinearpredict(self, list, days=10):

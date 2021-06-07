@@ -51,17 +51,24 @@ def round_or_none(n,places,sep=True):
 
 # create divs of graph of a certain type from country class item
 
-def graph2div(country_class,graph_type):
+def graph2div(country_class,graph_type,relative=False):
 
     i=country_class
 
+    if relative:
+        the_rel_string="-RELATIVE"
+        the_rel_string_camel="Relative"
+    else:
+        the_rel_string=""
+        the_rel_string_camel=""
+
     if graph_type=="log":           # log
-        the_type_string="LOG"
-        the_type_string_camel="Log"
+        the_type_string="LOG"+the_rel_string
+        the_type_string_camel="Log"+the_rel_string_camel
         the_type_fig="log"
     else:                           # normal
-        the_type_string="NORMAL"
-        the_type_string_camel="Normal"
+        the_type_string="NORMAL"+the_rel_string
+        the_type_string_camel="Normal"+the_rel_string_camel
         the_type_fig=None
 
     country_name=i.country
@@ -88,24 +95,37 @@ def graph2div(country_class,graph_type):
         "template": Theme_Template
     }
 
+    # y values:
+    CASES_LIST = i.cases_list if relative and i.relative_possible else i.cases_list
+    DEATHS_LIST = i.deaths_list if relative and i.relative_possible else i.deaths_list
+    ACTIVE_LIST = i.active_list if relative and i.relative_possible else i.active_list
+    RECOVERED_LIST = i.recovered_list if relative and i.relative_possible else i.recovered_list
+    DEATH_PERCENT_LIST = i.death_percent_list if relative and i.relative_possible else i.death_percent_list
+    RECOVERY_PERCENT_LIST = i.recovery_percent_list if relative and i.relative_possible else i.recovery_percent_list
+    DELTA_CASES_LIST = i.delta_cases_list if relative and i.relative_possible else i.delta_cases_list
+    DELTA_DEATHS_LIST = i.delta_deaths_list if relative and i.relative_possible else i.delta_deaths_list
+
     # Note: instead of Diff it used to say Δ, but that renders weird on html (I tried to fix it but too much work for something small)
 
     fig.update_layout(title=f"<b>{country_name} - Covid19 {the_type_string_camel} Plots</b> - covid19plot.py v{Version}<br><b>Last Data Point:</b> {i.last_date} , <b>Updated On:</b> {start_time_string}",**plot_options)
 
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.cases_list, name=f"<b>Cases</b> : y<sub>fin</sub>={round_or_none(i.cases_list[-1],0)}", line=dict(color='firebrick', width=2),showlegend=True),row=1,col=1)
+    fig.add_trace(go.Scatter(x=i.date_list, y=CASES_LIST, name=f"<b>Cases</b> : y<sub>fin</sub>={round_or_none(CASES_LIST[-1],0)}", line=dict(color='firebrick', width=2),showlegend=True),row=1,col=1)
 
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.deaths_list, name=f"<b>Deaths</b> : y<sub>fin</sub>={round_or_none(i.deaths_list[-1],0)}", line=dict(color='red', width=2),showlegend=True),row=1,col=1)
+    fig.add_trace(go.Scatter(x=i.date_list, y=DEATHS_LIST, name=f"<b>Deaths</b> : y<sub>fin</sub>={round_or_none(DEATHS_LIST[-1],0)}", line=dict(color='red', width=2),showlegend=True),row=1,col=1)
 
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.recovered_list, name=f"<b>Recovered</b> : y<sub>fin</sub>={round_or_none(i.recovered_list[-1],0)}", line=dict(color='green', width=2),showlegend=True),row=1,col=1)
+    fig.add_trace(go.Scatter(x=i.date_list, y=RECOVERED_LIST, name=f"<b>Recovered</b> : y<sub>fin</sub>={round_or_none(RECOVERED_LIST[-1],0)}", line=dict(color='green', width=2),showlegend=True),row=1,col=1)
 
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.active_list, name=f"<b>Active Cases</b> : y<sub>fin</sub>={round_or_none(i.active_list[-1],0)}", line=dict(color='purple', width=2),showlegend=True),row=1,col=1)
+    fig.add_trace(go.Scatter(x=i.date_list, y=ACTIVE_LIST, name=f"<b>Active Cases</b> : y<sub>fin</sub>={round_or_none(ACTIVE_LIST[-1],0)}", line=dict(color='purple', width=2),showlegend=True),row=1,col=1)
 
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.death_percent_list, name=f"<b>Death %</b> : y<sub>fin</sub>={round_or_none(i.death_percent_list[-1],2)}%", showlegend=True),row=1,col=2)
+    fig.add_trace(go.Scatter(x=i.date_list, y=DEATH_PERCENT_LIST, name=f"<b>Death %</b> : y<sub>fin</sub>={round_or_none(DEATH_PERCENT_LIST[-1],2)}%", showlegend=True),row=1,col=2)
 
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.recovery_percent_list, name=f"<b>Recovery %</b> : y<sub>fin</sub>={round_or_none(i.recovery_percent_list[-1],2)}%", showlegend=True),row=1,col=2)
+    fig.add_trace(go.Scatter(x=i.date_list, y=RECOVERY_PERCENT_LIST, name=f"<b>Recovery %</b> : y<sub>fin</sub>={round_or_none(RECOVERY_PERCENT_LIST[-1],2)}%", showlegend=True),row=1,col=2)
 
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_cases_list, name=f"<b>New Cases</b> : y<sub>fin</sub>={round_or_none(i.delta_cases_list[-1],0)}", showlegend=True),row=2,col=1) 
-    xavg,yavg = avgN(moving_average_samples,i.date_list,i.delta_cases_list)
+    # new daily cases
+    fig.add_trace(go.Scatter(x=i.date_list, y=DELTA_CASES_LIST, name=f"<b>New Cases</b> : y<sub>fin</sub>={round_or_none(DELTA_CASES_LIST[-1],0)}", showlegend=True),row=2,col=1)
+
+    # getting moving average of new daily cases
+    xavg,yavg = avgN(moving_average_samples,i.date_list,DELTA_CASES_LIST)
 
     fig.add_trace(go.Scatter(x=xavg, y=yavg, name=f"<b>New Cases {moving_average_samples}day Moving Avg</b> : y<sub>fin</sub>={round_or_none(yavg[-1],0)}", showlegend=True),row=2,col=1) # when had OLD-MIDDLE-ROW this was row=3,col=1
 
@@ -132,13 +152,18 @@ def graph2div(country_class,graph_type):
 
             daycross = None
 
-        i.predict_date_zero = daycross  # this variable doesn't exist in Country class, but in python you can create it regardless (we call it later when creating the HTML)
+        if relative and i.relative_possible:
+            i.rel_predict_date_zero = daycross  # this variable doesn't exist in Country class, but in python you can create it regardless (we call it later when creating the HTML)
+        else:
+            i.predict_date_zero = daycross  # this variable doesn't exist in Country class, but in python you can create it regardless (we call it later when creating the HTML)
 
         fig.add_trace(go.Scatter(x=xfinal, y=yfinal, name=f"<b>Daily New Cases {days_predict_new_cases} Days Prediction</b><br>r<sup>2</sup>={r_sq:0.5f}<br>y={m:0.3f}x+{b0:0.1f} where x<sub>0</sub>={xfinal[0]}<br>y=0 / no new cases predicted @ {daycross}", line=dict(color='black', width=1, dash='dash'), showlegend=True), row=2,col=1) # when had OLD-MIDDLE-ROW this was row=3,col=1
 
-    fig.add_trace(go.Scatter(x=i.date_list, y=i.delta_deaths_list, name=f"<b>New Deaths</b> : y<sub>fin</sub>={round_or_none(i.delta_deaths_list[-1],0)}", showlegend=True),row=2,col=2) # when had OLD-MIDDLE-ROW this was row=3,col=1
+    # daily deaths
+    fig.add_trace(go.Scatter(x=i.date_list, y=DELTA_DEATHS_LIST, name=f"<b>New Deaths</b> : y<sub>fin</sub>={round_or_none(DELTA_DEATHS_LIST[-1],0)}", showlegend=True),row=2,col=2) # when had OLD-MIDDLE-ROW this was row=3,col=1
 
-    xavg,yavg = avgN(moving_average_samples,i.date_list,i.delta_deaths_list)
+    # daily deaths moving average
+    xavg,yavg = avgN(moving_average_samples,i.date_list,DELTA_DEATHS_LIST)
 
     fig.add_trace(go.Scatter(x=xavg, y=yavg, name=f"<b>New Deaths {moving_average_samples}day Moving Avg</b> : y<sub>fin</sub>={round_or_none(yavg[-1],0)}", showlegend=True),row=2,col=2) # when had OLD-MIDDLE-ROW this was row=3,col=1
 
