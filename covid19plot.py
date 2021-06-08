@@ -9,6 +9,8 @@ import bs4
 import htmlmin
 import pickle
 from common import avgN, Entry, Country, GetVersion, GetTheme, THOUSAND
+import pandas as pd
+import math
 
 # By: Kostia Khlebopros
 # Site: http://www.infotinks.com/coronavirus-dashboard-covid19-py/
@@ -30,6 +32,7 @@ TESTDATA = "code/CountryTestData.json"
 moving_average_samples = 7 # 7 day moving average for daily new cases and daily deaths
 days_predict_new_cases = 30
 ThemeFile = "PLOTLY_THEME" # contents are comma sep: theme,font family,font size
+POPFILE = "world-pop.csv"
 
 # Get Version:
 Version = GetVersion(VersionFile)
@@ -289,7 +292,7 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
 
     place_num = -1 # so it starts at 0
 
-    for country,div in div_list:
+    for country,div,relative in div_list:
 
         place_num += 1
 
@@ -512,8 +515,8 @@ def main():
     with urllib.request.urlopen(SITE) as url:
         data=json.loads(url.read().decode())
     if not data:
-    	print(f"- Download Failed (no data).")
-    print(f"- Download Complete.")
+    	print(f"- Download Failed (no data)")
+    print(f"- Download Complete")
     #### - GET DATA - METHOD 1 - END - ####
 
     #### - GET DATA - METHOD 2 - START ####
@@ -526,10 +529,32 @@ def main():
     # print(f"- Loading Complete.")
     #### - GET DATA - METHOD 2 - END ####
 
+    #### LOAD POPULATION DATA ####
+
+    print(f"- Reading population csv from {POPFILE}")
+    pop = pd.read_csv(POPFILE)
+
+    #### PARSE BOTH DATA SETS POPULATION AND COVID ####
+
     list_of_countries=[]
     for x in data:
         str_country=x
-        # print(str_country)
+        # get population value
+        curpop_list = list(pop[pop["Country"] == x]["Population"].values) # if has value length 1 if no value length 0
+        if len(curpop_list) > 0: # make sure there is an item in the list
+            curpop_value = curpop_list[0]
+            if not math.isnan(curpop_value): # also make sure the value is not NaN (also a missing value, probably a space or something)
+                curpop = int(curpop_value)
+            else:
+                curpop = None
+        else: # if no items then no population
+            curpop = None
+        if str_country == "Korea, South": # work around for south korea as its written "South Korea" in population file
+            curpop = int(list(pop[pop["Country"] == "South Korea"]["Population"].values)[0])
+        if curpop == None:
+            print(f"* WARNING: Missing population data for {str_country=} {curpop=} in {POPFILE} file.")
+        # print(f"{str_country=} {curpop=}")
+        # work on covid data from json
         list_of_entries=[]
         oldEntry=None
         for i in data[x]:
@@ -540,7 +565,7 @@ def main():
             entry=Entry(str_date,int_confirmed,int_deaths,int_recovered,prevEntry=oldEntry)
             oldEntry=entry
             list_of_entries.append(entry)
-        country=Country(str_country,list_of_entries)
+        country=Country(str_country,list_of_entries,population=curpop)
         list_of_countries.append(country)
         # print(f"- {x} on {last_date} has {confirmed} confirmed {deaths} deaths {recovered} recovered {active} active")
 
@@ -587,18 +612,25 @@ def main():
         total_entry=Entry(d,total_confirmed,total_deaths,total_recovered,prevEntry=oldEntry)
         total_entry_list.append(total_entry)
         oldEntry=total_entry
-    total_country=Country("TOTAL",total_entry_list)
+    WORLDPOPULATION = int(list(pop[pop["Country"] == "Earth"]["Population"].values)[0])
+    total_country=Country("TOTAL",total_entry_list,population=WORLDPOPULATION)
     list_of_countries.append(total_country)
 
     # sort list of countries by total cases (TOTAL will be at top)
     list_of_countries.sort(key=lambda x: x.last_cases, reverse=True)
 
-    # plot all
+    #### CREATE DIRS AND PLOT DIV TEXTS ####
 
     rows=len(list_of_countries)
     n=1
-    div_list_log=[]
-    div_list_normal=[]
+
+    # the div_lists below are of form # lists [(countryname,divs,relative_bool), (countryname,divs,relative_bool), ...]
+    div_list_log = []
+    div_list_normal = []
+    div_list_log_perpop = []
+    div_list_normal_perpop = []
+
+    # make sure dirs exists incase we dump html plots (which we do) and image files (which we dont anymore actually - take too much space)
     if not os.path.exists("html-plots"):
         os.mkdir("html-plots")
     if not os.path.exists("img-plots"):
@@ -608,24 +640,42 @@ def main():
 
     for i in list_of_countries:
         # normal
-        div=graph2div(i,"normal")
-        div_list_normal.append((i,div))
+        div=graph2div(i,"normal") # by default relative=False (means not per pop)
+        div_list_normal.append((i,div,False))
         # log
-        div=graph2div(i,"log")
-        div_list_log.append((i,div))
+        div=graph2div(i,"log")  # by default relative=False (means not per pop)
+        div_list_log.append((i,div,False))
+        # normal per pop (means its relative)
+        div=graph2div(i,"normal",relative=True)
+        div_list_normal_perpop.append((i,div,True))
+        # log per pop (means its relative)
+        div=graph2div(i,"log",relative=True)
+        div_list_log_perpop.append((i,div,True))
         # done creating div plots message
-        print(f"{n}/{rows} - {i.country} - last value from {i.last_date} with {i.last_cases} cases, {i.last_deaths} deaths, {i.last_recovered} recovered, {i.last_active} active cases.")
+        print(f"{n}/{rows} - {i.country} (pop {i.population}) - last value from {i.last_date} with {i.last_cases} cases, {i.last_deaths} deaths, {i.last_recovered} recovered, {i.last_active} active cases.")
         n+=1
 
-    # create the html
+    ##### WRITE DIVS TO HTML FILES ####
 
     # create html from div list - normal
-    print("Creating 'covid19-normal.html', please wait.")
+    filename = "covid19-normal.html"
+    print(f"Creating '{filename}' - normal axis world covid plots, please wait.")
     divs2html(div_list_normal,"Normal",start_time_string,"covid19-normal.html",bootstrapped)
 
     # create html from div list - log
-    print("Creating 'covid19-log.html', please wait.")
+    filename = "covid19-log.html"
+    print(f"Creating '{filename}' - log axis world covid plots, please wait.")
     divs2html(div_list_log,"Log",start_time_string,"covid19-log.html",bootstrapped)
+
+    # create html from div list - normal
+    filename = "covid19-normal-perpop.html"
+    print(f"Creating '{filename}' - normal axis relative to population world covid plots, please wait.")
+    divs2html(div_list_normal_perpop,"Normal",start_time_string,"covid19-normal-perpop.html",bootstrapped)
+
+    # create html from div list - log
+    filename = "covid19-log-perpop.html"
+    print(f"Creating '{filename}' - log axis relative to population axis world covid plots, please wait.")
+    divs2html(div_list_log_perpop,"Log",start_time_string,"covid19-log-perpop.html",bootstrapped)
 
     # save
     # save_pickle(list_of_countries,"country-class-list",start_time_posix)

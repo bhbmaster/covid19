@@ -632,13 +632,15 @@ class Country:
         self.predict_date_zero = None # calculated and set in graph2div, called from there and div2html
         # null variable, create it in graph function anyways (which can be done like that in python). so this next line is optional
         self.predict_date_zero = None
+        # population
+        self.population = population
         # get the relative to population values using math operation function and mapping to list
         self.relative_possible = False
-        if population != None and population > 0:
+        if self.population != None and self.population > 0:
             # possible bool
             self.relative_possible = True
-            # math operator
-            population_math = lambda x: x * PER / population
+            # math operator to get relative information by population per 100K people
+            population_math = lambda x: x * PER / self.population if x != None else None
             # mine
             self.rel_cases_list = list(map(population_math,self.cases_list))
             self.rel_deaths_list = list(map(population_math,self.deaths_list))
