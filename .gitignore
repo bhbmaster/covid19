@@ -3,8 +3,8 @@ html-plots/*
 other/
 .idea/
 .vscode/
-/covid19-log.html
-/covid19-normal.html
+/covid19-log*.html
+/covid19-normal*.html
 /places.html
 /run.timelog
 /run-*.out
