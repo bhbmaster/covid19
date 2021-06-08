@@ -529,6 +529,7 @@ def main():
     list_of_countries=[]
     for x in data:
         str_country=x
+        # print(str_country)
         list_of_entries=[]
         oldEntry=None
         for i in data[x]:
