@@ -635,13 +635,13 @@ class Country:
         # population
         self.population = population
         # get the relative to population values using math operation function and mapping to list
-        self.relative_possible = False
+        self.relative_possible = False # relative_possible basically means is population data available could of been named if_populated or just populated
         if self.population != None and self.population > 0:
             # possible bool
             self.relative_possible = True
             # math operator to get relative information by population per 100K people
             population_math = lambda x: x * PER / self.population if x != None else None
-            # mine
+            # convert values to PER POPULATION
             self.rel_cases_list = list(map(population_math,self.cases_list))
             self.rel_deaths_list = list(map(population_math,self.deaths_list))
             self.rel_active_list = list(map(population_math,self.active_list))
@@ -650,15 +650,27 @@ class Country:
             self.rel_recovery_percent_list = list(map(population_math,self.recovery_percent_list))
             self.rel_delta_cases_list = list(map(population_math,self.delta_cases_list))
             self.rel_delta_deaths_list = list(map(population_math,self.delta_deaths_list))
+            self.rel_delta_active_list = list(map(population_math,self.delta_active_list))
+            self.rel_delta_recovered_list = list(map(population_math,self.delta_recovered_list))
+            self.rel_delta_ratio_cases_list = list(map(population_math,self.delta_ratio_cases_list))
+            self.rel_delta_ratio_active_list = list(map(population_math,self.delta_ratio_active_list))
+            self.rel_delta_ratio_recovered_list = list(map(population_math,self.delta_ratio_recovered_list))
+            self.rel_delta_ratio_deaths_list = list(map(population_math,self.delta_ratio_deaths_list))
             # last values
-            self.rel_last_case = self.rel_cases_list[-1]
-            self.rel_last_death = self.rel_deaths_list[-1]
+            self.rel_last_cases = self.rel_cases_list[-1]
+            self.rel_last_deaths = self.rel_deaths_list[-1]
             self.rel_last_active = self.rel_active_list[-1]
             self.rel_last_recovered = self.rel_recovered_list[-1]
             self.rel_last_death_percent = self.rel_death_percent_list[-1]
             self.rel_last_recovery_percent = self.rel_recovery_percent_list[-1]
             self.rel_last_delta_cases = self.rel_delta_cases_list[-1]
             self.rel_last_delta_deaths = self.rel_delta_deaths_list[-1]
+            self.rel_last_delta_active = self.rel_delta_active_list[-1]
+            self.rel_last_delta_recovered = self.rel_delta_recovered_list[-1]
+            self.rel_last_delta_ratio_active = self.rel_delta_ratio_active_list[-1]
+            self.rel_last_delta_ratio_cases = self.rel_delta_ratio_cases_list[-1]
+            self.rel_last_delta_ratio_deaths = self.rel_delta_ratio_deaths_list[-1]
+            self.rel_last_delta_ratio_recovered = self.rel_delta_ratio_recovered_list[-1]
             # note there can be more but we don't use them so might as well not create them
             self.rel_predict_date_zero = None
 

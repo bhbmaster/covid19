@@ -34,13 +34,19 @@ Here they are in more detail:
 
 - Log Axes plots of every country in to `covid19-log.html`: **http://www.infotinks.com/covid19/covid19-log.html**
 
+- Relative to Population Normal Axes plots of every country to `covid19-normal-perpop.html`: **http://www.infotinks.com/covid19/covid19-normal-perpop.html**
+
+- Relative to Population Log Axes plots of every country in to `covid19-log-perpop.html`: **http://www.infotinks.com/covid19/covid19-log-perpop.html**
+
 - Each country generates its own seperate normal and log plot into the `html-plots/` directory. As these are smaller the browser has an easier time allowing interaction with these plots
 
 Example: 
 
 ```
-html-plots/US-plot-NORMAL.html
-html-plots/US-plot-LOG.html
+html-plots/US-plot-NORMAL.html           - raw values
+html-plots/US-plot-LOG.html              - raw values
+html-plots/US-plot-NORMAL-perpop.html    - values adjusted by population per 100K people
+html-plots/US-plot-LOG-perpop.html       - values adjusted by population per 100K people
 ```
 
 **(2) `usa-states/states-plot.py` produces the similar graphs and outputs:**
@@ -224,9 +230,12 @@ covid19plot# ls --hide "run*" --hide "*html" -R -l
 
 ~~~.:~~~
 -rwxr-xr-x 1 root root 42888 Mar  2 18:55 covid19plot.py          # main code - plots countrys and creates html output
+-rw-r--r-- 1 root root 3660 Jun  8 04:37 world-pop.csv            # every countries population
 -rw-r--r-- 1 root root 26049 Apr  1 18:20 common.py               # common code between all of the scripts
 -rw-r--r-- 1 root root 27340556 Mar  2 18:07 covid19-log.html     # log plots of country covid stats
 -rw-r--r-- 1 root root 27338240 Mar  2 18:07 covid19-normal.html  # normal plots of country covid stats
+-rw-r--r-- 1 root root 27340556 Mar  2 18:07 covid19-log-perpop.html     # relative to population log plots of country covid stats
+-rw-r--r-- 1 root root 27338240 Mar  2 18:07 covid19-normal-perpop.html  # relative to population normal plots of country covid stats
 -rw-r--r-- 1 root root  7189726 Mar  2 18:07 places.html          # ranking countries from highest to lowest cases each day
 
 -rw-r--r-- 1 root root   646 Mar  2 00:35 PLOTLY_THEME          # theme file
