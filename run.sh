@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# * WHERE TO RUN: my linux server infotink.com
+# * WHERE TO RUN: my linux server infotinks.com
 
 # * WHAT THIS DOES:
 # This script calls the covid19plot.py to generate the 2 plot html files
