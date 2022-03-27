@@ -18,10 +18,14 @@
 # There are clean up instructions in places.sh comments on how to spot bad log files (that are not parseable) and delete them
 
 PYTHON="python3.9"
-PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+# blocked for wsl # PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 DATE=`date +%Y%m%d-%H%M%S`
 
+# check if find python3.9, if not exit
+type "$PYTHON" > /dev/null 2>&1 || { echo "* ERROR: $PYTHON not detected, check the PATH variable in this current script $0. exiting!" >&2; exit 1; };
+
+# change to script dir (we should probably be there already)
 cd "$DIR"
 
 echo "Logging to $PWD/run-$DATE.out"

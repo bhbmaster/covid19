@@ -10,7 +10,7 @@ from common import covid_init_and_plot # local module but up one directory hence
 ### presetting pandas for correct stdout output ###
 
 pd.set_option("max_colwidth", None)
-pd.set_option("max_columns", None)
+# pd.set_option("max_columns", None) # commented out to fix: pandas._config.config.OptionError: 'Pattern matched multiple keys'
 
 # prework
 print("------------ preparing dataset -----------")

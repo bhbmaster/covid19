@@ -180,13 +180,13 @@ def graph4area(fig, fig_1, area, pop, c, nX, nA, nC, nD, nNC, nND, visible_areas
     if area == DEBUGAREA:
         print(f"*** DEBUG printing data frame for {area} ***")
         option_value_rows = pd.get_option('display.max_rows')
-        option_value_cols = pd.get_option('display.max_columns')
+        # option_value_cols = pd.get_option('display.max_columns') # commented out to fix (at least when setting to None): pandas._config.config.OptionError: 'Pattern matched multiple keys'
         pd.set_option('display.max_rows', None)
-        pd.set_option('display.max_columns', None)
+        # pd.set_option('display.max_columns', None) # commented out to fix: pandas._config.config.OptionError: 'Pattern matched multiple keys'
         carea = c[c[nA] == area]
         print(carea)
         pd.set_option('display.max_rows', option_value_rows)
-        pd.set_option('display.max_columns', option_value_cols)
+        # pd.set_option('display.max_columns', option_value_cols) # commented out to fix (at least when setting to None): pandas._config.config.OptionError: 'Pattern matched multiple keys'
 
     #####################################################
     # -- newcountconfirmed per 100K (moving average) -- #
