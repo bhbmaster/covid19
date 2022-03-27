@@ -177,7 +177,7 @@ SHELL=/bin/bash
 ```
 
 
-Run each script like so (python = python3.9 or newer):
+Instead of running `run.sh`, you can manually run each script like so (python = python3.9 or newer):
 
 ```bash
 python covid19plot.py                           # main world plotted
@@ -186,7 +186,7 @@ cd usa-ca; python county-plot.py; cd ..         # plot california counties
 cd canada; python canada-plot.py; cd ..         # plot canada provinces
 ```
 
-Or run with python wrapper script:
+When running run.sh you can kick it off into the background so that you can follow the output log it creates. (sidenote these logfiles on the root of covid19 dir are the ones processed by places.sh)
 
 ```bash
 ./run.sh &
