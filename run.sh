@@ -18,7 +18,7 @@
 # There are clean up instructions in places.sh comments on how to spot bad log files (that are not parseable) and delete them
 
 PYTHON="python3.9"
-# blocked for wsl # PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+# PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin # instead of setting here, can set in crontab
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 DATE=`date +%Y%m%d-%H%M%S`
 

@@ -12,7 +12,7 @@
 # # for i in run*out; do grep -q -- "- end" $i && echo "Found at $i" || echo "Missing at $i"; done | grep -v Found
 # Result is all of the run files missing good data, and therefore can be deleted as they are not parsable
 
-PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+# PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin # can set in crontab to fix it instead
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 cd "$DIR"
 

@@ -83,7 +83,7 @@ html-plots/US-plot-LOG-perpop.html       - values adjusted by population per 100
 
 * View requirements.txt to see the required python modules
 
-* This only works with Python 3.9. Why? The new `f"{var=}"` format is used in some of the prints
+* This is only tested with Python 3.9.0. It should work with anything newer and not older. Why? The new `f"{var=}"` format is introduced in 3.9 and is used in some of the prints
 
 * Internet access (see Other Requirements below)
 
@@ -163,7 +163,19 @@ From a MAC run `run-simple-open-mac.sh` which runs the same two scripts and then
 
 Just run `covid19plot.py` with `python3.9` or newer, that will gather data, parse it and generate directory html_plots/ and dump 2 graphs for each country (normal y axes and log y axes) in dir. As Total worldwide cases/recovery/deaths is not provided in the json time series, the script manually calculates from the data for each day by summing through all of the countries. It will provide both plots for TOTAL in the same dir as well. It then creates covid19-log.html and covid19-normal.html in the root directory for all of the countries, TOTAL at the top, then sorted by number of cases.
 
-If you want to run this on a schedule, I recommend running it after midnight each day as the timeseries data updates once a day. On my infotinks site it runs 3 times a day 00:05, 06:05, 12:05, 18:05 using crontab. It executes `run.sh` which runs `covid19plot.sh` and saves the output to `run-$DATE.out` and then it run `places.sh` (to generate the extra places document). All of this generates the output files `covid19-log.html`, `covid19-normal.html` and `places.html` which are linked to from my infotinks site.
+If you want to run this on a schedule, I recommend running it after midnight each day as the timeseries data updates once a day. On my infotinks site it runs 4 times a day 00:05, 06:05, 12:05, 18:05 using crontab. It executes `run.sh` which runs `covid19plot.sh` and saves the output to `run-$DATE.out` and then it run `places.sh` (to generate the extra places document). All of this generates the output files `covid19-log.html`, `covid19-normal.html` and `places.html` which are linked to from my infotinks site. It then runs all of the python plot files for Canada, USA States, and California counties.
+
+My crontab is setup to kick off everything from `run.sh` like this:
+
+```
+# env vars for processes - we have to specify PATH and one of those should include where your python3.9 process is
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+SHELL=/bin/bash
+
+# m h  dom mon dow   command
+5 0,6,12,18 * * * /var/www/covid19/run.sh
+```
+
 
 Run each script like so (python = python3.9 or newer):
 
