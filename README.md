@@ -372,4 +372,6 @@ The data sources are mentioned in two areas. So putting it here as well will be 
 
 ## To Do
 
-* added population info to country and create new plot html or add subplot with per 100K
+[x] Add population info to country and create new plot html or add subplot with per 100K
+
+[ ] Add new graph called Deaths Per Cases
