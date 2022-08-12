@@ -372,10 +372,22 @@ The data sources are mentioned in two areas. So putting it here as well will be 
 ## Docker build environment
 
 I created a Docker container via Dockerfile, that gives me a development environment to work on covid19.
+It clones the latest version of covid19. So its a perfect entry point into developing this code.
 The Dockerfile and build & run scripts are located in the dev-docker-env directory.
 If curious, check out the comments of the Dockerfile.
 There is also a wrapper script that does the build and run for you.
 This is build environment mostly for me (bhbmaster). However, if you want to work on it, simply edit the user.name and user.email. Otherwise, you will be making commits with my username, with no way to push ( as you do not know my password / API key :P ).
+
+**Tip:**
+
+Start the covid19 build environment on a system with docker with one command.
+This will download Dockerfile and build-and-run.sh and kick it off.
+
+Make sure docker is running and run this from an empty directory. 
+
+```bash
+curl PUTURLHERE | tr -d '\r' | bash
+```
 
 ## To Do
 
