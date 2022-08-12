@@ -77,7 +77,7 @@ def avgN(N,x,y):
     return (mov_x,mov_y)
 
 # input x dates and y values lists, output x (date list) and y (values) and r^2 and m and b0. uses last X days to predict
-# note already have a form of it in Country class below but we recreated it so it works without class here (POSSIBLE-TODO: might be good idea to get into common)
+# note already have a form of it in Country class below but we recreated it so it works without class here
 def lastXdayslinearpredict(x_dates, y_values, days=10):
     success=True
     try:
@@ -422,8 +422,6 @@ def covid_init_and_plot(covid_dataframe,area_and_pop_listoftups,filename_prefix,
     # subplots
     fig = make_subplots(rows=2, cols=2, shared_xaxes=True, subplot_titles=subplot_titles, column_widths=[bigportion, smallportion],horizontal_spacing=spacing,vertical_spacing=spacing) # shared_xaxes to maintain zoom on all
     fig_1 = make_subplots(rows=2, cols=2, shared_xaxes=True, subplot_titles=subplot_titles_1, column_widths=[bigportion, smallportion],horizontal_spacing=spacing,vertical_spacing=spacing) # shared_xaxes to maintain zoom on 
-
-    # TODO - got to here
 
     random_area = area_and_pop_listoftups[0][0]
     print(f"* {random_area=}")

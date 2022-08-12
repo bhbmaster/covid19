@@ -374,4 +374,6 @@ The data sources are mentioned in two areas. So putting it here as well will be 
 
 - [x] Add population info to country and create new plot html or add subplot with per 100K
 
-- [ ] Add new graph called Deaths Per Cases
+- [ ] Add new graph called Deaths Per Cases (maybe).
+
+- [ ] Fix Canada plots. They stopped updating on 2022-05-03 as the used data source stopped being updated. I found a better data source, info in the comments at the top of canada-plot.py.
