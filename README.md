@@ -365,10 +365,17 @@ See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stab
 The data sources are mentioned in two areas. So putting it here as well will be redundant.
 
 * First, you can see the data sources on http://www.infotinks.com/coronavirus-dashboard-covid19-py/. Scroll down to "Data Sources". 
-
 * Second, The world covid plots also list the data sources for all of the plots. These are at the bottom of the notes section, which comes before all of the country plots. The world covid plots can be viewed from two links (y-log or y-normal plot): 
 	* y-log plot: http://www.infotinks.com/covid19/covid19-log.html
 	* y-normal plot: http://www.infotinks.com/covid19/covid19-normal.html
+
+## Docker build environment
+
+I created a Docker container via Dockerfile, that gives me a development environment to work on covid19.
+The Dockerfile and build & run scripts are located in the dev-docker-env directory.
+If curious, check out the comments of the Dockerfile.
+There is also a wrapper script that does the build and run for you.
+This is build environment mostly for me (bhbmaster). However, if you want to work on it, simply edit the user.name and user.email. Otherwise, you will be making commits with my username, with no way to push ( as you do not know my password / API key :P ).
 
 ## To Do
 
