@@ -17,9 +17,15 @@ pd.set_option("max_colwidth", None)
 print("------------ preparing dataset -----------")
 print()
 
+# * old data set lasts until 2022-05-03:
 # dataset site: https://github.com/ccodwg/Covid19Canada
 # link: https://github.com/ccodwg/Covid19Canada/blob/master/timeseries_prov/active_timeseries_prov.csv
 # actually getting the date from raw github: https://raw.githubusercontent.com/ccodwg/Covid19Canada/master/timeseries_prov/active_timeseries_prov.csv
+
+# TODO * use this new data set, however, it is split between cases + deaths, so we will need to figure out how to combine them
+# dataset site: https://github.com/ccodwg/Covid19Canada
+# link (cases): https://raw.githubusercontent.com/ccodwg/CovidTimelineCanada/main/data/pt/cases_pt.csv
+# link (deaths): https://raw.githubusercontent.com/ccodwg/CovidTimelineCanada/main/data/pt/deaths_pt.csv
 
 # --- get data and manipulate it into correct form --- #
 

@@ -200,7 +200,7 @@ tail -F <log file>
 First create a python3 virtual environment and install the modules like so:
 ```bash
 cd <into root directory where covid19plot.py is>
-python3 -v venv env
+python3 -m venv env
 source env/bin/activate
 pip install -r requirements.txt
 ```
