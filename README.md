@@ -386,7 +386,7 @@ This will download Dockerfile and build-and-run.sh and kick it off.
 Make sure docker is running and run this from an empty directory. 
 
 ```bash
-curl PUTURLHERE | tr -d '\r' | bash
+curl https://raw.githubusercontent.com/bhbmaster/covid19/master/dev-docker-env/download-build-run.sh | tr -d '\r' | bash
 ```
 
 ## To Do
