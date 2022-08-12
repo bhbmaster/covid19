@@ -389,6 +389,8 @@ Make sure docker is running and run this from an empty directory.
 curl https://raw.githubusercontent.com/bhbmaster/covid19/master/dev-docker-env/download-build-run.sh | tr -d '\r' | bash
 ```
 
+Then follow the instructions to kick off the covid19 development container. You will have to run `./build-and-run.sh`.
+
 ## To Do
 
 - [x] Add population info to country and create new plot html or add subplot with per 100K
