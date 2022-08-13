@@ -29,11 +29,15 @@ print()
 
 # --- get data and manipulate it into correct form --- #
 
-covid_url='https://raw.githubusercontent.com/ccodwg/Covid19Canada/master/timeseries_prov/active_timeseries_prov.csv' # github
+covid_url='https://raw.githubusercontent.com/ccodwg/Covid19Canada/master/timeseries_prov/active_timeseries_prov.csv' # github (TODO: remove when fix canada-plot)
+covid_url_cases='https://raw.githubusercontent.com/ccodwg/CovidTimelineCanada/main/data/pt/cases_pt.csv'
+covid_url_deaths='https://raw.githubusercontent.com/ccodwg/CovidTimelineCanada/main/data/pt/deaths_pt.csv'
 population_file='canada-pop.csv' # local - got data from wikipedia https://en.wikipedia.org/wiki/Population_of_Canada_by_province_and_territory
 
 # --- output names --- #
-covid_csv_rx='canada.csv'
+covid_csv_rx='canada.csv' ####### (TODO: remove when fix canada-plot)
+covid_csv_rx_cases='canada-cases.csv' ####### new for fixing canada-plot
+covid_csv_rx_deaths='canada-deaths.csv' ####### new for fixing canada-plot
 covid_csv_final='canada-parsable.csv'
 filename_prefix="canada"
 plot_title="Canada Provinces & Territories"
@@ -62,19 +66,69 @@ print()
 
 ##### downloading/accessing and manipulating covid dataframe #####
 
-c = pd.read_csv(covid_url)
+c = pd.read_csv(covid_url) # (TODO: remove when fix canada-plot)
+c_cases = pd.read_csv(covid_url_cases) ####### new for fixing canada-plot
+c_deaths = pd.read_csv(covid_url_deaths) ####### new for fixing canada-plot
+
+######## notes for fixing canada plot
+# how original was received
+"""
+,province,date_active,cumulative_cases,cumulative_recovered,cumulative_deaths,active_cases,active_cases_change
+0,Alberta,25-01-2020,0,0,0,0,0
+1,Alberta,26-01-2020,0,0,0,0,0
+2,Alberta,27-01-2020,0,0,0,0,0
+"""
+# how final looks after all manipulations
+"""
+,date,area,cases,new_cases,deaths,new_deaths
+0,2020-01-25,Alberta,0,,0,
+1,2020-01-26,Alberta,0,0.0,0,0.0
+"""
+######## end of notes for fixing canada plot
 
 # analyze covid data
 print(f"RECEIVED DATA (saved to {covid_csv_rx}):")
 print()
-print(f"{c.describe()=}")
+print(f"RX c.describe():\n{c.describe()}")
 print()
-print(f"{c.tail()=}")
+print(f"RX c.tail():\n{c.tail()}")
 print()
-print(f"{c.columns=}")
+print(f"RX c.columns:\n{c.columns}")
 print()
 c.to_csv(covid_csv_rx) # save it locally
 c_original = c
+
+# analyze covid cases data ####### new for fixing canada-plot
+print(f"RECEIVED CASES DATA (saved to {covid_csv_rx_cases}):")
+print()
+print(f"RX c_cases.describe():\n{c_cases.describe()}")
+print()
+print(f"RX c_cases.tail():\n{c_cases.tail()}")
+print()
+print(f"RX c_cases.columns:\n{c_cases.columns}")
+print()
+c_cases.to_csv(covid_csv_rx_cases) # save it locally
+c_cases_original = c_cases
+
+# analyze covid deaths data ####### new for fixing canada-plot
+print(f"RECEIVED DEATHS DATA (saved to {covid_csv_rx_deaths}):")
+print()
+print(f"RX c_deaths.describe():\n{c_deaths.describe()}")
+print()
+print(f"RX c_deaths.tail():\n{c_deaths.tail()}")
+print()
+print(f"RX c_deaths.columns:\n{c_deaths.columns}")
+print()
+c_deaths.to_csv(covid_csv_rx_deaths) # save it locally
+c_deaths_original = c_deaths
+
+####### canada-plot: *** got to here *** now must analyze output of c_cases & c_deaths & c
+#######              above + associated csv files canada{,_cases,_deaths}.csv.
+#######              with analysis come up with plan on how to convert
+#######              c_cases and c_deaths to look like c or look like c3 or
+#######              cf below (which is saved to canada-parsable.csv). if doing the latter
+#######              plan of making it look like c3 or cf, might to change more code below.
+#######              otherwise, can stop after c.
 
 # renaming cols
 rename_dict = {"province": "area", "date_active": "date", "cumulative_cases": "cases", "cumulative_deaths": "deaths"}
@@ -131,7 +185,12 @@ for i, current_prov in enumerate(unique_provinces):
 # print and save
 print()
 print(f"FINAL PARSABLE DATA (saved to {covid_csv_final}):")
-print(f"{c3=}")
+print()
+print(f"FINAL c3.describe():\n{c3.describe()}")
+print()
+print(f"FINAL c3.tail():\n{c3.tail()}")
+print()
+print(f"FINAL c3.columns:\n{c3.columns}")
 c3.to_csv(covid_csv_final)
 
 # copy to final dataframe cf

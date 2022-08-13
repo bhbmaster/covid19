@@ -33,3 +33,8 @@ canada/notes*
 RUN.OUTPUT
 TODO.txt
 dev-docker-env/last-docker-build.txt
+*.log
+*.logerr
+*.err
+canada/canada-cases.csv
+canada/canada-deaths.csv
