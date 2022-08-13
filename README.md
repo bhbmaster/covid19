@@ -369,9 +369,9 @@ The data sources are mentioned in two areas. So putting it here as well will be 
 	* y-log plot: http://www.infotinks.com/covid19/covid19-log.html
 	* y-normal plot: http://www.infotinks.com/covid19/covid19-normal.html
 
-## DEV TIPS + DOCKER DEV END
+## DEV TIPS + DOCKER DEV ENVIRONMENT
 
-**Dev Tip1: Docker Build Environment**
+**(Dev Tip 1): Docker Build Environment**
 
 I created a Docker container via Dockerfile, that gives me a development environment to work on covid19.
 It clones the latest version of covid19. So its a perfect entry point into developing this code.
@@ -380,7 +380,7 @@ If curious, check out the comments of the Dockerfile.
 There is also a wrapper script that does the build and run for you.
 This is build environment mostly for me (bhbmaster). However, if you want to work on it, simply edit the user.name and user.email. Otherwise, you will be making commits with my username, with no way to push ( as you do not know my password / API key :P ).
 
-**Dev Tip2: Docker Build Environment In One Command**
+**(Dev Tip 2): Docker Build Environment In One Command**
 
 Start the covid19 build environment on a system with docker with one command.
 This will download Dockerfile and build-and-run.sh and kick it off.
@@ -393,7 +393,7 @@ curl https://raw.githubusercontent.com/bhbmaster/covid19/master/dev-docker-env/d
 
 Then follow the instructions to kick off the covid19 development container. You will have to run `./build-and-run.sh`.
 
-**Dev Tip3: Kicking Off The Plots Into Files**
+**(Dev Tip 3): Kicking Off The Plots Into Files**
 
 Below are helpful execution commands that run each plotter (covid, usa, california, and canada) and save stdout + stderr to the same file and on a second run to separate files. Has to run two times get that output. They are surrounded by `date` so you can see how long each run took.
 
