@@ -181,7 +181,7 @@ Instead of running `run.sh`, you can manually run each script like so (python = 
 
 ```bash
 python covid19plot.py                           # main world plotted
-cd usa-states; python states-plots.py; cd ..    # plot usa states
+cd usa-states; python states-plot.py; cd ..    # plot usa states
 cd usa-ca; python county-plot.py; cd ..         # plot california counties
 cd canada; python canada-plot.py; cd ..         # plot canada provinces
 ```
@@ -210,7 +210,7 @@ To run `covid19ploy.py` and `usa-ca/county-plot.py` and `usa-states/us-states.cs
 
 ```
 python3 covid19plot.py
-cd usa-states; python3 states-plots.py; cd ..
+cd usa-states; python3 states-plot.py; cd ..
 cd usa-ca; python3 county-plot.py; cd ..
 cd canada; python3 canada-plot.py; cd ..
 ```
