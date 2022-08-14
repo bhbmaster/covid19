@@ -3,7 +3,7 @@ import numpy as np
 import datetime
 import sys
 sys.path.append("..")    # so we can import common from previous directory
-from common import covid_init_and_plot, pd_quick_info # local module but up one directory hence the sys path append ..
+from common import covid_init_and_plot, pd_quick_info_maybe_save # local module but up one directory hence the sys path append ..
 
 ### presetting pandas for correct stdout output ###
 
@@ -60,7 +60,7 @@ c=pd.read_csv(url_data)
 print("* downloading data complete")
 print()
 
-pd_quick_info(c, "RECEIVED DATA", csv_file)
+pd_quick_info_maybe_save(c, "RECEIVED DATA", csv_file)
 # print(f"RECEIVED DATA (saved to {csv_file}):")
 # print()
 # print(f"RX c.describe():\n{c.describe()}")
@@ -69,7 +69,7 @@ pd_quick_info(c, "RECEIVED DATA", csv_file)
 # print()
 # print(f"RX c.columns:\n{c.columns}")
 # print()
-c.to_csv(csv_file)
+# c.to_csv(csv_file)
 
 # reformat data frame
 def reformat_counties_data_frame_with_columns(c, cols):
@@ -167,7 +167,7 @@ except:
        'REPORTED_TESTS'])
 
 print()
-pd_quick_info(c, "FINAL PARSABLE DATA", csv_file_parsable)
+pd_quick_info_maybe_save(c, "FINAL PARSABLE DATA", csv_file_parsable)
 # print(f"CONVERTED TO PARSABLE DATA (saved to {csv_file_parsable}):")
 # print()
 # print(f"FINAL c.describe():\n{c.describe()}")
@@ -175,7 +175,7 @@ pd_quick_info(c, "FINAL PARSABLE DATA", csv_file_parsable)
 # print(f"FINAL c.tail():\n{c.tail()}")
 # print()
 # print(f"FINAL c.columns:\n{c.columns}")
-c.to_csv(csv_file_parsable)
+# c.to_csv(csv_file_parsable)
 
 
 ###################################################

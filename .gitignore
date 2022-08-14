@@ -38,3 +38,4 @@ dev-docker-env/last-docker-build.txt
 *.err
 canada/canada-cases.csv
 canada/canada-deaths.csv
+canada/canada-merged.csv

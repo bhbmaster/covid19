@@ -3,7 +3,7 @@ import numpy as np
 import datetime
 import sys
 sys.path.append("..")    # so we can import common from previous directory
-from common import covid_init_and_plot, pd_quick_info # local module but up one directory hence the sys path append ..
+from common import covid_init_and_plot, pd_quick_info_maybe_save # local module but up one directory hence the sys path append ..
 
 ###########################################################
 
@@ -53,7 +53,7 @@ print(f"* {visible_states=}")
 print()
 
 # analyze covid data
-pd_quick_info(c, "RECEIVED DATA", csv_file)
+pd_quick_info_maybe_save(c, "RECEIVED DATA", csv_file)
 # print(f"RECEIVED DATA (saved to {csv_file}):")
 # print()
 # print(f"RX c.describe():\n{c.describe()}")
@@ -62,7 +62,7 @@ pd_quick_info(c, "RECEIVED DATA", csv_file)
 # print()
 # print(f"RX c.columns:\n{c.columns}")
 # print()
-c.to_csv(csv_file) # save it locally
+# c.to_csv(csv_file) # save it locally
 c_original=c
 
 # goal is to get to look like this:
@@ -98,7 +98,7 @@ for i,current_state in enumerate(unique_states):
 	c1=c1.append(cpart, ignore_index = True)
 
 print()
-pd_quick_info(c1, "FINAL DATA", csv_file_parsable)
+pd_quick_info_maybe_save(c1, "FINAL DATA", csv_file_parsable)
 # print(f"FINAL PARSABLE DATA (saved to {csv_file_parsable}):")
 # print()
 # print(f"FINAL c1.describe():\n{c1.describe()}")
@@ -106,7 +106,7 @@ pd_quick_info(c1, "FINAL DATA", csv_file_parsable)
 # print(f"FINAL c1.tail():\n{c1.tail()}")
 # print()
 # print(f"FINAL c1.columns:\n{c1.columns}")
-c1.to_csv(csv_file_parsable)
+# c1.to_csv(csv_file_parsable)
 
 # at this point lets call it cf (cfinal) and thats what we will use for plotting
 cf = c1

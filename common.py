@@ -423,11 +423,18 @@ def covid_init_and_plot(covid_dataframe,area_and_pop_listoftups,filename_prefix,
     fig = make_subplots(rows=2, cols=2, shared_xaxes=True, subplot_titles=subplot_titles, column_widths=[bigportion, smallportion],horizontal_spacing=spacing,vertical_spacing=spacing) # shared_xaxes to maintain zoom on all
     fig_1 = make_subplots(rows=2, cols=2, shared_xaxes=True, subplot_titles=subplot_titles_1, column_widths=[bigportion, smallportion],horizontal_spacing=spacing,vertical_spacing=spacing) # shared_xaxes to maintain zoom on 
 
-    random_area = area_and_pop_listoftups[0][0]
-    print(f"* {random_area=}")
-    last_x = covid_dataframe[covid_dataframe[cvAREA] == random_area][cvDATE].values.tolist()[-1]
-    print(f"* {last_x=} of {random_area=}")
-    print()
+    # Get last date of random area
+    # random_area = area_and_pop_listoftups[0][0]
+    # print(f"* {random_area=}")
+    # last_x = covid_dataframe[covid_dataframe[cvAREA] == random_area][cvDATE].values.tolist()[-1]
+    # print(f"* {last_x=} of {random_area=}")
+    # print()
+
+    # Get last date always
+    tmp_df = covid_dataframe
+    tmp_df.sort_values(by=[cvDATE])
+    last_x = tmp_df[cvDATE].values.tolist()[-1]
+    print(f"* {last_x=}")
 
     # plot options
     # supported fonts: https://plotly.com/python/reference/layout/
@@ -498,7 +505,11 @@ def THOUSAND(number):
     return f"{number:,}"
 
 # print pandas table for prevew
-def pd_quick_info(data_frame, prefix="",save_to=""):
+def pd_quick_info_maybe_save(data_frame, prefix="",save_to=""):
+    # data_frame: data_frame we want to get quick information about
+    # prefix: for the quick info
+    # save_to: file name that we will save to. if empty / not given then will not save
+    #
     # adjust prefix if it has data
     if not prefix == "":
         prefix = prefix.strip() # remove left & right space
@@ -508,7 +519,7 @@ def pd_quick_info(data_frame, prefix="",save_to=""):
         print(f"*** {prefix} QUICK INFO: ***")
     else:
         save_to = save_to.strip()
-        print(f"*** {prefix} QUICK INFO (saved to {save_to}): ***")
+        print(f"*** {prefix} QUICK INFO (saving to {save_to}): ***")
     print()
     print(f"{prefix}data_frame.describe():\n{data_frame.describe()}")
     print()
@@ -518,6 +529,10 @@ def pd_quick_info(data_frame, prefix="",save_to=""):
     print()
     print(f"{prefix}data_frame:\n{data_frame}")
     print()
+    if not save_to == "":
+        data_frame.to_csv(save_to)
+        print(f"* saved to: {save_to}")
+        print()
 
 ###############
 ### classes ###
