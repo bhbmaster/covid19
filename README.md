@@ -418,14 +418,14 @@ date; python3 canada-plot.py &> canada-plot.logerr; date; python3 canada-plot.py
 
 ## To Do
 
-- [x] Add population info to country and create new plot html or add subplot with per 100K
+- [x] Add population info to country and create new plot html or add subplot with per 100K.
 
 - [ ] Add new graph called Deaths Per Cases (maybe).
 
 - [x] Fix Canada plots. They stopped updating on 2022-05-03 as the used data source stopped being updated. I found a better data source, info in the comments at the top of canada-plot.py. Update: successfully merged cases + deaths. now need to try and plot with it.
 
-- [ ] Update all places we talk about data sources, and mention this new data source. locations to keep in mind: infotinks and both covid19 output html plots
+- [ ] Update all places we talk about data sources, and mention this new data source. locations to keep in mind: infotinks and both covid19 output html plots.
 
-- [x] Clean up comments from working on Fix Canada Plots
+- [x] Clean up comments from working on Fix Canada Plots.
 
-- [ ] Fix style / lynt problems reported in "PROBLEMS" tab of the terminal in VSCode. At least fix as many as possible without hurting the program function.
+- [ ] Fix style / lint problems reported in "PROBLEMS" tab of the terminal in VSCode. At least fix as many as possible without hurting the program function.
