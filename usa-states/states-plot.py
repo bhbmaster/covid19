@@ -88,32 +88,15 @@ for i,current_state in enumerate(unique_states):
 	# print(cpart.tail())
 	c1=c1.append(cpart, ignore_index = True)
 
+# show results of final data frame before plotting
 print()
 pd_quick_info_maybe_save(c1, "FINAL DATA", csv_file_parsable)
-
-# at this point lets call it cf (cfinal) and thats what we will use for plotting
-cf = c1
-
-# what we have at this point:
-#              date    state  cases  newcases deaths  newdeaths
-# 0      2020-03-13  Alabama      6       NaN      0        NaN
-# 1      2020-03-14  Alabama     12       6.0      0        0.0
-# 2      2020-03-15  Alabama     23      11.0      0        0.0
-# 3      2020-03-16  Alabama     29       6.0      0        0.0
-# 4      2020-03-17  Alabama     39      10.0      0        0.0
-# ...
-# 21624  2021-03-26  Wyoming  56046     126.0    695        0.0
-# 21625  2021-03-27  Wyoming  56046       0.0    695        0.0
-# 21626  2021-03-28  Wyoming  56046       0.0    695        0.0
-# 21627  2021-03-29  Wyoming  56190     144.0    695        0.0
-# 21628  2021-03-30  Wyoming  56236      46.0    695        0.0
-# [21629 rows x 6 columns]
 
 #################################################
 #                     PLOT                      #
 #################################################
 
 # plot
-covid_init_and_plot(cf,cpop_list,filename_prefix,plot_title,[ "date", "state", "cases", "deaths", "newcases", "newdeaths" ],visible_states,to_get_to_root="..",DEBUGAREA="")
+covid_init_and_plot(c1,cpop_list,filename_prefix,plot_title,[ "date", "state", "cases", "deaths", "newcases", "newdeaths" ],visible_states,to_get_to_root="..",DEBUGAREA="")
 
 ##### END #####

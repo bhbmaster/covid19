@@ -157,6 +157,7 @@ except:
        'TOTAL_TESTS', 'POSITIVE_TESTS', 'REPORTED_CASES', 'REPORTED_DEATHS',
        'REPORTED_TESTS'])
 
+# show results of final data frame before plotting
 print()
 pd_quick_info_maybe_save(c, "FINAL PARSABLE DATA", csv_file_parsable)
 
