@@ -61,15 +61,6 @@ print("* downloading data complete")
 print()
 
 pd_quick_info_maybe_save(c, "RECEIVED DATA", csv_file)
-# print(f"RECEIVED DATA (saved to {csv_file}):")
-# print()
-# print(f"RX c.describe():\n{c.describe()}")
-# print()
-# print(f"RX c.head():\n{c.head()}")
-# print()
-# print(f"RX c.columns:\n{c.columns}")
-# print()
-# c.to_csv(csv_file)
 
 # reformat data frame
 def reformat_counties_data_frame_with_columns(c, cols):
@@ -168,15 +159,6 @@ except:
 
 print()
 pd_quick_info_maybe_save(c, "FINAL PARSABLE DATA", csv_file_parsable)
-# print(f"CONVERTED TO PARSABLE DATA (saved to {csv_file_parsable}):")
-# print()
-# print(f"FINAL c.describe():\n{c.describe()}")
-# print()
-# print(f"FINAL c.tail():\n{c.tail()}")
-# print()
-# print(f"FINAL c.columns:\n{c.columns}")
-# c.to_csv(csv_file_parsable)
-
 
 ###################################################
 #              PLOTTING                           #

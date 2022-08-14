@@ -54,15 +54,6 @@ print()
 
 # analyze covid data
 pd_quick_info_maybe_save(c, "RECEIVED DATA", csv_file)
-# print(f"RECEIVED DATA (saved to {csv_file}):")
-# print()
-# print(f"RX c.describe():\n{c.describe()}")
-# print()
-# print(f"RX c.tail():\n{c.tail()}")
-# print()
-# print(f"RX c.columns:\n{c.columns}")
-# print()
-# c.to_csv(csv_file) # save it locally
 c_original=c
 
 # goal is to get to look like this:
@@ -99,14 +90,6 @@ for i,current_state in enumerate(unique_states):
 
 print()
 pd_quick_info_maybe_save(c1, "FINAL DATA", csv_file_parsable)
-# print(f"FINAL PARSABLE DATA (saved to {csv_file_parsable}):")
-# print()
-# print(f"FINAL c1.describe():\n{c1.describe()}")
-# print()
-# print(f"FINAL c1.tail():\n{c1.tail()}")
-# print()
-# print(f"FINAL c1.columns:\n{c1.columns}")
-# c1.to_csv(csv_file_parsable)
 
 # at this point lets call it cf (cfinal) and thats what we will use for plotting
 cf = c1

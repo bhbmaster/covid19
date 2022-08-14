@@ -55,8 +55,6 @@ print()
 
 ##### downloading/accessing and manipulating covid dataframe #####
 
-####### print("* downloading data 1/3") # (TODO: remove when fix canada-plot)
-####### c = pd.read_csv(covid_url) # (TODO: remove when fix canada-plot)
 print("* downloading data 1/2")
 c_cases = pd.read_csv(covid_url_cases) ####### new for fixing canada-plot
 print("* downloading data 2/2")
