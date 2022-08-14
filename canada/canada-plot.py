@@ -18,7 +18,7 @@ print("------------ preparing dataset -----------")
 print()
 
 # --- get data and manipulate it into correct form --- #
-# started using new data 2022-08-13
+# started using new data 2022-08-13 provided by "COVID-19 Canada Open Data Working Group" on https://opencovid.ca/
 covid_url_cases='https://raw.githubusercontent.com/ccodwg/CovidTimelineCanada/main/data/pt/cases_pt.csv'
 covid_url_deaths='https://raw.githubusercontent.com/ccodwg/CovidTimelineCanada/main/data/pt/deaths_pt.csv'
 population_file='canada-pop.csv' # local - got data from wikipedia https://en.wikipedia.org/wiki/Population_of_Canada_by_province_and_territory
