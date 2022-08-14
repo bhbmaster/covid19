@@ -422,7 +422,7 @@ date; python3 canada-plot.py &> canada-plot.logerr; date; python3 canada-plot.py
 
 - [ ] Add new graph called Deaths Per Cases (maybe).
 
-- [ ] Fix Canada plots. They stopped updating on 2022-05-03 as the used data source stopped being updated. I found a better data source, info in the comments at the top of canada-plot.py.
+- [ ] Fix Canada plots. They stopped updating on 2022-05-03 as the used data source stopped being updated. I found a better data source, info in the comments at the top of canada-plot.py. Update: successfully merged cases + deaths. now need to try and plot with it. Also do not forget to update all places we talk about data sources, and mention this new data source (infotinks and covid19 output html plots)
 
 - [ ] Clean up comments from working on Fix Canada Plots
 
