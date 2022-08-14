@@ -423,3 +423,7 @@ date; python3 canada-plot.py &> canada-plot.logerr; date; python3 canada-plot.py
 - [ ] Add new graph called Deaths Per Cases (maybe).
 
 - [ ] Fix Canada plots. They stopped updating on 2022-05-03 as the used data source stopped being updated. I found a better data source, info in the comments at the top of canada-plot.py.
+
+- [ ] Clean up comments from working on Fix Canada Plots
+
+- [ ] Fix style / lynt problems reported in "PROBLEMS" tab of the terminal in VSCode. At least fix as many as possible without hurting the program function.

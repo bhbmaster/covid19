@@ -3,7 +3,7 @@ import numpy as np
 import datetime
 import sys
 sys.path.append("..")    # so we can import common from previous directory
-from common import covid_init_and_plot  # local module but up one directory hence the sys path append ..
+from common import covid_init_and_plot, pd_quick_info  # local module but up one directory hence the sys path append ..
 
 ###########################################################
 
@@ -66,9 +66,14 @@ print()
 
 ##### downloading/accessing and manipulating covid dataframe #####
 
+print("* downloading data 1/3") # (TODO: remove when fix canada-plot)
 c = pd.read_csv(covid_url) # (TODO: remove when fix canada-plot)
+print("* downloading data 2/3")
 c_cases = pd.read_csv(covid_url_cases) ####### new for fixing canada-plot
+print("* downloading data 3/3")
 c_deaths = pd.read_csv(covid_url_deaths) ####### new for fixing canada-plot
+print("* downloading data complete")
+print()
 
 ######## notes for fixing canada plot
 # how original was received
@@ -87,38 +92,41 @@ c_deaths = pd.read_csv(covid_url_deaths) ####### new for fixing canada-plot
 ######## end of notes for fixing canada plot
 
 # analyze covid data
-print(f"RECEIVED DATA (saved to {covid_csv_rx}):")
-print()
-print(f"RX c.describe():\n{c.describe()}")
-print()
-print(f"RX c.tail():\n{c.tail()}")
-print()
-print(f"RX c.columns:\n{c.columns}")
-print()
+pd_quick_info(c,"RECEIVED DATA",covid_csv_rx)
+# print(f"RECEIVED DATA (saved to {covid_csv_rx}):")
+# print()
+# print(f"RX c.describe():\n{c.describe()}")
+# print()
+# print(f"RX c.tail():\n{c.tail()}")
+# print()
+# print(f"RX c.columns:\n{c.columns}")
+# print()
 c.to_csv(covid_csv_rx) # save it locally
 c_original = c
 
 # analyze covid cases data ####### new for fixing canada-plot
-print(f"RECEIVED CASES DATA (saved to {covid_csv_rx_cases}):")
-print()
-print(f"RX c_cases.describe():\n{c_cases.describe()}")
-print()
-print(f"RX c_cases.tail():\n{c_cases.tail()}")
-print()
-print(f"RX c_cases.columns:\n{c_cases.columns}")
-print()
+pd_quick_info(c_cases,"RECEIVED CASES DATA",covid_csv_rx_cases)
+# print(f"RECEIVED CASES DATA (saved to {covid_csv_rx_cases}):")
+# print()
+# print(f"RX c_cases.describe():\n{c_cases.describe()}")
+# print()
+# print(f"RX c_cases.tail():\n{c_cases.tail()}")
+# print()
+# print(f"RX c_cases.columns:\n{c_cases.columns}")
+# print()
 c_cases.to_csv(covid_csv_rx_cases) # save it locally
 c_cases_original = c_cases
 
 # analyze covid deaths data ####### new for fixing canada-plot
-print(f"RECEIVED DEATHS DATA (saved to {covid_csv_rx_deaths}):")
-print()
-print(f"RX c_deaths.describe():\n{c_deaths.describe()}")
-print()
-print(f"RX c_deaths.tail():\n{c_deaths.tail()}")
-print()
-print(f"RX c_deaths.columns:\n{c_deaths.columns}")
-print()
+pd_quick_info(c_deaths,"RECEIVED DEATHS DATA",covid_csv_rx_deaths)
+# print(f"RECEIVED DEATHS DATA (saved to {covid_csv_rx_deaths}):")
+# print()
+# print(f"RX c_deaths.describe():\n{c_deaths.describe()}")
+# print()
+# print(f"RX c_deaths.tail():\n{c_deaths.tail()}")
+# print()
+# print(f"RX c_deaths.columns:\n{c_deaths.columns}")
+# print()
 c_deaths.to_csv(covid_csv_rx_deaths) # save it locally
 c_deaths_original = c_deaths
 
@@ -129,6 +137,77 @@ c_deaths_original = c_deaths
 #######              cf below (which is saved to canada-parsable.csv). if doing the latter
 #######              plan of making it look like c3 or cf, might to change more code below.
 #######              otherwise, can stop after c.
+
+####### merge tables
+####### https://pandas.pydata.org/pandas-docs/stable/user_guide/merging.html#brief-primer-on-merge-methods-relational-algebra
+
+# cases has more items so its going to be on the left (x)
+c_merged = pd.merge(c_cases, c_deaths, on=["region", "date"])
+
+pd_quick_info(c_merged, "MERGED DATA")
+# print(f"MERGED DATA:")
+# print()
+# print(f"MERGED c_merged.describe():\n{c_merged.describe()}")
+# print()
+# print(f"MERGED c_merged.tail():\n{c_merged.tail()}")
+# print()
+# print(f"MERGED c_merged.columns:\n{c_merged.columns}")
+# print()
+# print(f"MERGED c_merged:\n{c_merged}")
+# print()
+
+del c_merged["name_x"]
+del c_merged["name_y"]
+
+rename_dict = {"region": "area", "value_x":"cases", "value_daily_x":"new_cases", "value_y":"deaths", "value_daily_y":"new_deaths" }
+c_merged_mod_renamed = c_merged.rename(columns=rename_dict)
+
+# reference target column names
+# ,date,area,cases,new_cases,deaths,new_deaths
+
+pd_quick_info(c_merged_mod_renamed, "MERGED_MOD DATA")
+# print(f"MERGED_MOD DATA:")
+# print()
+# print(f"MERGED_MOD c_merged_mod_renamed.describe():\n{c_merged_mod_renamed.describe()}")
+# print()
+# print(f"MERGED_MOD c_merged_mod_renamed.tail():\n{c_merged_mod_renamed.tail()}")
+# print()
+# print(f"MERGED_MOD c_merged_mod_renamed.columns:\n{c_merged_mod_renamed.columns}")
+# print()
+# print(f"MERGED_MOD c_merged_mod_renamed:\n{c_merged_mod_renamed}")
+# print()
+
+# trying other merge
+c_merged_OTHER = pd.merge(c_deaths, c_cases, on=["region", "date"])
+del c_merged_OTHER["name_x"]
+del c_merged_OTHER["name_y"]
+rename_dict_OTHER = {"region": "area", "value_y":"cases", "value_daily_y":"new_cases", "value_x":"deaths", "value_daily_x":"new_deaths" }
+c_merged_mod_renamed_OTHER = c_merged_OTHER.rename(columns=rename_dict_OTHER)
+
+pd_quick_info(c_merged_mod_renamed_OTHER, "MERGED_MOD_OTHER")
+# print(f"MERGED_MOD_OTHER DATA:")
+# print()
+# print(f"MERGED_MOD_OTHER c_merged_mod_renamed_OTHER.describe():\n{c_merged_mod_renamed_OTHER.describe()}")
+# print()
+# print(f"MERGED_MOD_OTHER c_merged_mod_renamed_OTHER.tail():\n{c_merged_mod_renamed_OTHER.tail()}")
+# print()
+# print(f"MERGED_MOD_OTHER c_merged_mod_renamed_OTHER.columns:\n{c_merged_mod_renamed_OTHER.columns}")
+# print()
+# print(f"MERGED_MOD_OTHER c_merged_mod_renamed_OTHER:\n{c_merged_mod_renamed_OTHER}")
+# print()
+
+# pick table merge with most items
+# table merge 1: cases, deaths
+# table merge 2: deaths, cases
+# if the same pick item 1
+row_count_cd = c_merged_mod_renamed.shape[0]
+row_count_dc = c_merged_mod_renamed_OTHER.shape[0]
+
+c_merged_final = c_merged_mod_renamed if row_count_cd > row_count_dc else c_merged_mod_renamed_OTHER
+
+####### TODO canada-plot-fix: got to here, perfectly merged cases & deaths tables
+
+sys.exit(0) # DEBUG
 
 # renaming cols
 rename_dict = {"province": "area", "date_active": "date", "cumulative_cases": "cases", "cumulative_deaths": "deaths"}
@@ -184,13 +263,14 @@ for i, current_prov in enumerate(unique_provinces):
 
 # print and save
 print()
-print(f"FINAL PARSABLE DATA (saved to {covid_csv_final}):")
-print()
-print(f"FINAL c3.describe():\n{c3.describe()}")
-print()
-print(f"FINAL c3.tail():\n{c3.tail()}")
-print()
-print(f"FINAL c3.columns:\n{c3.columns}")
+pd_quick_info(c3, "FINAL DATA", covid_csv_final)
+# print(f"FINAL PARSABLE DATA (saved to {covid_csv_final}):")
+# print()
+# print(f"FINAL c3.describe():\n{c3.describe()}")
+# print()
+# print(f"FINAL c3.tail():\n{c3.tail()}")
+# print()
+# print(f"FINAL c3.columns:\n{c3.columns}")
 c3.to_csv(covid_csv_final)
 
 # copy to final dataframe cf

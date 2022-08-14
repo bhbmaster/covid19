@@ -497,6 +497,28 @@ def THOUSAND(number):
         return f"N/A"
     return f"{number:,}"
 
+# print pandas table for prevew
+def pd_quick_info(data_frame, prefix="",save_to=""):
+    # adjust prefix if it has data
+    if not prefix == "":
+        prefix = prefix.strip() # remove left & right space
+        prefix = prefix + " " # add one space
+    # MAYBE-TODO: maybe replace "data_frame" with name of the object from calling function
+    if save_to == "":
+        print(f"*** {prefix} QUICK INFO: ***")
+    else:
+        save_to = save_to.strip()
+        print(f"*** {prefix} QUICK INFO (saved to {save_to}): ***")
+    print()
+    print(f"{prefix}data_frame.describe():\n{data_frame.describe()}")
+    print()
+    print(f"{prefix}data_frame.tail():\n{data_frame.tail()}")
+    print()
+    print(f"{prefix}data_frame.columns:\n{data_frame.columns}")
+    print()
+    print(f"{prefix}data_frame:\n{data_frame}")
+    print()
+
 ###############
 ### classes ###
 ###############

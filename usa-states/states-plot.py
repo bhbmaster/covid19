@@ -3,7 +3,7 @@ import numpy as np
 import datetime
 import sys
 sys.path.append("..")    # so we can import common from previous directory
-from common import covid_init_and_plot # local module but up one directory hence the sys path append ..
+from common import covid_init_and_plot, pd_quick_info # local module but up one directory hence the sys path append ..
 
 ###########################################################
 
@@ -30,7 +30,11 @@ cpops = pd.read_csv(file_pop,index_col="Rank", skiprows=[1])  # we add skiprows=
 
 # covid data
 url_data = "https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv"
+
+print("* downloading data 1/1")
 c = pd.read_csv(url_data)
+print("* downloading data complete")
+print()
 
 # analyze and parse population
 cpops_state_list = cpops["State"].values.tolist()
@@ -49,14 +53,15 @@ print(f"* {visible_states=}")
 print()
 
 # analyze covid data
-print(f"RECEIVED DATA (saved to {csv_file}):")
-print()
-print(f"RX c.describe():\n{c.describe()}")
-print()
-print(f"RX c.tail():\n{c.tail()}")
-print()
-print(f"RX c.columns:\n{c.columns}")
-print()
+pd_quick_info(c, "RECEIVED DATA", csv_file)
+# print(f"RECEIVED DATA (saved to {csv_file}):")
+# print()
+# print(f"RX c.describe():\n{c.describe()}")
+# print()
+# print(f"RX c.tail():\n{c.tail()}")
+# print()
+# print(f"RX c.columns:\n{c.columns}")
+# print()
 c.to_csv(csv_file) # save it locally
 c_original=c
 
@@ -93,13 +98,14 @@ for i,current_state in enumerate(unique_states):
 	c1=c1.append(cpart, ignore_index = True)
 
 print()
-print(f"FINAL PARSABLE DATA (saved to {csv_file_parsable}):")
-print()
-print(f"FINAL c1.describe():\n{c1.describe()}")
-print()
-print(f"FINAL c1.tail():\n{c1.tail()}")
-print()
-print(f"FINAL c1.columns:\n{c1.columns}")
+pd_quick_info(c1, "FINAL DATA", csv_file_parsable)
+# print(f"FINAL PARSABLE DATA (saved to {csv_file_parsable}):")
+# print()
+# print(f"FINAL c1.describe():\n{c1.describe()}")
+# print()
+# print(f"FINAL c1.tail():\n{c1.tail()}")
+# print()
+# print(f"FINAL c1.columns:\n{c1.columns}")
 c1.to_csv(csv_file_parsable)
 
 # at this point lets call it cf (cfinal) and thats what we will use for plotting

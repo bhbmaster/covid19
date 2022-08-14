@@ -3,7 +3,7 @@ import numpy as np
 import datetime
 import sys
 sys.path.append("..")    # so we can import common from previous directory
-from common import covid_init_and_plot # local module but up one directory hence the sys path append ..
+from common import covid_init_and_plot, pd_quick_info # local module but up one directory hence the sys path append ..
 
 ### presetting pandas for correct stdout output ###
 
@@ -55,18 +55,23 @@ cpop_list.sort(key=lambda x:x[0]) # sort by first field county so alphabet
 url_data="https://data.chhs.ca.gov/dataset/f333528b-4d38-4814-bebb-12db1f10f535/resource/046cdd2b-31e5-4d34-9ed3-b48cdbc4be7a/download/covid19cases_test.csv" # NEW
 
 # read in covid data for california counties
+print("* downloading data 1/1")
 c=pd.read_csv(url_data)
-print(f"RECEIVED DATA (saved to {csv_file}):")
+print("* downloading data complete")
 print()
-print(f"RX c.describe():\n{c.describe()}")
-print()
-print(f"RX c.head():\n{c.head()}")
-print()
-print(f"RX c.columns:\n{c.columns}")
-print()
+
+pd_quick_info(c, "RECEIVED DATA", csv_file)
+# print(f"RECEIVED DATA (saved to {csv_file}):")
+# print()
+# print(f"RX c.describe():\n{c.describe()}")
+# print()
+# print(f"RX c.head():\n{c.head()}")
+# print()
+# print(f"RX c.columns:\n{c.columns}")
+# print()
 c.to_csv(csv_file)
 
-# reformat dataframe
+# reformat data frame
 def reformat_counties_data_frame_with_columns(c, cols):
 
     # c is the dataframe
@@ -162,13 +167,14 @@ except:
        'REPORTED_TESTS'])
 
 print()
-print(f"CONVERTED TO PARSABLE DATA (saved to {csv_file_parsable}):")
-print()
-print(f"FINAL c.describe():\n{c.describe()}")
-print()
-print(f"FINAL c.tail():\n{c.tail()}")
-print()
-print(f"FINAL c.columns:\n{c.columns}")
+pd_quick_info(c, "FINAL PARSABLE DATA", csv_file_parsable)
+# print(f"CONVERTED TO PARSABLE DATA (saved to {csv_file_parsable}):")
+# print()
+# print(f"FINAL c.describe():\n{c.describe()}")
+# print()
+# print(f"FINAL c.tail():\n{c.tail()}")
+# print()
+# print(f"FINAL c.columns:\n{c.columns}")
 c.to_csv(csv_file_parsable)
 
 
