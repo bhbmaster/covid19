@@ -1,6 +1,4 @@
 import pandas as pd
-import numpy as np
-import datetime
 import sys
 sys.path.append("..")    # so we can import common from previous directory
 from common import covid_init_and_plot, pd_quick_info_maybe_save  # local module but up one directory hence the sys path append ..
