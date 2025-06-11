@@ -250,7 +250,7 @@ covid19plot# ls --hide "run*" --hide "*html" -R -l
 -rw-r--r-- 1 root root 27338240 Mar  2 18:07 covid19-normal-perpop.html  # relative to population normal plots of country covid stats
 -rw-r--r-- 1 root root  7189726 Mar  2 18:07 places.html          # ranking countries from highest to lowest cases each day
 
--rw-r--r-- 1 root root   646 Mar  2 00:35 PLOTLY_THEME          # theme file
+-rw-r--r-- 1 root root   646 Mar  2 00:35 PLOTLY_THEME          # graph template,font,size settings
 -rw-r--r-- 1 root root  6155 Mar  1 22:10 README.md             # this readme
 -rw-r--r-- 1 root root     9 Mar  2 10:26 VERSION               # version
 -rwxr-xr-x 1 root root  1364 Feb 25 16:30 places.sh             # parses output files generated from run.sh & generates places.html 

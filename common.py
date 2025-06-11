@@ -21,7 +21,7 @@ PER = 100000 # when we display relative data this is the per value so we do per 
 PER_TEXT = "100K" # text version, so we type less when we talk about it
 ndays = 7 # how many days is the moving average averaging
 predictdays = 30 # how many days to predict back and forward with linear regression fit
-COLOR_LIST = px.colors.qualitative.Vivid # this sets the colorway option in layout
+COLOR_LIST = px.colors.qualitative.Plotly # this sets the colorway option in layout
 COLOR_LIST_LEN = len(COLOR_LIST) # we will use the mod of this later
 
 #################
