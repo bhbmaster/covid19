@@ -151,7 +151,7 @@ try:
        'reported_tests'])
 except:
     # trying upper case and returning if date or DATE, area or AREA, cases or CASES, deaths or DEATHS, and modified c dataframe
-    DATE, AREA, CASES, DEATHS, c = reformat_counties_data_frame_with_columns(c, ['DATE', 'AREA', 'AREA_TYPE', 'POPULATUIB', 'CASES', 'DEATHS',
+    DATE, AREA, CASES, DEATHS, c = reformat_counties_data_frame_with_columns(c, ['DATE', 'AREA', 'AREA_TYPE', 'POPULATION', 'CASES', 'DEATHS',
        'TOTAL_TESTS', 'POSITIVE_TESTS', 'REPORTED_CASES', 'REPORTED_DEATHS',
        'REPORTED_TESTS'])
 
