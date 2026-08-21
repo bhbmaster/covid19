@@ -1,14 +1,22 @@
 import pandas as pd
 import sys
 sys.path.append("..")    # so we can import common from previous directory
-from common import covid_init_and_plot, pd_quick_info_maybe_save # local module but up one directory hence the sys path append ..
+from common import (  # local module but up one directory hence the sys path append ..
+    covid_init_and_plot,
+    pd_quick_info_maybe_save,
+    pandas_display_options,
+    read_csv_from_url,
+    add_daily_diffs,
+    NYT_US_STATES_CSV,
+    NYT_COVID_REPO,
+)
 
 ###########################################################
 
 ### presetting pandas for correct stdout output ###
 
-pd.set_option("max_colwidth", None)
-# pd.set_option("max_columns", None) # commented out to fix: pandas._config.config.OptionError: 'Pattern matched multiple keys'
+pandas_display_options()
+# pd.set_option("display.max_columns", None) # commented out to fix: pandas._config.config.OptionError: 'Pattern matched multiple keys'
 
 # prework
 print("------------ preparing dataset -----------")
@@ -26,11 +34,12 @@ plot_title = "US States"
 file_pop = "states-pop.csv"
 cpops = pd.read_csv(file_pop,index_col="Rank", skiprows=[1])  # we add skiprows=[1] to skip row 1 which is the USA one (sidenote row 0 is column names)
 
-# covid data
-url_data = "https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv"
+# covid data: NY Times full historical state archive (2020-01-21 through 2023-03-23)
+# https://github.com/nytimes/covid-19-data
+url_data = NYT_US_STATES_CSV
 
-print("* downloading data 1/1")
-c = pd.read_csv(url_data)
+print(f"* downloading US states historical data from {NYT_COVID_REPO}")
+c = read_csv_from_url(url_data)
 print("* downloading data complete")
 print()
 
@@ -57,34 +66,23 @@ c_original=c
 # goal is to get to look like this:
 # date, area, newcountconfirmed*,  totalcountconfirmed,  newcountdeaths*,  totalcountdeaths (we need to calc *)
 
-# remove fips column
+# keep the historical cumulative columns and compute daily diffs for every state
 cols_to_select = ["date","state","cases","deaths"]
-c0 = c[cols_to_select]
-c0s = c0.sort_values(by=['date'])
+c0 = c[cols_to_select].copy()
+c0["date"] = pd.to_datetime(c0["date"], errors="coerce")
+c0 = c0.dropna(subset=["date", "state"])
+c0["date"] = c0["date"].dt.strftime("%Y-%m-%d")
+c0["cases"] = pd.to_numeric(c0["cases"], errors="coerce").fillna(0)
+c0["deaths"] = pd.to_numeric(c0["deaths"], errors="coerce").fillna(0)
+c1 = add_daily_diffs(c0, "state", "date", "cases", "deaths")
 
 # find all the unique states
-unique_states = list(set(c["state"].values.tolist()))  # take a list and convert to set. sets can only have one of the same value. then back to list so we can sort with below func.
-unique_states.sort() # alphabetical
+unique_states = sorted(c1["state"].unique().tolist())
 print(f"* covid data -> {unique_states=} length {len(unique_states)}")
-cpops_state_list_sorted = cpops_state_list
-cpops_state_list_sorted.sort()
+cpops_state_list_sorted = sorted(cpops_state_list)
 print(f"* population -> {cpops_state_list_sorted=} length {len(cpops_state_list_sorted)}")
 print(f"* Do we get the same areas from Covid Data and Population data: {cpops_state_list_sorted==unique_states}")
-
-# create the new parsable dataframe c1, first start with empty one. we look at every state one by one (they are sorted) from the original dataframe.
-# creating a new dataframe from each state (note it just has the cols we want ["date","state","cases","deaths"] and its date sorted)
-# we subtract previous rows to create new cols: newcases and newdeaths in this new state dataframe
-# then we append this new state dataframe to our new parsable dataframe c1
-c1 = pd.DataFrame(columns = ["date","state","cases","newcases","deaths","newdeaths"])
-for i,current_state in enumerate(unique_states):
-	# print("*", i,current_state)
-	cpart = c0s[c0s["state"]==current_state] # select one state
-	cpart = cpart.set_index('date') # can index on date and it works too
-	cpart["newcases"] = cpart["cases"] - cpart["cases"].shift(1)     # do the diff math for cases
-	cpart["newdeaths"] = cpart["deaths"] - cpart["deaths"].shift(1)  # do the diff math for deaths
-	cpart = cpart.reset_index() # remove the index so it looks nice (optional as it gets appended)
-	# print(cpart.tail())
-	c1=c1.append(cpart, ignore_index = True)
+print(f"* date range: {c1['date'].min()} through {c1['date'].max()}")
 
 # show results of final data frame before plotting
 print()

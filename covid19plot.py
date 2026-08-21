@@ -1,5 +1,4 @@
 import json
-import urllib.request
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import plotly.offline.offline
@@ -8,7 +7,35 @@ import datetime
 import bs4
 import htmlmin
 import pickle
-from common import avgN, Entry, Country, GetVersion, GetTheme, THOUSAND, PER, PER_TEXT
+from common import (
+    avgN,
+    Entry,
+    Country,
+    GetVersion,
+    GetTheme,
+    THOUSAND,
+    PER,
+    PER_TEXT,
+    read_csv_from_url,
+    OWID_COMPACT_CSV,
+    OWID_COVID_DOCS,
+    OWID_COVID_PAGE,
+    NYT_COVID_REPO,
+    NYT_US_STATES_CSV,
+    CHHS_CA_PAGE,
+    CHHS_CA_CSV,
+    NYT_US_COUNTIES_CSV,
+    CANADA_OPENCOVID,
+    CANADA_CASES_CSV,
+    CANADA_DEATHS_CSV,
+    POMBER_JSON,
+    POMBER_PAGE,
+    JHU_CSSE_REPO,
+    CA_DATA_DEPRECATED_PAGE,
+    CA_DATA_DEPRECATED_CSV,
+    CANADA_DEPRECATED_REPO,
+    CANADA_DEPRECATED_CSV,
+)
 import pandas as pd
 import math
 
@@ -19,7 +46,7 @@ import math
 ### constants ###
 
 VersionFile = "VERSION"  # Last Update YY.MM.DD
-SITE="https://pomber.github.io/covid19/timeseries.json"
+SITE = OWID_COMPACT_CSV  # world historical cases/deaths (OWID compact CSV)
 start_time = datetime.datetime.now()
 start_time_string = start_time.strftime("%Y-%m-%d %H:%M:%S")
 start_time_posix = start_time.strftime("%Y-%m-%d-%H-%M-%S")
@@ -33,6 +60,24 @@ moving_average_samples = 7 # 7 day moving average for daily new cases and daily 
 days_predict_new_cases = 30
 ThemeFile = "PLOTLY_THEME" # contents are comma sep: theme,font family,font size
 POPFILE = "world-pop.csv"
+
+# world-pop.csv still uses a few JHU/Pomber names. Map OWID names when we have to fall back to it.
+OWID_TO_WORLD_POP = {
+    "United States": "US",
+    "Myanmar": "Burma",
+    "Taiwan": "Taiwan*",
+    "Vatican": "Holy See",
+    "Palestine": "West Bank and Gaza",
+    "Democratic Republic of Congo": "Congo (Kinshasa)",
+    "Congo": "Congo (Brazzaville)",
+    "Cote d'Ivoire": "Cote d'Ivoire",
+    "Côte d'Ivoire": "Cote d'Ivoire",
+    "Czech Republic": "Czechia",
+    "Cape Verde": "Cabo Verde",
+    "East Timor": "Timor-Leste",
+    "Swaziland": "Eswatini",
+    "Micronesia (country)": "Micronesia",
+}
 
 # Get Version:
 Version = GetVersion(VersionFile)
@@ -306,14 +351,15 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
                     <p>* <b>Note:</b> Daily new cases moving average has a linear regression fit calculated from previous {days_predict_new_cases} days and extending same days into the future. This is to help estimate daily new cases trend. Of course, the real trend is not linear, so this is strictly a prediction. The predicted line has its r<sup>2</sup> fit value and y=mx+b equation shown in the legend. x is number of days since x<sub>0</sub>, which is provided in the label. y is predicted daily new cases (technically its the predicted moving average of the daily new cases). Finally, we predict the day we reach 0 daily new cases; also shown on the legend.</p>
                     <p>* <b>Note:</b> The plotly graphs are interactive. To have better you can click on the "Normal" or "Log" link for each country to see it's own interactive plot.</p>
                     <p>There you can control control which information is plotted by clicking & double clicking on the items in the legend to isolate or disable that data.</p>
-                    <p>* <b>Note:</b> Active Cases is calculated by subtracting Recovered and Deaths from total Cases.</p>
-                    <p>* <b>Note:</b> The United States, US, recovery numbers are all nullfied to 0 on 2020-12-15 and onward. This was a decision made by the data source. More can be read here: <a href="https://github.com/CSSEGISandData/COVID-19/issues/3464">Github Issue</a> and <a href="https://covidtracking.com/about-data/faq#why-have-you-stopped-reporting-national-recoveries">Reasoning</a>.</p>
-                    <p>* <b>World Data Source:</b> The world data is gathered directly from <a href="https://pomber.github.io/covid19/">Pomber</a> which generates a parsable <b><a href="{SITE}">json</a></b> daily. They use the data from <a href="https://github.com/CSSEGISandData/COVID-19">CSSEGISandData</a> data to generate that json.</p>
-                    <p>* <b>USA States Source:</b> The US data is gathered directly from <a href="https://github.com/nytimes/covid-19-data">NY Times</a> which generates a parsable <b><a href="https://github.com/nytimes/covid-19-data/blob/master/us-states.csv">csv</a></b> daily.</p>
-                    <p>* <b>California Data Source (CURRENT DATA):</b> The California county data is gathered from <a href="https://data.chhs.ca.gov/dataset/covid-19-time-series-metrics-by-county-and-state">data.chhs.ca.gov</a>, they also provide a parseable <b><a href="https://data.chhs.ca.gov/dataset/f333528b-4d38-4814-bebb-12db1f10f535/resource/046cdd2b-31e5-4d34-9ed3-b48cdbc4be7a/download/covid19cases_test.csv">csv file</a></b> format.</p>
-                    <p>* <b>California Data Source (DEPRECATED as of March 12, 2021):</b> The California county data is gathered from <a href="https://data.ca.gov/dataset/covid-19-cases/resource/926fd08f-cc91-4828-af38-bd45de97f8c3">data.ca.gov</a>, they also provide a parseable <b><a href="https://data.ca.gov/dataset/590188d5-8545-4c93-a9a0-e230f0db7290/resource/926fd08f-cc91-4828-af38-bd45de97f8c3/download/statewide_cases.csv">csv file</a></b> format.</p>
-                    <p>* <b>Canada Data Source (CURRENT DATA):</b> The Canada data is gathered directly from <a href="https://opencovid.ca/">COVID-19 Canada Open Data Working Group </a> which generates a parsable <b><a href="https://raw.githubusercontent.com/ccodwg/CovidTimelineCanada/main/data/pt/cases_pt.csv">cases csv</a></b> and <b><a href="https://raw.githubusercontent.com/ccodwg/CovidTimelineCanada/main/data/pt/deaths_pt.csv">deaths csv</a></b> daily.</p>
-                    <p>* <b>Canada Data Source (DEPRECATED as of August 12, 2022):</b> The Canada data is gathered directly from <a href="https://github.com/ccodwg/Covid19Canada">COVID-19 Canada Open Data Working Group </a> which generates a parsable <b><a href="https://raw.githubusercontent.com/ccodwg/Covid19Canada/master/timeseries_prov/active_timeseries_prov.csv">csv</a></b> daily. Data source was deprecated as it stopped getting updated in May of 2022.</p>
+                    <p>* <b>Note:</b> Active Cases is calculated by subtracting Recovered and Deaths from total Cases. The current world source does not publish recovered counts, so Recovered is 0 and Active is Cases minus Deaths.</p>
+                    <p>* <b>Note:</b> Recovered counts used to be published by JHU CSSE via Pomber. The United States recovery numbers were nullified to 0 on 2020-12-15 and onward in that older source. More can be read here: <a href="https://github.com/CSSEGISandData/COVID-19/issues/3464">Github Issue</a> and <a href="https://covidtracking.com/about-data/faq#why-have-you-stopped-reporting-national-recoveries">Reasoning</a>.</p>
+                    <p>* <b>World Data Source (CURRENT):</b> Full historical country cases and deaths from <a href="{OWID_COVID_PAGE}">Our World in Data</a>. We download the compact COVID-19 <b><a href="{SITE}">CSV</a></b> (series starts 2020-01-01). Docs: <a href="{OWID_COVID_DOCS}">OWID COVID data</a>. World totals use OWID's World series rather than summing every location.</p>
+                    <p>* <b>World Data Source (DEPRECATED as of 2023-03-09):</b> Previously gathered from <a href="{POMBER_PAGE}">Pomber</a> <b><a href="{POMBER_JSON}">json</a></b>, which wrapped <a href="{JHU_CSSE_REPO}">JHU CSSE</a>. That pipeline stopped updating on 2023-03-09.</p>
+                    <p>* <b>USA States Source:</b> Full historical NY Times state series from <a href="{NYT_COVID_REPO}">nytimes/covid-19-data</a> (<b><a href="{NYT_US_STATES_CSV}">us-states.csv</a></b>), 2020-01-21 through 2023-03-23. NYT archived this dataset when daily reporting ended.</p>
+                    <p>* <b>California Data Source (CURRENT):</b> Full historical California county time series from <a href="{CHHS_CA_PAGE}">data.chhs.ca.gov</a> (<b><a href="{CHHS_CA_CSV}">csv</a></b>), 2020-02-01 through 2023-12-19. If that portal blocks the download, we fall back to the NY Times California counties archive (<b><a href="{NYT_US_COUNTIES_CSV}">us-counties.csv</a></b>, 2020-01-25 through 2023-03-23).</p>
+                    <p>* <b>California Data Source (DEPRECATED as of March 12, 2021):</b> The California county data was gathered from <a href="{CA_DATA_DEPRECATED_PAGE}">data.ca.gov</a>, they also provided a parseable <b><a href="{CA_DATA_DEPRECATED_CSV}">csv file</a></b> format.</p>
+                    <p>* <b>Canada Data Source (CURRENT):</b> Full historical provincial/territorial cases and deaths from <a href="{CANADA_OPENCOVID}">COVID-19 Canada Open Data Working Group / CovidTimelineCanada</a>: <b><a href="{CANADA_CASES_CSV}">cases csv</a></b> and <b><a href="{CANADA_DEATHS_CSV}">deaths csv</a></b> (2020 through 2023-12-31). Cases and deaths are outer-merged so every historical date from either file is kept.</p>
+                    <p>* <b>Canada Data Source (DEPRECATED as of August 12, 2022):</b> The Canada data was gathered directly from <a href="{CANADA_DEPRECATED_REPO}">COVID-19 Canada Open Data Working Group</a> which generated a parsable <b><a href="{CANADA_DEPRECATED_CSV}">csv</a></b> daily. That source stopped getting updated in May of 2022.</p>
                     <p>* <b>Note:</b> Antarctica population ranges from 1000 to 5000 based. I used the higher value.</p>
                     <a id="search_anchor"></a>
                     <h3 class="roundback">Country Quick Navigation / Search</h3>
@@ -532,7 +578,7 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
 
         html += "        " + div+"\n"
 
-        # redundant (already in notes # html += '<p>* <b>Note:</b> Data Source: <a href="https://pomber.github.io/covid19/">Pomber</a>, which generates daily json from <a href="https://github.com/CSSEGISandData/COVID-19">CSSEGISandData</a> data.</p>\n'
+        # redundant (already in notes)
 
     html += f"""
                     <!-- hitwebcounter Code START -->
@@ -590,6 +636,67 @@ def save_pickle(object_to_save,filename_prefix,time_string):
     except:
         print(f"* failed to save object archived_data/{filename_prefix}-{time_string}.pk")
 
+# load the world time series as {country: [{date, confirmed, deaths, recovered}, ...]}
+# plus per-country population and the OWID World series used for TOTAL
+def load_world_owid():
+    print(f"- Downloading world historical CSV from {SITE} (please wait)")
+    owid = read_csv_from_url(SITE, usecols=["country", "date", "total_cases", "total_deaths", "population", "continent"])
+    print(f"- Download Complete ({len(owid)} rows)")
+
+    owid["date"] = pd.to_datetime(owid["date"], errors="coerce")
+    owid = owid.dropna(subset=["date", "country"])
+    owid["date"] = owid["date"].dt.strftime("%Y-%m-%d")
+    owid["total_cases"] = pd.to_numeric(owid["total_cases"], errors="coerce")
+    owid["total_deaths"] = pd.to_numeric(owid["total_deaths"], errors="coerce")
+    owid["population"] = pd.to_numeric(owid["population"], errors="coerce")
+
+    # real places have a continent; keep World as the global total series
+    is_world = owid["country"].eq("World")
+    owid = owid[owid["continent"].notna() | is_world].copy()
+
+    data = {}
+    owid_pop = {}
+    world_entries = None
+    world_pop = None
+
+    for country, group in owid.groupby("country", sort=True):
+        group = group.sort_values("date")
+        cases = group["total_cases"].ffill().fillna(0)
+        deaths = group["total_deaths"].ffill().fillna(0)
+        records = [
+            {"date": d, "confirmed": int(c), "deaths": int(de), "recovered": 0}
+            for d, c, de in zip(group["date"], cases, deaths)
+        ]
+        pop_series = group["population"].dropna()
+        pop = int(pop_series.iloc[-1]) if len(pop_series) else None
+        if country == "World":
+            world_entries = records
+            world_pop = pop
+            continue
+        data[country] = records
+        owid_pop[country] = pop
+
+    test_only = os.environ.get("COVID19_TEST_COUNTRIES", "").strip()
+    if test_only:
+        keep = {name.strip() for name in test_only.split(",") if name.strip()}
+        data = {name: rows for name, rows in data.items() if name in keep}
+        owid_pop = {name: owid_pop[name] for name in data}
+        print(f"- COVID19_TEST_COUNTRIES set; plotting {sorted(data.keys())}")
+
+    return data, owid_pop, world_entries, world_pop
+
+def lookup_world_pop(pop_df, country_name):
+    aliases = [country_name]
+    if country_name in OWID_TO_WORLD_POP:
+        aliases.append(OWID_TO_WORLD_POP[country_name])
+    if country_name == "Korea, South":
+        aliases.append("South Korea")
+    for name in aliases:
+        values = list(pop_df[pop_df["Country"] == name]["Population"].values)
+        if len(values) > 0 and not math.isnan(values[0]):
+            return int(values[0])
+    return None
+
 ### main ###
 
 def main():
@@ -600,24 +707,21 @@ def main():
     print(f"- Plot theme,font,size: {Theme_Template},{Theme_Font},{Theme_FontSize}")
 
     #### - GET DATA - METHOD 1 - START - ####
-    # download json data (comment out this or load json; only have one)
-    print(f"- Downloading json from {SITE} (please wait)")
-    with urllib.request.urlopen(SITE) as url:
-        data=json.loads(url.read().decode())
+    # download OWID compact CSV and shape it like the old Pomber json
+    if os.environ.get("COVID19_USE_TESTDATA"):
+        print(f"- Loading json from {TESTDATA}. (please wait)")
+        with open(TESTDATA) as f:
+            data = json.load(f)
+        owid_pop = {}
+        world_entries = None
+        world_pop = None
+        print(f"- Loading Complete.")
+    else:
+        data, owid_pop, world_entries, world_pop = load_world_owid()
     if not data:
-    	print(f"- Download Failed (no data)")
-    print(f"- Download Complete")
+        print(f"- Download Failed (no data)")
+        return
     #### - GET DATA - METHOD 1 - END - ####
-
-    #### - GET DATA - METHOD 2 - START ####
-    # # load json data from file (comment out this or load json; only have one) - useful for testing and debugging
-    # print(f"- Loading json from {TESTDATA}. (please wait)")
-    # with open(TESTDATA) as f:
-    #     data = json.load(f)
-    # if not data:
-    #     print(f"- Loading Failed (no data).")
-    # print(f"- Loading Complete.")
-    #### - GET DATA - METHOD 2 - END ####
 
     #### LOAD POPULATION DATA ####
 
@@ -629,22 +733,13 @@ def main():
     list_of_countries=[]
     for x in data:
         str_country=x
-        # get population value
-        curpop_list = list(pop[pop["Country"] == x]["Population"].values) # if has value length 1 if no value length 0
-        if len(curpop_list) > 0: # make sure there is an item in the list
-            curpop_value = curpop_list[0]
-            if not math.isnan(curpop_value): # also make sure the value is not NaN (also a missing value, probably a space or something)
-                curpop = int(curpop_value)
-            else:
-                curpop = None
-        else: # if no items then no population
-            curpop = None
-        if str_country == "Korea, South": # work around for south korea as its written "South Korea" in population file
-            curpop = int(list(pop[pop["Country"] == "South Korea"]["Population"].values)[0])
+        # prefer OWID population (matches the country names in the new source)
+        curpop = owid_pop.get(str_country)
+        if curpop == None:
+            curpop = lookup_world_pop(pop, str_country)
         if curpop == None:
             print(f"* WARNING: Missing population data for {str_country=} {curpop=} in {POPFILE} file.")
-        # print(f"{str_country=} {curpop=}")
-        # work on covid data from json
+        # work on covid data
         list_of_entries=[]
         oldEntry=None
         for i in data[x]:
@@ -657,54 +752,48 @@ def main():
             list_of_entries.append(entry)
         country=Country(str_country,list_of_entries,population=curpop)
         list_of_countries.append(country)
-        # print(f"- {x} on {last_date} has {confirmed} confirmed {deaths} deaths {recovered} recovered {active} active")
 
-    # print(f"* TOTALS on {last_date} are {last_confirmed} confirmed {last_deaths} deaths {last_recovered} recovered {last_active} active")
     print(f"* {len(list_of_countries)} countries + 1 world total = {len(list_of_countries)+1} total plots")
 
-    # get world total country
-
-    # world total not provided so we sum everything
-
-    # get list of dates from China as it has the most - most likely (thats where it started so it will have most dates)
-    all_dates=[]
-    for i in list_of_countries:
-        if i.country == "China":
-            all_dates=i.date_list # at this point all_dates is all of our dates
-            break
-
-    # ### - DEBUG TEST DATA - START ####
-    # # For quicker runs - for tests: only work with China, US and Canada by creating new list only w/ those countries
-    # TestCountries = [ "China", "US", "Canada" ]
-    # test_list_of_countries = []
-    # print(f"* {len(TestCountries)} countries + 1 world total = {len(TestCountries)+1} total plots (modified for debug / testing)")
-    # for i in list_of_countries:
-    #     if i.country in TestCountries:
-    #         test_list_of_countries.append(i)
-    # list_of_countries = test_list_of_countries
-    # ### - DEBUG TEST DATA - END ####
-
-    # now iterate thru all of the dates summing each country at the date
-    i=0
-    oldEntry=None
-    total_entry_list=[]
-    for d in all_dates: # outer date loop (iterate thru all of the dates)
-        total_confirmed=0
-        total_deaths=0
-        total_recovered=0
-        for i in list_of_countries:  # country loop - itereate thru all countries
-            for e in i.entrylist:    # inner date loop - itereate thru all the dates until we hit our date & break out of inner date loop
-                if e.date == d:
-                    total_confirmed+=e.cases
-                    total_deaths+=e.deaths
-                    total_recovered+=e.recovered
-                    break
-        total_entry=Entry(d,total_confirmed,total_deaths,total_recovered,prevEntry=oldEntry)
-        total_entry_list.append(total_entry)
-        oldEntry=total_entry
-    WORLDPOPULATION = int(list(pop[pop["Country"] == "Earth"]["Population"].values)[0])
-    total_country=Country("TOTAL",total_entry_list,population=WORLDPOPULATION)
-    list_of_countries.append(total_country)
+    # world total: use OWID World when available (full historical global series)
+    if world_entries:
+        print("- Using OWID World series for TOTAL (full historical global cases/deaths)")
+        oldEntry=None
+        total_entry_list=[]
+        for i in world_entries:
+            entry=Entry(i["date"], i["confirmed"], i["deaths"], i["recovered"], prevEntry=oldEntry)
+            oldEntry=entry
+            total_entry_list.append(entry)
+        if world_pop == None:
+            world_pop = int(list(pop[pop["Country"] == "Earth"]["Population"].values)[0])
+        total_country=Country("TOTAL",total_entry_list,population=world_pop)
+        list_of_countries.append(total_country)
+    else:
+        # fallback: sum every country per date (old Pomber/test-json path)
+        all_dates=[]
+        for i in list_of_countries:
+            if len(i.date_list) > len(all_dates):
+                all_dates=i.date_list
+        i=0
+        oldEntry=None
+        total_entry_list=[]
+        for d in all_dates:
+            total_confirmed=0
+            total_deaths=0
+            total_recovered=0
+            for i in list_of_countries:
+                for e in i.entrylist:
+                    if e.date == d:
+                        total_confirmed+=e.cases
+                        total_deaths+=e.deaths
+                        total_recovered+=e.recovered
+                        break
+            total_entry=Entry(d,total_confirmed,total_deaths,total_recovered,prevEntry=oldEntry)
+            total_entry_list.append(total_entry)
+            oldEntry=total_entry
+        WORLDPOPULATION = int(list(pop[pop["Country"] == "Earth"]["Population"].values)[0])
+        total_country=Country("TOTAL",total_entry_list,population=WORLDPOPULATION)
+        list_of_countries.append(total_country)
 
     # sort list of countries by total cases (TOTAL will be at top)
     list_of_countries.sort(key=lambda x: x.last_cases, reverse=True)

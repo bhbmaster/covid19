@@ -17,12 +17,16 @@
 # * CLEANING UP LOG FILES: for places.sh to work, the generated run.*out log files in main dir should be good.
 # There are clean up instructions in places.sh comments on how to spot bad log files (that are not parseable) and delete them
 
-PYTHON="python3.9"
+PYTHON="python3"
+# Prefer python3.9 when it exists (infotinks server), otherwise the default python3.
+if type python3.9 > /dev/null 2>&1; then
+    PYTHON="python3.9"
+fi
 # PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin # instead of setting here, can set in crontab
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 DATE=`date +%Y%m%d-%H%M%S`
 
-# check if find python3.9, if not exit
+# check if we found a python, if not exit
 type "$PYTHON" > /dev/null 2>&1 || { echo "* ERROR: $PYTHON not detected, check the PATH variable in this current script $0. exiting!" >&2; exit 1; };
 
 # change to script dir (we should probably be there already)
