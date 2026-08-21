@@ -1,14 +1,22 @@
 import pandas as pd
 import sys
 sys.path.append("..")    # so we can import common from previous directory
-from common import covid_init_and_plot, pd_quick_info_maybe_save  # local module but up one directory hence the sys path append ..
+from common import (  # local module but up one directory hence the sys path append ..
+    covid_init_and_plot,
+    pd_quick_info_maybe_save,
+    pandas_display_options,
+    read_csv_from_url,
+    CANADA_CASES_CSV,
+    CANADA_DEATHS_CSV,
+    CANADA_OPENCOVID,
+)
 
 ###########################################################
 
 ### presetting pandas for correct stdout output ###
 
-pd.set_option("max_colwidth", None)
-# pd.set_option("max_columns", None) # commented out to fix: pandas._config.config.OptionError: 'Pattern matched multiple keys'
+pandas_display_options()
+# pd.set_option("display.max_columns", None) # commented out to fix: pandas._config.config.OptionError: 'Pattern matched multiple keys'
 
 #### init #####
 
@@ -16,9 +24,10 @@ print("------------ preparing dataset -----------")
 print()
 
 # --- get data and manipulate it into correct form --- #
-# new data source started using on 2022-08-13 provided by "COVID-19 Canada Open Data Working Group" on https://opencovid.ca/
-covid_url_cases='https://raw.githubusercontent.com/ccodwg/CovidTimelineCanada/main/data/pt/cases_pt.csv'
-covid_url_deaths='https://raw.githubusercontent.com/ccodwg/CovidTimelineCanada/main/data/pt/deaths_pt.csv'
+# Full historical provincial/territorial series from COVID-19 Canada Open Data Working Group / CovidTimelineCanada
+# https://opencovid.ca/  — cases and deaths, 2020 through 2023-12-31
+covid_url_cases = CANADA_CASES_CSV
+covid_url_deaths = CANADA_DEATHS_CSV
 population_file='canada-pop.csv' # local - got data from wikipedia https://en.wikipedia.org/wiki/Population_of_Canada_by_province_and_territory
 
 # --- output names --- #
@@ -32,6 +41,22 @@ plot_title="Canada Provinces & Territories"
 # --- other variables --- #
 
 SHOW_TOP_NUMBER = 6 # 12 # how many counties to have enabled when graph shows (others can be toggled on interactively)
+
+REGION_NAME = {
+    "AB": "Alberta",
+    "BC": "BC",
+    "MB": "Manitoba",
+    "NL": "NL",
+    "NS": "Nova Scotia",
+    "NT": "NWT",
+    "NB": "New Brunswick",
+    "NU": "Nunavut",
+    "ON": "Ontario",
+    "PE": "PEI",
+    "QC": "Quebec",
+    "SK": "Saskatchewan",
+    "YT": "Yukon",
+}
 
 ##### downloading/accessing and manipulating population dataframe #####
 
@@ -53,76 +78,52 @@ print()
 
 ##### downloading/accessing and manipulating covid dataframe #####
 
+print(f"* downloading Canada historical data from {CANADA_OPENCOVID}")
 print("* downloading data 1/2")
-c_cases = pd.read_csv(covid_url_cases) ####### new for fixing canada-plot
+c_cases = read_csv_from_url(covid_url_cases)
 print("* downloading data 2/2")
-c_deaths = pd.read_csv(covid_url_deaths) ####### new for fixing canada-plot
+c_deaths = read_csv_from_url(covid_url_deaths)
 print("* downloading data complete")
 print()
 
-# analyze covid cases data ####### new for fixing canada-plot
+# analyze covid cases data
 pd_quick_info_maybe_save(c_cases,"RECEIVED CASES DATA",covid_csv_rx_cases)
-c_cases_original = c_cases
 
-# analyze covid deaths data ####### new for fixing canada-plot
+# analyze covid deaths data
 pd_quick_info_maybe_save(c_deaths,"RECEIVED DEATHS DATA",covid_csv_rx_deaths)
-c_deaths_original = c_deaths
 
-# how merge tables https://pandas.pydata.org/pandas-docs/stable/user_guide/merging.html#brief-primer-on-merge-methods-relational-algebra
-# reference target column names
-# ,date,area,cases,new_cases,deaths,new_deaths
+# Keep every historical date from either file (outer merge). Inner merge dropped
+# dates that exist in only cases or only deaths, which truncated some provinces.
+cases = c_cases.rename(columns={"value": "cases", "value_daily": "new_cases"})[["region", "date", "cases", "new_cases"]].copy()
+deaths = c_deaths.rename(columns={"value": "deaths", "value_daily": "new_deaths"})[["region", "date", "deaths", "new_deaths"]].copy()
+cases["date"] = pd.to_datetime(cases["date"], errors="coerce")
+deaths["date"] = pd.to_datetime(deaths["date"], errors="coerce")
+cases = cases.dropna(subset=["date", "region"])
+deaths = deaths.dropna(subset=["date", "region"])
 
-# (MERGE1) merge with cases on the left, deaths on the right
-c_merged = pd.merge(c_cases, c_deaths, on=["region", "date"])
-del c_merged["name_x"]
-del c_merged["name_y"]
-rename_dict = {"region": "area", "value_x":"cases", "value_daily_x":"new_cases", "value_y":"deaths", "value_daily_y":"new_deaths" }
-c_merged_mod_renamed = c_merged.rename(columns=rename_dict)
-
-# (MERGE2) merge with deaths on the left, cases on the right
-c_merged_OTHER = pd.merge(c_deaths, c_cases, on=["region", "date"])
-del c_merged_OTHER["name_x"]
-del c_merged_OTHER["name_y"]
-rename_dict_OTHER = {"region": "area", "value_y":"cases", "value_daily_y":"new_cases", "value_x":"deaths", "value_daily_x":"new_deaths" }
-c_merged_mod_renamed_OTHER = c_merged_OTHER.rename(columns=rename_dict_OTHER)
-
-# pick the merge which has more items (MERGE1 cases on the right, or MERGE2 deaths on the right). if the same pick item 1
-row_count_cd = c_merged_mod_renamed.shape[0]
-row_count_dc = c_merged_mod_renamed_OTHER.shape[0]
-c_merged_final = c_merged_mod_renamed if row_count_cd >= row_count_dc else c_merged_mod_renamed_OTHER
+c_merged = pd.merge(cases, deaths, on=["region", "date"], how="outer")
+c_merged = c_merged.sort_values(["region", "date"])
+for col in ["cases", "deaths"]:
+    c_merged[col] = pd.to_numeric(c_merged[col], errors="coerce")
+    c_merged[col] = c_merged.groupby("region")[col].ffill().fillna(0)
+for col in ["new_cases", "new_deaths"]:
+    c_merged[col] = pd.to_numeric(c_merged[col], errors="coerce").fillna(0)
+c_merged["date"] = c_merged["date"].dt.strftime("%Y-%m-%d")
+c_merged["area"] = c_merged["region"].replace(REGION_NAME)
+c_merged_final = c_merged[["date", "area", "cases", "new_cases", "deaths", "new_deaths"]]
 pd_quick_info_maybe_save(c_merged_final, "MERGED_FINAL", covid_csv_merged)
 c0 = c_merged_final
 
-# Rename the provinces in the given dataframe to match the population dataframes provinces (for the relative to population stats)
-# GIVEN:  * covid data -> unique_provinces=['AB', 'BC', 'MB', 'NB', 'NL', 'NS', 'NT', 'NU', 'ON', 'PE', 'QC', 'SK', 'YT'] , length 13
-# TARGET: * population -> cpops_prov_list_sorted=['Alberta', 'BC', 'Manitoba', 'NL', 'NWT', 'New Brunswick', 'Nova Scotia', 'Nunavut', 'Ontario', 'PEI', 'Quebec', 'Saskatchewan', 'Yukon'] , length 13
-# * Do we get the same areas from Covid Data and Population data: False
-c0["area"] = c0["area"].replace("AB","Alberta")
-c0["area"] = c0["area"].replace("BC","BC")
-c0["area"] = c0["area"].replace("MB","Manitoba")
-c0["area"] = c0["area"].replace("NL","NL")
-c0["area"] = c0["area"].replace("NS","Nova Scotia")
-c0["area"] = c0["area"].replace("NT","NWT")
-c0["area"] = c0["area"].replace("NB","New Brunswick")
-c0["area"] = c0["area"].replace("NU","Nunavut")
-c0["area"] = c0["area"].replace("ON","Ontario")
-c0["area"] = c0["area"].replace("PE","PEI")
-c0["area"] = c0["area"].replace("QC","Quebec")
-c0["area"] = c0["area"].replace("SK","Saskatchewan")
-c0["area"] = c0["area"].replace("YT","Yukon")
-c1 = c0
-
 # find all unique provinces and compare with population (they must match)
-unique_provinces = list(set(c1["area"].values.tolist()))
-unique_provinces.sort()
+unique_provinces = sorted(c0["area"].unique().tolist())
 print(f"* covid data -> {unique_provinces=} , length {len(unique_provinces)}")
-cpops_prov_list_sorted = cpops_prov_list
-cpops_prov_list_sorted.sort()
+cpops_prov_list_sorted = sorted(cpops_prov_list)
 print(f"* population -> {cpops_prov_list_sorted=} , length {len(cpops_prov_list_sorted)}")
 print(f"* Do we get the same areas from Covid Data and Population data: {cpops_prov_list_sorted==unique_provinces}")
+print(f"* date range: {c0['date'].min()} through {c0['date'].max()}")
 
 # sort by date
-c2 = c1.sort_values(by=["date"])
+c2 = c0.sort_values(by=["date", "area"])
 
 # show results of final data frame before plotting
 print()

@@ -1,5 +1,8 @@
 import string
 import datetime
+import io
+import subprocess
+import urllib.request
 import numpy as np
 from sklearn.linear_model import LinearRegression
 from scipy.optimize import curve_fit
@@ -23,6 +26,33 @@ ndays = 7 # how many days is the moving average averaging
 predictdays = 30 # how many days to predict back and forward with linear regression fit
 COLOR_LIST = px.colors.qualitative.Vivid # this sets the colorway option in layout
 COLOR_LIST_LEN = len(COLOR_LIST) # we will use the mod of this later
+DOWNLOAD_USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+
+# Current data sources. These are the working historical series used by the plotters.
+# World: OWID compact CSV, full country history from 2020-01-01 (replaces frozen Pomber/JHU JSON).
+OWID_COMPACT_CSV = "https://catalog.ourworldindata.org/garden/covid/latest/compact/compact.csv"
+OWID_COVID_DOCS = "https://docs.owid.io/projects/etl/api/covid/"
+OWID_COVID_PAGE = "https://ourworldindata.org/coronavirus"
+# USA states: NY Times archive, 2020-01-21 through 2023-03-23.
+NYT_US_STATES_CSV = "https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv"
+NYT_US_COUNTIES_CSV = "https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv"
+NYT_COVID_REPO = "https://github.com/nytimes/covid-19-data"
+# California counties: CHHS official time series (full history 2020-02-01 through 2023-12-19).
+# Python urllib is often blocked (HTTP 403); download_bytes() falls back to curl. NYT counties is the fallback archive.
+CHHS_CA_CSV = "https://data.chhs.ca.gov/dataset/f333528b-4d38-4814-bebb-12db1f10f535/resource/046cdd2b-31e5-4d34-9ed3-b48cdbc4be7a/download/covid19cases_test.csv"
+CHHS_CA_PAGE = "https://data.chhs.ca.gov/dataset/covid-19-time-series-metrics-by-county-and-state"
+# Canada provinces: CovidTimelineCanada / CCODWG, full history through 2023-12-31.
+CANADA_CASES_CSV = "https://raw.githubusercontent.com/ccodwg/CovidTimelineCanada/main/data/pt/cases_pt.csv"
+CANADA_DEATHS_CSV = "https://raw.githubusercontent.com/ccodwg/CovidTimelineCanada/main/data/pt/deaths_pt.csv"
+CANADA_OPENCOVID = "https://opencovid.ca/"
+# Deprecated sources kept for notes / HTML footnotes.
+POMBER_JSON = "https://pomber.github.io/covid19/timeseries.json"
+POMBER_PAGE = "https://pomber.github.io/covid19/"
+JHU_CSSE_REPO = "https://github.com/CSSEGISandData/COVID-19"
+CA_DATA_DEPRECATED_PAGE = "https://data.ca.gov/dataset/covid-19-cases/resource/926fd08f-cc91-4828-af38-bd45de97f8c3"
+CA_DATA_DEPRECATED_CSV = "https://data.ca.gov/dataset/590188d5-8545-4c93-a9a0-e230f0db7290/resource/926fd08f-cc91-4828-af38-bd45de97f8c3/download/statewide_cases.csv"
+CANADA_DEPRECATED_REPO = "https://github.com/ccodwg/Covid19Canada"
+CANADA_DEPRECATED_CSV = "https://raw.githubusercontent.com/ccodwg/Covid19Canada/master/timeseries_prov/active_timeseries_prov.csv"
 
 #################
 ### functions ###
@@ -58,6 +88,60 @@ def GetTheme(ThemeFile):
     Theme_FontSize = int(ThemeFileContents[2]) if os.path.exists(ThemeFile) else 12
     return Theme_Template, Theme_Font, Theme_FontSize
 
+# pandas 2+/3 compatible display options (old "max_colwidth" alias is gone)
+def pandas_display_options():
+    pd.set_option("display.max_colwidth", None)
+
+# download url to bytes. urllib is enough for GitHub/OWID; CHHS/S3 often 403s Python so we fall back to curl
+def download_bytes(url, timeout=180):
+    headers = {"User-Agent": DOWNLOAD_USER_AGENT, "Accept": "*/*"}
+    req = urllib.request.Request(url, headers=headers)
+    urllib_err = None
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            body = resp.read()
+        if body:
+            if not _looks_like_html(body):
+                return body
+            urllib_err = RuntimeError("urllib returned HTML instead of data")
+        else:
+            urllib_err = RuntimeError("urllib returned empty body")
+    except Exception as e:
+        urllib_err = e
+    print(f"* urllib download failed for {url}: {urllib_err}; trying curl")
+    result = subprocess.run(
+        ["curl", "-sSL", "-A", DOWNLOAD_USER_AGENT, "--max-time", str(timeout), url],
+        capture_output=True,
+        check=False,
+    )
+    if result.returncode != 0 or not result.stdout:
+        err = result.stderr.decode("utf-8", errors="replace")[:500]
+        raise RuntimeError(f"Failed to download {url}. urllib={urllib_err}; curl rc={result.returncode} {err}")
+    if _looks_like_html(result.stdout):
+        raise RuntimeError(f"Failed to download {url}: curl also returned HTML instead of data")
+    return result.stdout
+
+def _looks_like_html(body):
+    head = body.lstrip()[:200].lower()
+    return head.startswith(b"<!doctype") or head.startswith(b"<html")
+
+# pandas.read_csv from a remote URL using download_bytes so blocked portals still work
+def read_csv_from_url(url, **kwargs):
+    print(f"* downloading {url}")
+    raw = download_bytes(url)
+    kwargs.setdefault("low_memory", False)
+    return pd.read_csv(io.BytesIO(raw), **kwargs)
+
+# compute daily new cases/deaths from cumulative columns, grouped by area
+def add_daily_diffs(df, area_col, date_col, cases_col, deaths_col, new_cases_col="newcases", new_deaths_col="newdeaths"):
+    out = df.sort_values([area_col, date_col]).copy()
+    grouped = out.groupby(area_col, sort=False)
+    out[new_cases_col] = grouped[cases_col].diff()
+    out[new_deaths_col] = grouped[deaths_col].diff()
+    out[new_cases_col] = out[new_cases_col].fillna(out[cases_col])
+    out[new_deaths_col] = out[new_deaths_col].fillna(out[deaths_col])
+    return out
+
 # N day moving average (ex: 7 day average). averages the y values over window size N, our array shrinks by N-1 due to this. therefore, we also truncate the x array values by N-1 from the left side (older dates are on the left side)
 def avgN(N,x,y):
     # example:
@@ -67,6 +151,8 @@ def avgN(N,x,y):
     # *** get y values - moving average algo
     mov_y = []
     # print("DEBUG:",y)
+    if N < 1 or len(y) < N or len(x) < N:
+        return ([], [])
     for i in range(len(y) - N + 1):
         wind = y[i : i + N]
         wind_avg = sum(wind) / N
@@ -101,7 +187,7 @@ def lastXdayslinearpredict(x_dates, y_values, days=10):
         model.fit(x, y)
         r_sq = model.score(x, y)
         b0=model.intercept_
-        m=float(model.coef_)
+        m=float(np.asarray(model.coef_).reshape(-1)[0])
         # print('* day 0:', day0)
         # print('* coefficient of determination:', r_sq)
         # print('* intercept:', b0)
@@ -430,10 +516,8 @@ def covid_init_and_plot(covid_dataframe,area_and_pop_listoftups,filename_prefix,
     # print(f"* {last_x=} of {random_area=}")
     # print()
 
-    # Get last date always
-    tmp_df = covid_dataframe
-    tmp_df.sort_values(by=[cvDATE])
-    last_x = tmp_df[cvDATE].values.tolist()[-1]
+    # Get last date always (max date in the series, not whatever row happens to be last)
+    last_x = covid_dataframe[cvDATE].max()
     print(f"* {last_x=}")
 
     # plot options
@@ -733,7 +817,7 @@ class Country:
             model.fit(x, y)
             r_sq = model.score(x, y)
             b0=model.intercept_
-            m=float(model.coef_)
+            m=float(np.asarray(model.coef_).reshape(-1)[0])
             # print('* day 0:', day0)
             # print('* coefficient of determination:', r_sq)
             # print('* intercept:', b0)

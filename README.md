@@ -6,7 +6,7 @@ The public facing version of this project resides on my personal blog, **infotin
 
 From there all of the plot outputs can be accessed + some other interesting information.
 
-Additionally, the data sources are mentioned in the "Data Sources section" there.
+Additionally, the data sources are mentioned in the "Data Sources section" there and in this README.
 
 The rest of this Readme covers the following:
 * The different outputs that are provided by the different scripts. 
@@ -81,9 +81,9 @@ html-plots/US-plot-LOG-perpop.html       - values adjusted by population per 100
 
 ## Requirements
 
-* View requirements.txt to see the required python modules
+* View requirements.txt to see the required python modules (`scikit-learn` is the sklearn package used by the linear-fit code)
 
-* This is only tested with Python 3.9.0. It should work with anything newer and not older. Why? The new `f"{var=}"` format is introduced in 3.9 and is used in some of the prints
+* This is tested with Python 3.9 and newer (including 3.12). The `f"{var=}"` debug format is used in some of the prints (3.8+).
 
 * Internet access (see Other Requirements below)
 
@@ -362,12 +362,50 @@ See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stab
 
 ## Data Sources
 
-The data sources are mentioned in two areas. So putting it here as well will be redundant.
+These are the working historical series the scripts download. The same list is printed at the bottom of the notes section in the world HTML plots (`covid19-normal.html` / `covid19-log.html`) and on http://www.infotinks.com/coronavirus-dashboard-covid19-py/.
 
-* First, you can see the data sources on http://www.infotinks.com/coronavirus-dashboard-covid19-py/. Scroll down to "Data Sources". 
-* Second, The world covid plots also list the data sources for all of the plots. These are at the bottom of the notes section, which comes before all of the country plots. The world covid plots can be viewed from two links (y-log or y-normal plot): 
-	* y-log plot: http://www.infotinks.com/covid19/covid19-log.html
-	* y-normal plot: http://www.infotinks.com/covid19/covid19-normal.html
+### World (covid19plot.py) — CURRENT
+
+* **Our World in Data compact COVID-19 dataset** (full historical country cases and deaths from 2020-01-01)
+  * CSV: https://catalog.ourworldindata.org/garden/covid/latest/compact/compact.csv
+  * Docs: https://docs.owid.io/projects/etl/api/covid/
+  * Topic page: https://ourworldindata.org/coronavirus
+  * World totals use OWID's `World` series. Recovered counts are not in this dataset, so Recovered is plotted as 0 and Active is Cases minus Deaths.
+
+### World — DEPRECATED (stopped 2023-03-09)
+
+* Pomber JSON wrapping JHU CSSE: https://pomber.github.io/covid19/timeseries.json
+* JHU CSSE repo: https://github.com/CSSEGISandData/COVID-19
+
+### USA states (usa-states/states-plot.py) — CURRENT
+
+* **New York Times** full historical state archive (2020-01-21 through 2023-03-23; NYT stopped daily updates after that)
+  * Repo: https://github.com/nytimes/covid-19-data
+  * CSV: https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv
+
+### California counties (usa-ca/county-plot.py) — CURRENT
+
+* **California Health and Human Services (CHHS)** county time series (full history 2020-02-01 through 2023-12-19)
+  * Dataset: https://data.chhs.ca.gov/dataset/covid-19-time-series-metrics-by-county-and-state
+  * CSV: https://data.chhs.ca.gov/dataset/f333528b-4d38-4814-bebb-12db1f10f535/resource/046cdd2b-31e5-4d34-9ed3-b48cdbc4be7a/download/covid19cases_test.csv
+  * That portal often returns HTTP 403 to Python `urllib`/`pandas`; the scripts retry with `curl`. If CHHS still fails, we fall back to the NY Times California counties archive:
+    * https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv (2020-01-25 through 2023-03-23)
+
+### California — DEPRECATED (as of March 12, 2021)
+
+* data.ca.gov statewide_cases.csv: https://data.ca.gov/dataset/590188d5-8545-4c93-a9a0-e230f0db7290/resource/926fd08f-cc91-4828-af38-bd45de97f8c3/download/statewide_cases.csv
+
+### Canada provinces & territories (canada/canada-plot.py) — CURRENT
+
+* **COVID-19 Canada Open Data Working Group / CovidTimelineCanada** full provincial history (2020 through 2023-12-31)
+  * https://opencovid.ca/
+  * Cases: https://raw.githubusercontent.com/ccodwg/CovidTimelineCanada/main/data/pt/cases_pt.csv
+  * Deaths: https://raw.githubusercontent.com/ccodwg/CovidTimelineCanada/main/data/pt/deaths_pt.csv
+  * Cases and deaths are outer-merged so dates that exist in only one file are still kept.
+
+### Canada — DEPRECATED (as of August 12, 2022)
+
+* Older CCODWG timeseries that stopped updating in May 2022: https://raw.githubusercontent.com/ccodwg/Covid19Canada/master/timeseries_prov/active_timeseries_prov.csv
 
 ## DEV TIPS + DOCKER DEV ENVIRONMENT
 
@@ -427,5 +465,7 @@ date; python3 canada-plot.py &> canada-plot.logerr; date; python3 canada-plot.py
 - [x] Update all places we talk about data sources, and mention this new data source. locations to keep in mind: infotinks and both covid19 output html plots.
 
 - [x] Clean up comments from working on Fix Canada Plots.
+
+- [x] Replace frozen/failing live sources with working **full historical** series: OWID compact CSV for world (Pomber/JHU stopped 2023-03-09), keep NYT state archive, CHHS California with NYT counties fallback (CHHS 403s Python urllib), CovidTimelineCanada outer-merged so no dates are dropped. Update README + HTML footnotes.
 
 - [ ] Fix style / lint problems reported in "PROBLEMS" tab of the terminal in VSCode. At least fix as many as possible without hurting the program function.

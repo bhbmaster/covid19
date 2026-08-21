@@ -56,3 +56,14 @@ soupsieve==2.3.2.post1
 tenacity==8.0.1
 threadpoolctl==3.1.0
 
+2026-08-21
+============
+
+World source switch: Pomber/JHU JSON is frozen at 2023-03-09. The working full-historical country series is Our World in Data compact CSV:
+https://catalog.ourworldindata.org/garden/covid/latest/compact/compact.csv
+(docs: https://docs.owid.io/projects/etl/api/covid/)
+
+California CHHS CSV still exists (2020-02-01 through 2023-12-19) but Python urllib/pandas often get HTTP 403 from the portal/S3 signed URL. curl with a browser User-Agent succeeds; we fall back to NY Times us-counties.csv if needed.
+
+`pip install sklearn` is dead; use `scikit-learn`. pandas 2+/3 removed DataFrame.append.
+
