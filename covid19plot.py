@@ -189,14 +189,17 @@ def graph2div(country_class,graph_type,relative=False):
     fig.add_trace(go.Scatter(x=i.date_list, y=RECOVERY_PERCENT_LIST, name=f"<b>Recovery %</b> : y<sub>fin</sub>={round_or_none(RECOVERY_PERCENT_LIST[-1],2)}%", showlegend=True),row=1,col=2)
 
     # new daily cases
-    fig.add_trace(go.Scatter(x=i.date_list, y=DELTA_CASES_LIST, name=f"<b>New Cases</b> : y<sub>fin</sub>={round_or_none(DELTA_CASES_LIST[-1],0)}", showlegend=True),row=2,col=1)
+    fig.add_trace(go.Scatter(x=i.date_list, y=DELTA_CASES_LIST, name=f"<b>New Cases</b> : y<sub>fin</sub>={round_or_none(DELTA_CASES_LIST[-1] if DELTA_CASES_LIST else None,0)}", showlegend=True),row=2,col=1)
 
     # getting moving average of new daily cases
     xavg,yavg = avgN(moving_average_samples,i.date_list,DELTA_CASES_LIST)
 
-    fig.add_trace(go.Scatter(x=xavg, y=yavg, name=f"<b>New Cases {moving_average_samples}day Moving Avg</b> : y<sub>fin</sub>={round_or_none(yavg[-1],0)}", showlegend=True),row=2,col=1) # when had OLD-MIDDLE-ROW this was row=3,col=1
+    if yavg:
+        fig.add_trace(go.Scatter(x=xavg, y=yavg, name=f"<b>New Cases {moving_average_samples}day Moving Avg</b> : y<sub>fin</sub>={round_or_none(yavg[-1],0)}", showlegend=True),row=2,col=1)
 
-    success, xfinal, yfinal, r_sq, m, b0 = i.lastXdayslinearpredict(yavg, days_predict_new_cases)
+        success, xfinal, yfinal, r_sq, m, b0 = i.lastXdayslinearpredict(yavg, days_predict_new_cases)
+    else:
+        success, xfinal, yfinal, r_sq, m, b0 = False, None, None, None, None, None
 
     # print(f"DEBUG: fit -> success={success} fita={fita} fitb={fitb} fitc={fitc}")
     # print(f"DEBUG: fit -> xfinal={xfinal} yfinal={yfinal}")
@@ -234,7 +237,8 @@ def graph2div(country_class,graph_type,relative=False):
     # daily deaths moving average
     xavg,yavg = avgN(moving_average_samples,i.date_list,DELTA_DEATHS_LIST)
 
-    fig.add_trace(go.Scatter(x=xavg, y=yavg, name=f"<b>New Deaths {moving_average_samples}day Moving Avg</b> : y<sub>fin</sub>={round_or_none(yavg[-1],0)}", showlegend=True),row=2,col=2) # when had OLD-MIDDLE-ROW this was row=3,col=1
+    if yavg:
+        fig.add_trace(go.Scatter(x=xavg, y=yavg, name=f"<b>New Deaths {moving_average_samples}day Moving Avg</b> : y<sub>fin</sub>={round_or_none(yavg[-1],0)}", showlegend=True),row=2,col=2)
 
     # adjust the plot axes properly
 
@@ -669,6 +673,10 @@ def load_world_owid():
         ]
         pop_series = group["population"].dropna()
         pop = int(pop_series.iloc[-1]) if len(pop_series) else None
+        if int(cases.max()) <= 0 and int(deaths.max()) <= 0:
+            continue
+        if len(records) < 2:
+            continue
         if country == "World":
             world_entries = records
             world_pop = pop

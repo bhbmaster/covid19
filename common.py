@@ -151,6 +151,8 @@ def avgN(N,x,y):
     # *** get y values - moving average algo
     mov_y = []
     # print("DEBUG:",y)
+    if N < 1 or len(y) < N or len(x) < N:
+        return ([], [])
     for i in range(len(y) - N + 1):
         wind = y[i : i + N]
         wind_avg = sum(wind) / N
@@ -185,7 +187,7 @@ def lastXdayslinearpredict(x_dates, y_values, days=10):
         model.fit(x, y)
         r_sq = model.score(x, y)
         b0=model.intercept_
-        m=float(model.coef_)
+        m=float(np.asarray(model.coef_).reshape(-1)[0])
         # print('* day 0:', day0)
         # print('* coefficient of determination:', r_sq)
         # print('* intercept:', b0)
@@ -815,7 +817,7 @@ class Country:
             model.fit(x, y)
             r_sq = model.score(x, y)
             b0=model.intercept_
-            m=float(model.coef_)
+            m=float(np.asarray(model.coef_).reshape(-1)[0])
             # print('* day 0:', day0)
             # print('* coefficient of determination:', r_sq)
             # print('* intercept:', b0)
