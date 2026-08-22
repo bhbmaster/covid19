@@ -67,3 +67,5 @@ California CHHS CSV still exists (2020-02-01 through 2023-12-19) but Python urll
 
 `pip install sklearn` is dead; use `scikit-learn`. pandas 2+/3 removed DataFrame.append.
 
+Python 3.13: stdlib `cgi` was removed, so `htmlmin` 0.1.12 cannot build. Use `htmlmin2` (same `import htmlmin` API).
+

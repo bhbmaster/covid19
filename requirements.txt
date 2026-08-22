@@ -1,7 +1,7 @@
 plotly
 bs4
 lxml
-htmlmin
+htmlmin2
 scikit-learn
 numpy
 pandas

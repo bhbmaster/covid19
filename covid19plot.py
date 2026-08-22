@@ -5,7 +5,10 @@ import plotly.offline.offline
 import os
 import datetime
 import bs4
-import htmlmin
+try:
+    import htmlmin  # provided by htmlmin2 on Python 3.13+ (stdlib cgi was removed)
+except ImportError:  # pragma: no cover - fallback if minify package is missing
+    htmlmin = None
 import pickle
 from common import (
     avgN,
@@ -617,8 +620,8 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
     # make it pretty (fix newlines, tabs, and spaces)
     prettyhtml = bs4.BeautifulSoup(html, "lxml").prettify()
 
-    # make it htmlmin
-    minihtml = htmlmin.minify(prettyhtml, remove_empty_space=True)
+    # minify (htmlmin2 on Py3.13; skip minify if the package is missing)
+    minihtml = htmlmin.minify(prettyhtml, remove_empty_space=True) if htmlmin else prettyhtml
 
     # write file
     with open(output_file, 'wb') as file:
