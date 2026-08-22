@@ -5,9 +5,11 @@ from common import (  # local module but up one directory hence the sys path app
     covid_init_and_plot,
     pd_quick_info_maybe_save,
     pandas_display_options,
-    read_csv_from_url,
+    read_csv_from_url,  # kept so the commented live-download remnant below still works if uncommented
+    read_csv_local,
     add_daily_diffs,
     NYT_US_STATES_CSV,
+    NYT_US_STATES_LOCAL_CSV,
     NYT_COVID_REPO,
 )
 
@@ -36,11 +38,15 @@ cpops = pd.read_csv(file_pop,index_col="Rank", skiprows=[1])  # we add skiprows=
 
 # covid data: NY Times full historical state archive (2020-01-21 through 2023-03-23)
 # https://github.com/nytimes/covid-19-data
-url_data = NYT_US_STATES_CSV
-
-print(f"* downloading US states historical data from {NYT_COVID_REPO}")
-c = read_csv_from_url(url_data)
-print("* downloading data complete")
+# Used to download live:
+# url_data = NYT_US_STATES_CSV
+# print(f"* downloading US states historical data from {NYT_COVID_REPO}")
+# c = read_csv_from_url(url_data)
+# print("* downloading data complete")
+print(f"* reading US states historical data from local {NYT_US_STATES_LOCAL_CSV}")
+print(f"* original online source was {NYT_COVID_REPO} ({NYT_US_STATES_CSV})")
+c = read_csv_local(NYT_US_STATES_LOCAL_CSV)
+print("* reading local data complete")
 print()
 
 # analyze and parse population

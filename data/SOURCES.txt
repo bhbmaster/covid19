@@ -1,0 +1,43 @@
+Bundled historical COVID datasets
+=================================
+
+COVID daily reporting has ended. The plotters now read these local snapshots
+instead of downloading on every run. Original online URLs are kept as comments
+in the Python scripts and as constants in common.py.
+
+Downloaded: 2026-08-22 (same series that still worked from the live URLs)
+
+owid-compact.csv
+  World cases/deaths used by covid19plot.py
+  Original: https://catalog.ourworldindata.org/garden/covid/latest/compact/compact.csv
+  Note: full compact.csv is ~172MB. This file keeps only the columns the plotter
+  uses (country, date, total_cases, total_deaths, continent, population): 607209 rows.
+
+nytimes-us-states.csv
+  US states used by usa-states/states-plot.py
+  Original: https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv
+  Repo: https://github.com/nytimes/covid-19-data
+  Coverage: 2020-01-21 through 2023-03-23 (61942 rows)
+
+chhs-covid19cases-test.csv
+  California counties used by usa-ca/county-plot.py
+  Original: https://data.chhs.ca.gov/dataset/f333528b-4d38-4814-bebb-12db1f10f535/resource/046cdd2b-31e5-4d34-9ed3-b48cdbc4be7a/download/covid19cases_test.csv
+  Dataset: https://data.chhs.ca.gov/dataset/covid-19-time-series-metrics-by-county-and-state
+  Coverage: 2020-02-01 through 2023-12-19
+  Note: live CHHS portal often returns HTTP 403 to Python urllib; curl worked.
+
+covidtimelinecanada-cases-pt.csv
+  Canada provincial cases used by canada/canada-plot.py
+  Original: https://raw.githubusercontent.com/ccodwg/CovidTimelineCanada/main/data/pt/cases_pt.csv
+  Site: https://opencovid.ca/
+
+covidtimelinecanada-deaths-pt.csv
+  Canada provincial deaths used by canada/canada-plot.py
+  Original: https://raw.githubusercontent.com/ccodwg/CovidTimelineCanada/main/data/pt/deaths_pt.csv
+  Site: https://opencovid.ca/
+
+Not bundled (fallback only, ~100MB):
+  NY Times us-counties.csv was the CHHS fallback.
+  Original: https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv
+  The county plotter used to download that if CHHS failed; that download path is
+  left commented in usa-ca/county-plot.py.
