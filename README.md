@@ -81,9 +81,9 @@ html-plots/US-plot-LOG-perpop.html       - values adjusted by population per 100
 
 ## Requirements
 
-* View requirements.txt to see the required python modules (`scikit-learn` is the sklearn package used by the linear-fit code)
+* View requirements.txt to see the required python modules (`scikit-learn` is the sklearn package used by the linear-fit code; `htmlmin2` is the Python 3.13-compatible fork of `htmlmin`, which cannot install because `cgi` was removed from the stdlib)
 
-* This is tested with Python 3.9 and newer (including 3.12). The `f"{var=}"` debug format is used in some of the prints (3.8+).
+* This is tested with Python 3.9 and newer (including 3.12 and 3.13). The `f"{var=}"` debug format is used in some of the prints (3.8+).
 
 * Internet access (see Other Requirements below)
 
