@@ -19,8 +19,10 @@ from common import (
     THOUSAND,
     PER,
     PER_TEXT,
-    read_csv_from_url,
+    read_csv_from_url,  # kept so the commented live-download remnant below still works if uncommented
+    read_csv_local,
     OWID_COMPACT_CSV,
+    OWID_LOCAL_CSV,
     OWID_COVID_DOCS,
     OWID_COVID_PAGE,
     NYT_COVID_REPO,
@@ -49,7 +51,8 @@ import math
 ### constants ###
 
 VersionFile = "VERSION"  # Last Update YY.MM.DD
-SITE = OWID_COMPACT_CSV  # world historical cases/deaths (OWID compact CSV)
+SITE = OWID_COMPACT_CSV  # original online URL (shown in HTML footnotes)
+# Used to download live: SITE was fetched with read_csv_from_url(SITE, ...)
 start_time = datetime.datetime.now()
 start_time_string = start_time.strftime("%Y-%m-%d %H:%M:%S")
 start_time_posix = start_time.strftime("%Y-%m-%d-%H-%M-%S")
@@ -360,12 +363,12 @@ def divs2html(div_list,type_title,time_string,output_file,bootstrap_on=False):
                     <p>There you can control control which information is plotted by clicking & double clicking on the items in the legend to isolate or disable that data.</p>
                     <p>* <b>Note:</b> Active Cases is calculated by subtracting Recovered and Deaths from total Cases. The current world source does not publish recovered counts, so Recovered is 0 and Active is Cases minus Deaths.</p>
                     <p>* <b>Note:</b> Recovered counts used to be published by JHU CSSE via Pomber. The United States recovery numbers were nullified to 0 on 2020-12-15 and onward in that older source. More can be read here: <a href="https://github.com/CSSEGISandData/COVID-19/issues/3464">Github Issue</a> and <a href="https://covidtracking.com/about-data/faq#why-have-you-stopped-reporting-national-recoveries">Reasoning</a>.</p>
-                    <p>* <b>World Data Source (CURRENT):</b> Full historical country cases and deaths from <a href="{OWID_COVID_PAGE}">Our World in Data</a>. We download the compact COVID-19 <b><a href="{SITE}">CSV</a></b> (series starts 2020-01-01). Docs: <a href="{OWID_COVID_DOCS}">OWID COVID data</a>. World totals use OWID's World series rather than summing every location.</p>
+                    <p>* <b>World Data Source (CURRENT):</b> Bundled local snapshot of full historical country cases and deaths from <a href="{OWID_COVID_PAGE}">Our World in Data</a> (<code>data/owid-compact.csv</code>). Original compact COVID-19 <b><a href="{SITE}">CSV</a></b> (series starts 2020-01-01). Docs: <a href="{OWID_COVID_DOCS}">OWID COVID data</a>. World totals use OWID's World series rather than summing every location. Live download remnant is commented in <code>covid19plot.py</code>.</p>
                     <p>* <b>World Data Source (DEPRECATED as of 2023-03-09):</b> Previously gathered from <a href="{POMBER_PAGE}">Pomber</a> <b><a href="{POMBER_JSON}">json</a></b>, which wrapped <a href="{JHU_CSSE_REPO}">JHU CSSE</a>. That pipeline stopped updating on 2023-03-09.</p>
-                    <p>* <b>USA States Source:</b> Full historical NY Times state series from <a href="{NYT_COVID_REPO}">nytimes/covid-19-data</a> (<b><a href="{NYT_US_STATES_CSV}">us-states.csv</a></b>), 2020-01-21 through 2023-03-23. NYT archived this dataset when daily reporting ended.</p>
-                    <p>* <b>California Data Source (CURRENT):</b> Full historical California county time series from <a href="{CHHS_CA_PAGE}">data.chhs.ca.gov</a> (<b><a href="{CHHS_CA_CSV}">csv</a></b>), 2020-02-01 through 2023-12-19. If that portal blocks the download, we fall back to the NY Times California counties archive (<b><a href="{NYT_US_COUNTIES_CSV}">us-counties.csv</a></b>, 2020-01-25 through 2023-03-23).</p>
+                    <p>* <b>USA States Source:</b> Bundled local snapshot of the NY Times state series from <a href="{NYT_COVID_REPO}">nytimes/covid-19-data</a> (<code>data/nytimes-us-states.csv</code>; original <b><a href="{NYT_US_STATES_CSV}">us-states.csv</a></b>), 2020-01-21 through 2023-03-23. NYT archived this dataset when daily reporting ended.</p>
+                    <p>* <b>California Data Source (CURRENT):</b> Bundled local snapshot of the California county time series from <a href="{CHHS_CA_PAGE}">data.chhs.ca.gov</a> (<code>data/chhs-covid19cases-test.csv</code>; original <b><a href="{CHHS_CA_CSV}">csv</a></b>), 2020-02-01 through 2023-12-19. The old live download (and NY Times <b><a href="{NYT_US_COUNTIES_CSV}">us-counties.csv</a></b> fallback) is commented in <code>usa-ca/county-plot.py</code>.</p>
                     <p>* <b>California Data Source (DEPRECATED as of March 12, 2021):</b> The California county data was gathered from <a href="{CA_DATA_DEPRECATED_PAGE}">data.ca.gov</a>, they also provided a parseable <b><a href="{CA_DATA_DEPRECATED_CSV}">csv file</a></b> format.</p>
-                    <p>* <b>Canada Data Source (CURRENT):</b> Full historical provincial/territorial cases and deaths from <a href="{CANADA_OPENCOVID}">COVID-19 Canada Open Data Working Group / CovidTimelineCanada</a>: <b><a href="{CANADA_CASES_CSV}">cases csv</a></b> and <b><a href="{CANADA_DEATHS_CSV}">deaths csv</a></b> (2020 through 2023-12-31). Cases and deaths are outer-merged so every historical date from either file is kept.</p>
+                    <p>* <b>Canada Data Source (CURRENT):</b> Bundled local snapshots of provincial/territorial cases and deaths from <a href="{CANADA_OPENCOVID}">COVID-19 Canada Open Data Working Group / CovidTimelineCanada</a> (<code>data/covidtimelinecanada-cases-pt.csv</code> and <code>data/covidtimelinecanada-deaths-pt.csv</code>; original <b><a href="{CANADA_CASES_CSV}">cases csv</a></b> and <b><a href="{CANADA_DEATHS_CSV}">deaths csv</a></b>, 2020 through 2023-12-31). Cases and deaths are outer-merged so every historical date from either file is kept.</p>
                     <p>* <b>Canada Data Source (DEPRECATED as of August 12, 2022):</b> The Canada data was gathered directly from <a href="{CANADA_DEPRECATED_REPO}">COVID-19 Canada Open Data Working Group</a> which generated a parsable <b><a href="{CANADA_DEPRECATED_CSV}">csv</a></b> daily. That source stopped getting updated in May of 2022.</p>
                     <p>* <b>Note:</b> Antarctica population ranges from 1000 to 5000 based. I used the higher value.</p>
                     <a id="search_anchor"></a>
@@ -646,9 +649,14 @@ def save_pickle(object_to_save,filename_prefix,time_string):
 # load the world time series as {country: [{date, confirmed, deaths, recovered}, ...]}
 # plus per-country population and the OWID World series used for TOTAL
 def load_world_owid():
-    print(f"- Downloading world historical CSV from {SITE} (please wait)")
-    owid = read_csv_from_url(SITE, usecols=["country", "date", "total_cases", "total_deaths", "population", "continent"])
-    print(f"- Download Complete ({len(owid)} rows)")
+    # Used to download live:
+    # print(f"- Downloading world historical CSV from {SITE} (please wait)")
+    # owid = read_csv_from_url(SITE, usecols=["country", "date", "total_cases", "total_deaths", "population", "continent"])
+    # print(f"- Download Complete ({len(owid)} rows)")
+    print(f"- Reading local world historical CSV from {OWID_LOCAL_CSV} (please wait)")
+    print(f"- original online source was {SITE}")
+    owid = read_csv_local(OWID_LOCAL_CSV, usecols=["country", "date", "total_cases", "total_deaths", "population", "continent"])
+    print(f"- Local read complete ({len(owid)} rows)")
 
     owid["date"] = pd.to_datetime(owid["date"], errors="coerce")
     owid = owid.dropna(subset=["date", "country"])

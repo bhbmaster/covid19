@@ -5,10 +5,12 @@ from common import (  # local module but up one directory hence the sys path app
     covid_init_and_plot,
     pd_quick_info_maybe_save,
     pandas_display_options,
-    read_csv_from_url,
+    read_csv_from_url,  # kept so the commented live-download remnant below still works if uncommented
+    read_csv_local,
     add_daily_diffs,
     CHHS_CA_CSV,
     CHHS_CA_PAGE,
+    CHHS_CA_LOCAL_CSV,
     NYT_US_COUNTIES_CSV,
     NYT_US_STATES_CSV,
     NYT_COVID_REPO,
@@ -133,22 +135,31 @@ def format_nyt_california(counties_raw, states_raw):
     ], ignore_index=True)
     return out.sort_values(by=["date", "area"])
 
-print(f"* trying California source: CHHS {CHHS_CA_PAGE}")
-used_source = "CHHS"
-try:
-    raw = read_csv_from_url(CHHS_CA_CSV)
-    pd_quick_info_maybe_save(raw, "RECEIVED DATA", csv_file)
-    c = format_chhs(raw)
-    print("* using CHHS full historical county time series")
-except Exception as e:
-    print(f"* CHHS failed ({e})")
-    print(f"* falling back to NY Times California counties archive {NYT_COVID_REPO}")
-    used_source = "NY Times"
-    counties_raw = read_csv_from_url(NYT_US_COUNTIES_CSV)
-    states_raw = read_csv_from_url(NYT_US_STATES_CSV)
-    pd_quick_info_maybe_save(counties_raw[counties_raw["state"].astype(str).eq("California")] if "state" in counties_raw.columns else counties_raw, "RECEIVED DATA", csv_file)
-    c = format_nyt_california(counties_raw, states_raw)
-    print("* using NY Times full historical California county archive")
+# Used to download live (CHHS often 403s Python urllib; download_bytes fell back to curl):
+# print(f"* trying California source: CHHS {CHHS_CA_PAGE}")
+# used_source = "CHHS"
+# try:
+#     raw = read_csv_from_url(CHHS_CA_CSV)
+#     pd_quick_info_maybe_save(raw, "RECEIVED DATA", csv_file)
+#     c = format_chhs(raw)
+#     print("* using CHHS full historical county time series")
+# except Exception as e:
+#     print(f"* CHHS failed ({e})")
+#     print(f"* falling back to NY Times California counties archive {NYT_COVID_REPO}")
+#     used_source = "NY Times"
+#     counties_raw = read_csv_from_url(NYT_US_COUNTIES_CSV)
+#     states_raw = read_csv_from_url(NYT_US_STATES_CSV)
+#     pd_quick_info_maybe_save(counties_raw[counties_raw["state"].astype(str).eq("California")] if "state" in counties_raw.columns else counties_raw, "RECEIVED DATA", csv_file)
+#     c = format_nyt_california(counties_raw, states_raw)
+#     print("* using NY Times full historical California county archive")
+print(f"* reading California source from local {CHHS_CA_LOCAL_CSV}")
+print(f"* original online source was CHHS {CHHS_CA_PAGE} ({CHHS_CA_CSV})")
+print(f"* NY Times counties fallback remnant is commented below; original {NYT_COVID_REPO} ({NYT_US_COUNTIES_CSV} + {NYT_US_STATES_CSV})")
+used_source = "CHHS (local snapshot)"
+raw = read_csv_local(CHHS_CA_LOCAL_CSV)
+pd_quick_info_maybe_save(raw, "RECEIVED DATA", csv_file)
+c = format_chhs(raw)
+print("* using CHHS full historical county time series (local snapshot)")
 
 print(f"* California source in use: {used_source}")
 print(f"* date range: {c['date'].min()} through {c['date'].max()}")

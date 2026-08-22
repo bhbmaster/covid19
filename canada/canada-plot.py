@@ -5,9 +5,12 @@ from common import (  # local module but up one directory hence the sys path app
     covid_init_and_plot,
     pd_quick_info_maybe_save,
     pandas_display_options,
-    read_csv_from_url,
+    read_csv_from_url,  # kept so the commented live-download remnant below still works if uncommented
+    read_csv_local,
     CANADA_CASES_CSV,
     CANADA_DEATHS_CSV,
+    CANADA_CASES_LOCAL_CSV,
+    CANADA_DEATHS_LOCAL_CSV,
     CANADA_OPENCOVID,
 )
 
@@ -26,8 +29,11 @@ print()
 # --- get data and manipulate it into correct form --- #
 # Full historical provincial/territorial series from COVID-19 Canada Open Data Working Group / CovidTimelineCanada
 # https://opencovid.ca/  — cases and deaths, 2020 through 2023-12-31
-covid_url_cases = CANADA_CASES_CSV
-covid_url_deaths = CANADA_DEATHS_CSV
+# Used to download live:
+# covid_url_cases = CANADA_CASES_CSV
+# covid_url_deaths = CANADA_DEATHS_CSV
+covid_local_cases = CANADA_CASES_LOCAL_CSV
+covid_local_deaths = CANADA_DEATHS_LOCAL_CSV
 population_file='canada-pop.csv' # local - got data from wikipedia https://en.wikipedia.org/wiki/Population_of_Canada_by_province_and_territory
 
 # --- output names --- #
@@ -78,12 +84,20 @@ print()
 
 ##### downloading/accessing and manipulating covid dataframe #####
 
-print(f"* downloading Canada historical data from {CANADA_OPENCOVID}")
-print("* downloading data 1/2")
-c_cases = read_csv_from_url(covid_url_cases)
-print("* downloading data 2/2")
-c_deaths = read_csv_from_url(covid_url_deaths)
-print("* downloading data complete")
+# Used to download live:
+# print(f"* downloading Canada historical data from {CANADA_OPENCOVID}")
+# print("* downloading data 1/2")
+# c_cases = read_csv_from_url(covid_url_cases)
+# print("* downloading data 2/2")
+# c_deaths = read_csv_from_url(covid_url_deaths)
+# print("* downloading data complete")
+print(f"* reading Canada historical data from local files")
+print(f"* original online source was {CANADA_OPENCOVID} ({CANADA_CASES_CSV} and {CANADA_DEATHS_CSV})")
+print("* reading data 1/2")
+c_cases = read_csv_local(covid_local_cases)
+print("* reading data 2/2")
+c_deaths = read_csv_local(covid_local_deaths)
+print("* reading local data complete")
 print()
 
 # analyze covid cases data

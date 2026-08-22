@@ -69,3 +69,8 @@ California CHHS CSV still exists (2020-02-01 through 2023-12-19) but Python urll
 
 Python 3.13: stdlib `cgi` was removed, so `htmlmin` 0.1.12 cannot build. Use `htmlmin2` (same `import htmlmin` API).
 
+2026-08-22
+============
+
+COVID tracking is over, so the working historical CSVs are vendored under `data/` and the plotters read local files. Original download URLs remain as commented remnants in the plot scripts (and as constants in `common.py`). OWID compact.csv is ~172MB; `data/owid-compact.csv` keeps only the columns covid19plot.py uses. NY Times us-counties.csv (~100MB) is not bundled; that CHHS fallback path is commented in `usa-ca/county-plot.py`.
+

@@ -28,7 +28,17 @@ COLOR_LIST = px.colors.qualitative.Vivid # this sets the colorway option in layo
 COLOR_LIST_LEN = len(COLOR_LIST) # we will use the mod of this later
 DOWNLOAD_USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 
-# Current data sources. These are the working historical series used by the plotters.
+# Bundled local snapshots (COVID reporting has ended; plotters read these instead of downloading).
+# Paths are relative to this file so scripts work from the repo root or from usa-states/usa-ca/canada.
+_REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.path.join(_REPO_ROOT, "data")
+OWID_LOCAL_CSV = os.path.join(DATA_DIR, "owid-compact.csv")
+NYT_US_STATES_LOCAL_CSV = os.path.join(DATA_DIR, "nytimes-us-states.csv")
+CHHS_CA_LOCAL_CSV = os.path.join(DATA_DIR, "chhs-covid19cases-test.csv")
+CANADA_CASES_LOCAL_CSV = os.path.join(DATA_DIR, "covidtimelinecanada-cases-pt.csv")
+CANADA_DEATHS_LOCAL_CSV = os.path.join(DATA_DIR, "covidtimelinecanada-deaths-pt.csv")
+
+# Original online URLs (kept for HTML footnotes / README / commented remnants in the plotters).
 # World: OWID compact CSV, full country history from 2020-01-01 (replaces frozen Pomber/JHU JSON).
 OWID_COMPACT_CSV = "https://catalog.ourworldindata.org/garden/covid/latest/compact/compact.csv"
 OWID_COVID_DOCS = "https://docs.owid.io/projects/etl/api/covid/"
@@ -126,11 +136,18 @@ def _looks_like_html(body):
     return head.startswith(b"<!doctype") or head.startswith(b"<html")
 
 # pandas.read_csv from a remote URL using download_bytes so blocked portals still work
+# (kept for the commented-out live-download remnants in the plotters)
 def read_csv_from_url(url, **kwargs):
     print(f"* downloading {url}")
     raw = download_bytes(url)
     kwargs.setdefault("low_memory", False)
     return pd.read_csv(io.BytesIO(raw), **kwargs)
+
+# pandas.read_csv from a bundled local snapshot under data/
+def read_csv_local(path, **kwargs):
+    print(f"* reading local {path}")
+    kwargs.setdefault("low_memory", False)
+    return pd.read_csv(path, **kwargs)
 
 # compute daily new cases/deaths from cumulative columns, grouped by area
 def add_daily_diffs(df, area_col, date_col, cases_col, deaths_col, new_cases_col="newcases", new_deaths_col="newdeaths"):

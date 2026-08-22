@@ -57,7 +57,7 @@ html-plots/US-plot-LOG-perpop.html       - values adjusted by population per 100
 - `usa-states/states-output.html` shows the values of the States of the USA relative to the population per 100K and with 7 day moving average
 - `usa-states/states-output-raw.html` shows the raw values of the States of the USA with 7 day moving average
 - The moving average only applies to Daily New Cases & Daily New Deaths plots. The Total Cases & Total Deaths plot do not have the moving average function applied to them
-- Also this script saves the raw csv data that was downloaded `usa-states/us-states.csv` and then saves the manipulated dataframe(csv) that is parsed by the graph4area() function to `usa-states/us-states-parsable.csv`
+- Also this script reads the bundled NY Times snapshot `data/nytimes-us-states.csv` and then saves a working copy `usa-states/us-states.csv` plus the manipulated dataframe to `usa-states/us-states-parsable.csv`
 
 **(3) `usa-ca/county-plot.py` produces the following graphs and outputs:**
 
@@ -67,7 +67,7 @@ html-plots/US-plot-LOG-perpop.html       - values adjusted by population per 100
 - `usa-ca/county-output.html` shows the values of the counties and California state relative to the population per 100K and with 7 day moving average
 - `usa-ca/county-output-raw.html` shows the raw values of the counties and California state with 7 day moving average
 - The moving average only applies to Daily New Cases & Daily New Deaths plots. The Total Cases & Total Deaths plot do not have the moving average function applied to them
-- Also this script saves the raw csv data that was downloaded `usa-ca/CA-covid19cases_test.csv` and then saves the manipulated dataframe(csv) that is parsed by the graph() function to `usa-ca/CA-covid19cases_test-parsable.csv`
+- Also this script reads the bundled CHHS snapshot `data/chhs-covid19cases-test.csv` and then saves a working copy `usa-ca/CA-covid19cases_test.csv` plus the manipulated dataframe to `usa-ca/CA-covid19cases_test-parsable.csv`
 
 **(4) `canada/canada-plot.py` produces the similar graphs and outputs:**
 
@@ -77,7 +77,7 @@ html-plots/US-plot-LOG-perpop.html       - values adjusted by population per 100
 - `canada/canada-output.html` shows the values of the Provinces & Territories of Canada relative to the population per 100K and with 7 day moving average
 - `canada/canada-output-raw.html` shows the raw values of the Provinces & Territories of Canada with 7 day moving average
 - The moving average only applies to Daily New Cases & Daily New Deaths plots. The Total Cases & Total Deaths plot do not have the moving average function applied to them
-- Also this script saves the raw csv data that was downloaded `canada/canada.csv` and then saves the manipulated dataframe(csv) that is parsed by the graph4area() function to `canada/canada-parsable.csv`
+- Also this script reads the bundled Canada snapshots `data/covidtimelinecanada-cases-pt.csv` and `data/covidtimelinecanada-deaths-pt.csv`, then saves working copies (`canada/canada-cases.csv`, `canada/canada-deaths.csv`, `canada/canada-merged.csv`) plus the manipulated dataframe to `canada/canada-parsable.csv`
 
 ## Requirements
 
@@ -85,7 +85,7 @@ html-plots/US-plot-LOG-perpop.html       - values adjusted by population per 100
 
 * This is tested with Python 3.9 and newer (including 3.12 and 3.13). The `f"{var=}"` debug format is used in some of the prints (3.8+).
 
-* Internet access (see Other Requirements below)
+* Historical COVID CSVs are bundled under `data/` (no internet needed to plot). Original download URLs are kept as comments in the plotters.
 
 ## Required Python version & how to launch the scripts
 
@@ -137,7 +137,7 @@ Or install the modules listed in `requirements.txt` one by one using `pip instal
 
 ## Other Requirements
 
-* Internet access to access the data sources
+* Historical COVID datasets are vendored in `data/` (see `data/SOURCES.txt`). The plotters read those local files. Original online URLs remain in `common.py` and as commented remnants in each plot script if you ever want to fetch live again.
 
 ## Wrapper run.sh Script & places.sh
 
@@ -362,12 +362,13 @@ See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stab
 
 ## Data Sources
 
-These are the working historical series the scripts download. The same list is printed at the bottom of the notes section in the world HTML plots (`covid19-normal.html` / `covid19-log.html`) and on http://www.infotinks.com/coronavirus-dashboard-covid19-py/.
+These are the historical series bundled under `data/` (see `data/SOURCES.txt`). The same list is printed at the bottom of the notes section in the world HTML plots (`covid19-normal.html` / `covid19-log.html`) and on http://www.infotinks.com/coronavirus-dashboard-covid19-py/. COVID daily reporting has ended, so the scripts no longer download on each run; the original URLs are kept as comments in the plotters.
 
 ### World (covid19plot.py) — CURRENT
 
 * **Our World in Data compact COVID-19 dataset** (full historical country cases and deaths from 2020-01-01)
-  * CSV: https://catalog.ourworldindata.org/garden/covid/latest/compact/compact.csv
+  * Local: `data/owid-compact.csv` (columns used by the plotter only; full compact.csv is ~172MB)
+  * Original CSV: https://catalog.ourworldindata.org/garden/covid/latest/compact/compact.csv
   * Docs: https://docs.owid.io/projects/etl/api/covid/
   * Topic page: https://ourworldindata.org/coronavirus
   * World totals use OWID's `World` series. Recovered counts are not in this dataset, so Recovered is plotted as 0 and Active is Cases minus Deaths.
@@ -380,16 +381,17 @@ These are the working historical series the scripts download. The same list is p
 ### USA states (usa-states/states-plot.py) — CURRENT
 
 * **New York Times** full historical state archive (2020-01-21 through 2023-03-23; NYT stopped daily updates after that)
+  * Local: `data/nytimes-us-states.csv`
   * Repo: https://github.com/nytimes/covid-19-data
-  * CSV: https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv
+  * Original CSV: https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv
 
 ### California counties (usa-ca/county-plot.py) — CURRENT
 
 * **California Health and Human Services (CHHS)** county time series (full history 2020-02-01 through 2023-12-19)
+  * Local: `data/chhs-covid19cases-test.csv`
   * Dataset: https://data.chhs.ca.gov/dataset/covid-19-time-series-metrics-by-county-and-state
-  * CSV: https://data.chhs.ca.gov/dataset/f333528b-4d38-4814-bebb-12db1f10f535/resource/046cdd2b-31e5-4d34-9ed3-b48cdbc4be7a/download/covid19cases_test.csv
-  * That portal often returns HTTP 403 to Python `urllib`/`pandas`; the scripts retry with `curl`. If CHHS still fails, we fall back to the NY Times California counties archive:
-    * https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv (2020-01-25 through 2023-03-23)
+  * Original CSV: https://data.chhs.ca.gov/dataset/f333528b-4d38-4814-bebb-12db1f10f535/resource/046cdd2b-31e5-4d34-9ed3-b48cdbc4be7a/download/covid19cases_test.csv
+  * That portal often returns HTTP 403 to Python `urllib`/`pandas`; `curl` with a browser User-Agent used to succeed. The old live download (and NY Times us-counties.csv fallback) is commented in `usa-ca/county-plot.py`.
 
 ### California — DEPRECATED (as of March 12, 2021)
 
@@ -398,9 +400,10 @@ These are the working historical series the scripts download. The same list is p
 ### Canada provinces & territories (canada/canada-plot.py) — CURRENT
 
 * **COVID-19 Canada Open Data Working Group / CovidTimelineCanada** full provincial history (2020 through 2023-12-31)
+  * Local: `data/covidtimelinecanada-cases-pt.csv` and `data/covidtimelinecanada-deaths-pt.csv`
   * https://opencovid.ca/
-  * Cases: https://raw.githubusercontent.com/ccodwg/CovidTimelineCanada/main/data/pt/cases_pt.csv
-  * Deaths: https://raw.githubusercontent.com/ccodwg/CovidTimelineCanada/main/data/pt/deaths_pt.csv
+  * Original cases: https://raw.githubusercontent.com/ccodwg/CovidTimelineCanada/main/data/pt/cases_pt.csv
+  * Original deaths: https://raw.githubusercontent.com/ccodwg/CovidTimelineCanada/main/data/pt/deaths_pt.csv
   * Cases and deaths are outer-merged so dates that exist in only one file are still kept.
 
 ### Canada — DEPRECATED (as of August 12, 2022)
